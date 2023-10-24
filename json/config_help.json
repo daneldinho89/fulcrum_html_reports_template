@@ -1,5 +1,5 @@
 {
-    "json_file_path": "../exports/angles_timeline.json"
+    "json_file_path": "json/Fulcrum FC v Opposition.json"
     , "page_title": "html_pretty"
     , "arrangement": {"rows": 8, "columns": 1}
     , "colours": {"fulcrum":"#532CEB"
