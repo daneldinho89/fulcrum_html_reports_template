@@ -821,7 +821,7 @@ function read_config_variables(config, data) {
 function create_data_table(id, title, data_table, location_id, colour) {
     // Add title to the location div
     d3.select(location_id)
-        .attr("style", "overflow-x: auto;")
+        .attr("style", "overflow-x: auto; width: 100%")
         .append("h5")
         .text(title)
 
@@ -866,20 +866,21 @@ function create_data_table(id, title, data_table, location_id, colour) {
 * ---------------------------------------------------------------
 * Function to create a data card with a single data value
 ****************************************************************/
-function create_data_card(id, title, data, location_id, colour = "#532CEB", textcolour = "white") {
+function create_data_card(id, title, data, location_id, colour = "#532CEB", textcolour = "white", height= "100") {
     // Create a card element
     d3.select(location_id)
         .append("div")
         .attr("class", "card m-1")
-        .attr("style", "background-color:" + colour + "; color:" + textcolour)
+        .attr("style", "background-color:" + colour + "; color:" + textcolour +"; height:" + height + "px")
         .attr("id", id)
         .append("div")
-        .attr("class", "card-body")
+        .attr("class", "card-body d-flex flex-column justify-content-center align-items-center")
         .append("h5")
         .attr("class", "card-title text-center")
         .text(title)
         .append("p")
-        .attr("class", "card-text display-4 text-center")
+        .attr("class", "card-text")
+        .attr("style", "font-size:" + height/2.5 + "px;")
         .text(data)
 };
 
@@ -1060,6 +1061,112 @@ function create_contest_bar(id, title, success_val, failure_val, location_id, wi
         .attr("fill", "#bfbfbf")
 
 };
+
+/****************************************************************
+* SCATTER PLOT
+* ---------------------------------------------------------------
+* Function to create a horizontal elliptical bar with 2 values -
+* success/fail
+****************************************************************/
+function create_scatter_plot(id, team1_data, team2_data, background_image_path = "images/map_football_horiz.png", location_id, width, height, colour1 = "yellow", colour2 = "red") {
+
+    // set the dimensions and margins of the graph
+    var margin = {top: 10, right: 30, bottom: 60, left: 60},
+        width = width - margin.left - margin.right,
+        height = height - margin.top - margin.bottom;
+
+    // Tooltip setup
+    var tooltip = d3.select(location_id)
+        .append("div")
+        .style("opacity", 0)
+        .attr("class", "tooltip")
+        .style("background-color", "white")
+        .style("border", "solid")
+        .style("border-width", "1px")
+        .style("border-radius", "5px")
+        .style("padding", "10px")
+        .style("position", "absolute")
+        .style("width", width*0.25 + "px");
+
+    // Mouse interaction functions
+    var mouseover = function(d) {
+        tooltip.style("opacity", 1)
+    }
+
+    var mousemove_team1 = function(d) {
+        var [x, y] = d3.pointer(event)
+        tooltip
+        .html("<b>Team 1</b><br>" +
+                "time: " + ((d.target.__data__[2] / 60).toFixed(0)) + " mins" + "<br>" +
+                "x: " + (d.target.__data__[0].toFixed(2)) + "<br>" +
+                "y: " + (d.target.__data__[1].toFixed(2)))
+        .style("left", (event.offsetX + 10) + "px") 
+        .style("top", (event.offsetY + 10)  + "px")
+    }
+    
+    var mousemove_team2 = function(d) {
+        var [x, y] = d3.pointer(event)
+        tooltip
+        .html("<b>Team 2</b><br>" +
+                "time: " + ((d.target.__data__[2] / 60).toFixed(0)) + " mins" + "<br>" +
+                "x: " + (d.target.__data__[0].toFixed(2)) + "<br>" +
+                "y: " + (d.target.__data__[1].toFixed(2)))
+        .style("left", (event.offsetX + 10) + "px") 
+        .style("top", (event.offsetY + 10)  + "px")
+    }
+
+    var mouseleave = function(d) {
+        tooltip
+        .transition()
+        .duration(200)
+        .style("opacity", 0)
+    }
+
+    // Append svg to specified location
+    var svg = d3.select(location_id)
+    .append("svg")
+        .attr("id", id)
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    // Append image to svg
+    svg.append("image")
+        .attr("href", background_image_path)
+        .attr("height", height)
+        .attr("width", width)
+        .attr("preserveAspectRatio", "none");
+
+    // Add dots for Team 1
+    svg.append('g')
+        .selectAll("dot")
+        .data(team1_data)
+        .enter()
+        .append("circle")
+            .attr("cx", function (d) { return d[0] * width; } )
+            .attr("cy", function (d) { return (1 - d[1]) * height; } )
+            .attr("r", 5)
+            .style("fill", colour1)
+        .on("mouseover", mouseover )
+        .on("mousemove", mousemove_team1 )
+        .on("mouseleave", mouseleave );
+
+    // Add dots for Team 2
+    svg.append('g')
+        .selectAll("dot")
+        .data(team2_data)
+        .enter()
+        .append("circle")
+            .attr("cx", function (d) { return d[0] * width; } )
+            .attr("cy", function (d) { return (1 - d[1]) * height; } )
+            .attr("r", 5)
+            .style("fill", colour2)
+        .on("mouseover", mouseover )
+        .on("mousemove", mousemove_team2 )
+        .on("mouseleave", mouseleave );
+
+}
 
 /****************************************************************
 * CREATE BOOTSTRAP GRID
