@@ -1065,8 +1065,7 @@ function create_contest_bar(id, title, success_val, failure_val, location_id, wi
 /****************************************************************
 * SCATTER PLOT
 * ---------------------------------------------------------------
-* Function to create a horizontal elliptical bar with 2 values -
-* success/fail
+* Function to create a scatter plot of two respective team's data
 ****************************************************************/
 function create_scatter_plot(id, team1_data, team2_data, background_image_path = "images/map_football_horiz.png", location_id, width, height, colour1 = "yellow", colour2 = "red") {
 
