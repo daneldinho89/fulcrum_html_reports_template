@@ -639,31 +639,72 @@ function count_qualifier_patterns(data, clip_row_name = "", search_criteria = []
 * clips which match the specific search criteria
 *
 ****************************************************************/
-function count_attributes(data, attributeCategory = "" , attributeName = "") {
+function count_attributes(data, row_name = "", search_criteria = [], time_start = 0, time_end = Infinity) {
     let attributeCount = 0;
 
     for (const row of data.rows) {
-        if (!row.clips) continue;
+        // Row name and time filters
+        if ((row_name !== "" && row.row_name !== row_name) || !row.clips) continue;
 
         for (const clip of row.clips) {
-            if (!clip.qualifiers || !clip.qualifiers.qualifiers_array) continue;
+            if (clip.time_start < time_start || clip.time_end > time_end || !clip.qualifiers || !clip.qualifiers.qualifiers_array) continue;
 
-            for (const qualifier of clip.qualifiers.qualifiers_array) {
-                if (!qualifier.qualifier_attributes) continue;
+            let searchIndex = 0;
 
-                for (const attribute of qualifier.qualifier_attributes) {
-                    // Check if either the category or the name matches, if they are provided
-                    const categoryMatch = attributeCategory ? attribute.category === attributeCategory : true;
-                    const nameMatch = attributeName ? attribute.name === attributeName : true;
+            for (let i = 0; i < clip.qualifiers.qualifiers_array.length; i++) {
+                const qualifier = clip.qualifiers.qualifiers_array[i];
+                const search_qualifier = search_criteria[searchIndex];
 
-                    if (categoryMatch && nameMatch) {
-                        attributeCount++;
+                // Check if category and name are part of the search criteria
+                const search_qual_cat = search_qualifier.category || '';
+                const search_qual_val = search_qualifier.name || '';
+
+                // Category and name matches
+                const categoryMatch = search_qual_cat === '' || qualifier.category === search_qual_cat;
+                const nameMatch = search_qual_val === '' || qualifier.name === search_qual_val;
+
+                if (categoryMatch && nameMatch && qualifier.qualifier_attributes) {
+                    let attributesMatch = true;
+
+                    if (search_qualifier.attributes) {
+                        for (const search_attr_cat in search_qualifier.attributes) {
+                            const search_attr_val = search_qualifier.attributes[search_attr_cat] || '';
+                            let attributeFound = false;
+
+                            for (const attribute of qualifier.qualifier_attributes) {
+                                const attributeCatMatch = search_attr_cat === '' || attribute.category === search_attr_cat;
+                                const attributeNameMatch = search_attr_val === '' || attribute.name === search_attr_val;
+
+                                if (attributeCatMatch && attributeNameMatch) {
+                                    attributeFound = true;
+                                    break;
+                                }
+                            }
+
+                            if (!attributeFound) {
+                                attributesMatch = false;
+                                break;
+                            }
+                        }
                     }
+    
+                    if (attributesMatch) {
+                        searchIndex++;
+                        if (searchIndex === search_criteria.length) {
+                            attributeCount++;
+                            console.log("Clip UUID:", clip.uuid, "| Pattern occurrence:", attributeCount);
+                            searchIndex = 0;
+                            i -= (search_criteria.length - 1);
+                        }
+                    } else {
+                        searchIndex = 0;
+                    }
+                } else {
+                    searchIndex = 0;
                 }
             }
         }
     }
-
     return attributeCount;
 }
 
@@ -854,7 +895,12 @@ function read_config_variables(config, data) {
                 eval(`var ${each} = ${res};`);
                 var_res[each] = res;
                 break;
-            case "sum_clip_durations":
+            case "count_attributes":
+                var res = count_attributes(data, row_name, search_criteria, time_start, time_end)
+                eval(`var ${each} = ${res};`);
+                var_res[each] = res;
+                break;    
+                case "sum_clip_durations":
                 var res = sum_clip_durations(data, row_name, search_criteria, time_start, time_end)
                 eval(`var ${each} = ${res};`);
                 var_res[each] = res;
