@@ -338,57 +338,66 @@ function clip_extract(data, clip_row_name = "", detail = "") {
 *
 ****************************************************************/
 function count_clips(data, clip_row_name = "", search_criteria = [], time_start = 0, time_end = Infinity, row_cat = "") {
-    // Initialize the clip_count to 0
     let clip_count = 0;
 
-    // Loop through each row in the data
-    for (row of data.rows) {
-        // Check for row name and category match
+    // Iterate through each row in the dataset
+    for (const row of data.rows) {
+        // Check for row name and category constraints
         if ((clip_row_name !== "" && row.row_name !== clip_row_name) || (row_cat !== "" && row.row_category !== row_cat)) continue;
-
-        // If the row does not have any clips, skip to the next row
+        // Skip rows without clips
         if (!row.clips) continue;
 
-        // Loop through each clip in the row
-        for (clip of row.clips) {
-            // If clip start time is less than the specified start time or greater than the specified end time, skip to the next clip
+        // Iterate through each clip in the row
+        for (const clip of row.clips) {
+            // Check if clip falls within the specified time range
             if (clip.time_start < time_start || clip.time_start > time_end) continue;
 
-            // If search_criteria is not empty, filter clips based on search criteria
+            // Process only if there are search criteria defined
             if (search_criteria.length > 0) {
-                // Skip if clip has no qualifiers
+                // Skip clips without qualifiers
                 if (!clip.qualifiers || !clip.qualifiers.qualifiers_array) continue;
 
                 let matched_criteria_count = 0;
+
+                // Iterate through each search criteria
                 for (const criteria of search_criteria) {
-                    const category = Object.keys(criteria)[0];
-                    const value = criteria[category];
+                    const category = criteria.category || "";
+                    const value = criteria.name || "";
                     const attributes = criteria.attributes || {};
 
+                    // Iterate through each qualifier in the clip
                     for (const qualifier of clip.qualifiers.qualifiers_array) {
-                        // If the category is not defined, match any qualifier category with the given qualifier name
-                        if (!category && qualifier.name === value) {
-                            matched_criteria_count++;
-                            break;
-                        } else if (qualifier.category === category && qualifier.name === value) {
+                        // Check for category and name matches, allowing for unspecified (any) matches
+                        const categoryMatch = category === "" || qualifier.category === category;
+                        const valueMatch = value === "" || qualifier.name === value;
+
+                        if (categoryMatch && valueMatch) {
+                            // If there are attributes in the criteria
                             if (Object.keys(attributes).length > 0) {
                                 if (!qualifier.qualifier_attributes) continue;
 
                                 let attribute_match_count = 0;
+                                // Iterate through each attribute in the qualifier
                                 for (const attribute of qualifier.qualifier_attributes) {
+                                    // Check each specified attribute against qualifier attributes
                                     for (const [attr_category, attr_value] of Object.entries(attributes)) {
-                                        if (attribute.category === attr_category && attribute.name === attr_value) {
+                                        const attributeCatMatch = attr_category === "" || attribute.category === attr_category;
+                                        const attributeNameMatch = attribute.name === attr_value;
+
+                                        // Count matches for attributes
+                                        if (attributeCatMatch && attributeNameMatch) {
                                             attribute_match_count++;
                                         }
                                     }
                                 }
 
+                                // If all specified attributes match, increment the criteria match count
                                 if (attribute_match_count === Object.keys(attributes).length) {
                                     matched_criteria_count++;
                                     break;
                                 }
                             } else {
-                                // If no attributes are specified in the criteria, count the qualifier match
+                                // Increment matched criteria count if there are no additional attribute criteria
                                 matched_criteria_count++;
                                 break;
                             }
@@ -396,35 +405,25 @@ function count_clips(data, clip_row_name = "", search_criteria = [], time_start 
                     }
                 }
 
-                if (matched_criteria_count < search_criteria.length) continue;
+                // Only count the clip if it matches all the search criteria
+                if (matched_criteria_count >= search_criteria.length) {
+                    clip_count++;
+                    console.log("Clip UUID:", clip.uuid, "| Clip Cumulative Total:", clip_count);
+                }
+            } else {
+                // If no search criteria, count all clips
+                clip_count++;
             }
-
-            // Increment the clip_count
-            clip_count++;
-
-            // Log the clip UUID and the current clip_count
-            console.log("Clip UUID:", clip.uuid, "| Clip Cumulative Total:", clip_count);
         }
     }
 
-    // Convert search_criteria to a readable string
-    let search_criteria_str = search_criteria.map(criteria => {
-        let category = Object.keys(criteria)[0];
-        let value = criteria[category];
-        let attributes = criteria.attributes || {};
-
-        let attribute_str = Object.entries(attributes).map(([attr_category, attr_value]) => {
-            return `${attr_category}: ${attr_value}`;
-        }).join(', ');
-
-        return `${category}: ${value}` + (attribute_str ? ` (${attribute_str})` : '');
-    }).join(', ');
-
-    // Log the row_name, clip_count, and search_criteria_str to the console
-    console.log(clip_row_name + ": " + clip_count + " clips | Search Criteria: " + search_criteria_str);
+    // Log the total count with additional information
+    console.log(clip_row_name + ": " + clip_count + " clips | Search Criteria: " + JSON.stringify(search_criteria));
 
     return clip_count;
 }
+
+
 
 /****************************************************************
 * COUNT QUALIFIERS
@@ -441,68 +440,58 @@ function count_clips(data, clip_row_name = "", search_criteria = [], time_start 
 *
 ****************************************************************/
 function count_qualifiers(data, clip_row_name = "", search_criteria = [], time_start = 0, time_end = Infinity) {
-    // Initialize the total qualifier count to 0.
     let total_qualifier_count = 0;
 
-    // Iterate through each search criteria.
+    // Iterate through each search criterion
     for (const criteria of search_criteria) {
-        // Initialize the qualifier count for the current criteria to 0.
         let qualifier_count = 0;
 
-        // Iterate through each row in the data set.
+        // Iterate through each row in the data set
         for (const row of data.rows) {
-            // If a specific row name is provided and doesn't match the current row, skip this row.
             if (clip_row_name !== "" && row.row_name !== clip_row_name) continue;
 
-            // Get the clips array, or use an empty array if clips are not present.
             const clips = row.clips || [];
-            // Iterate through each clip in the row.
+
+            // Iterate through each clip in the row
             for (const clip of clips) {
-                // If clip start time is less than the specified start time or end time is greater than the specified end time, skip to the next clip
                 if (clip.time_start < time_start || clip.time_end > time_end) continue;
 
-                // Get the qualifiers array using optional chaining, or use an empty array if qualifiers are not present.
                 const qualifiers = clip.qualifiers?.qualifiers_array || [];
-                // Iterate through each qualifier in the clip.
+
+                // Iterate through each qualifier in the clip
                 for (const qualifier of qualifiers) {
-                    // If qualifier time is less than the specified start time or end time is greater than the specified end time, skip to the next qualifier
                     if (qualifier.time < time_start || qualifier.time > time_end) continue;
 
-                    const category = Object.keys(criteria)[0];
-                    const value = criteria[category];
+                    // Optional: Check if qualifier category and name are part of the search criteria
+                    const category = criteria.category || "";
+                    const value = criteria.name || "";
 
-                    // If category is left blank, set it to match any category.
-                    if (category === "") {
-                        criteria[qualifier.category] = value;
-                        delete criteria[category];
-                    }
+                    // Determine if there's a match on category and name
+                    const categoryMatch = category === "" || qualifier.category === category;
+                    const nameMatch = value === "" || qualifier.name === value;
 
-                    // Get the attributes from the search criteria, or use an empty object if not present.
-                    const attributes = criteria.attributes || {};
-
-                    // Check if the qualifier category and name match the search criteria.
-                    if (qualifier.category === category && qualifier.name === value) {
-                        // Initialize the count of matched attributes.
+                    if (categoryMatch && nameMatch) {
                         let attribute_match_count = 0;
 
-                        // Check if there are any attributes in the search criteria.
-                        if (Object.keys(attributes).length > 0) {
-                            // If the current qualifier doesn't have any attributes, continue to the next qualifier.
-                            if (!qualifier.qualifier_attributes) continue;
-
-                            // Iterate through each attribute in the current qualifier's attributes.
+                        // Check if attributes match the search criteria
+                        const attributes = criteria.attributes || {};
+                        if (Object.keys(attributes).length > 0 && qualifier.qualifier_attributes) {
+                            // Iterate through each attribute in the qualifier
                             for (const attribute of qualifier.qualifier_attributes) {
-                                // Iterate through each attribute in the search criteria.
+                                // Check each specified attribute against qualifier attributes
                                 for (const [attr_category, attr_value] of Object.entries(attributes)) {
-                                    // If the attribute category and name match the search criteria, increment the attribute match count.
-                                    if (attribute.category === attr_category && attribute.name === attr_value) {
+                                    const attributeCatMatch = attr_category === "" || attribute.category === attr_category;
+                                    const attributeNameMatch = attribute.name === attr_value;
+
+                                    // Count matches for attributes
+                                    if (attributeCatMatch && attributeNameMatch) {
                                         attribute_match_count++;
                                     }
                                 }
                             }
                         }
 
-                        // If all attributes match the search criteria, increment the qualifier count for the current criteria.
+                        // If all attributes match, increment the qualifier count for the current criteria
                         if (attribute_match_count === Object.keys(attributes).length) {
                             qualifier_count++;
                         }
@@ -511,28 +500,15 @@ function count_qualifiers(data, clip_row_name = "", search_criteria = [], time_s
             }
         }
 
-        // Increment the total qualifier count by the count for the current criteria.
+        // Add the count for the current criteria to the total count
         total_qualifier_count += qualifier_count;
     }
 
-    // Generate a string representation of the search criteria for logging.
-    let search_criteria_str = search_criteria.map(criteria => {
-        let category = Object.keys(criteria)[0];
-        let value = criteria[category];
-        let attributes = criteria.attributes || {};
-
-        let attribute_str = Object.entries(attributes).map(([attr_category, attr_value]) => {
-            return `${attr_category}: ${attr_value}`;
-        }).join(', ');
-
-        return `${category}: ${value}` + (attribute_str ? ` (${attribute_str})` : '');
-    }).join(', ');
-
-    // Log the row name, qualifier count, and search criteria.
-    console.log(clip_row_name + ": " + total_qualifier_count + " qualifiers | Search Criteria: " + search_criteria_str);
+    // Log the total count with additional information
+    console.log(clip_row_name + ": " + total_qualifier_count + " qualifiers | Search Criteria: " + JSON.stringify(search_criteria));
 
     return total_qualifier_count;
-};
+}
 
 /****************************************************************
 * COUNT QUALIFIER PATTERNS
@@ -642,71 +618,86 @@ function count_qualifier_patterns(data, clip_row_name = "", search_criteria = []
 function count_attributes(data, row_name = "", search_criteria = [], time_start = 0, time_end = Infinity) {
     let attributeCount = 0;
 
+    // Iterate through each row in the dataset.
     for (const row of data.rows) {
-        // Row name and time filters
+        // Check for row name and time constraints.
         if ((row_name !== "" && row.row_name !== row_name) || !row.clips) continue;
 
+        // Iterate through each clip in the row.
         for (const clip of row.clips) {
+            // Check if clip falls within the specified time range.
             if (clip.time_start < time_start || clip.time_end > time_end || !clip.qualifiers || !clip.qualifiers.qualifiers_array) continue;
 
             let searchIndex = 0;
 
+            // Iterate through each qualifier in the clip.
             for (let i = 0; i < clip.qualifiers.qualifiers_array.length; i++) {
                 const qualifier = clip.qualifiers.qualifiers_array[i];
                 const search_qualifier = search_criteria[searchIndex];
 
-                // Check if category and name are part of the search criteria
+                // Optional: Check if qualifier category and name are part of the search criteria.
                 const search_qual_cat = search_qualifier.category || '';
                 const search_qual_val = search_qualifier.name || '';
 
-                // Category and name matches
+                // Determine if there's a match on category and name.
                 const categoryMatch = search_qual_cat === '' || qualifier.category === search_qual_cat;
                 const nameMatch = search_qual_val === '' || qualifier.name === search_qual_val;
 
+                // If the category and name match and there are attributes in the qualifier.
                 if (categoryMatch && nameMatch && qualifier.qualifier_attributes) {
                     let attributesMatch = true;
 
+                    // Check if attributes match the search criteria.
                     if (search_qualifier.attributes) {
                         for (const search_attr_cat in search_qualifier.attributes) {
                             const search_attr_val = search_qualifier.attributes[search_attr_cat] || '';
                             let attributeFound = false;
 
+                            // Iterate through each attribute in the qualifier.
                             for (const attribute of qualifier.qualifier_attributes) {
                                 const attributeCatMatch = search_attr_cat === '' || attribute.category === search_attr_cat;
                                 const attributeNameMatch = search_attr_val === '' || attribute.name === search_attr_val;
 
+                                // If attribute matches the search criteria.
                                 if (attributeCatMatch && attributeNameMatch) {
                                     attributeFound = true;
                                     break;
                                 }
                             }
 
+                            // If the required attribute is not found, break the loop.
                             if (!attributeFound) {
                                 attributesMatch = false;
                                 break;
                             }
                         }
                     }
-    
+
+                    // If all attributes match, update search index and count.
                     if (attributesMatch) {
                         searchIndex++;
                         if (searchIndex === search_criteria.length) {
                             attributeCount++;
                             console.log("Clip UUID:", clip.uuid, "| Pattern occurrence:", attributeCount);
+                            // Reset search index for next search.
                             searchIndex = 0;
                             i -= (search_criteria.length - 1);
                         }
                     } else {
+                        // Reset search index if attributes do not match.
                         searchIndex = 0;
                     }
                 } else {
+                    // Reset search index if category and name do not match.
                     searchIndex = 0;
                 }
             }
         }
     }
+    // Return the final count of attributes that match the criteria.
     return attributeCount;
 }
+
 
 /****************************************************************
 * SUM CLIP DURATIONS
