@@ -143,6 +143,44 @@ function row_categories(data) {
 };
 
 /****************************************************************
+* ROW NAMES IN CATEGORY
+* ---------------------------------------------------------------
+* Function to return an array unique rows in the timeline
+* based upon a defined category name
+****************************************************************/
+function row_names_in_category(data, category) {
+    let row_names = [];
+    // Loop through each row
+    for (row of data.rows) {
+        // Check if any clips exists for the given row
+        if ("clips" in row && row.row_category == category) {
+            row_names.push(row.row_name)
+        };
+    };
+    // Remove duplicate names from the array
+    return uniqueArray(row_names);
+};
+
+/****************************************************************
+* ROW NAMES IN COLOUR
+* ---------------------------------------------------------------
+* Function to return an array unique rows in the timeline
+* based upon a defined row colour
+****************************************************************/
+function row_names_in_colour(data, colour) {
+    let row_names = [];
+    // Loop through each row
+    for (row of data.rows) {
+        // Check if color is correct and if any clips exists for the given row
+        if (row.color == colour && "clips" in row) {
+            row_names.push(row.row_name)
+        };
+    };
+    // Remove duplicate names from the array
+    return uniqueArray(row_names);
+};
+
+/****************************************************************
 * QUALIFIER CATEGORIES
 * ---------------------------------------------------------------
 * Function to return an array unique qualifier categories in the timeline
