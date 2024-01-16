@@ -84,7 +84,10 @@
     var pagename = url.substring(url.lastIndexOf('/')+1, url.length -5);
     if (pagename === "index" || url.slice(-1) === "/") { pagename = "home"};
 
-    d3.json("json/config_"+ pagename +".json").then(function(config){
+    const configUrl = "json/config_"+ pagename +".json";
+
+    d3.json(configUrl).then(function(config){
+
         const mainTitle = d3.select("#main_title");
         const pageTitle = config.page_title;
         // Capitalise the pagename so it looks better as a page title
@@ -113,7 +116,31 @@
             create_config_content(config, var_results)
 
         });
+
+        // Read the file initially
+        readJSONFile(json_file_path);
+
+        // Set up an interval to read the file every 5 seconds
+        setInterval(() => readJSONFile(json_file_path), 5000);
+
+
     });
+
+    let lastJSONContent = null;
+
+    function readJSONFile(url) {
+        d3.json(url).then(data => {
+            const currentJSONContent = JSON.stringify(data);
+            if (lastJSONContent !== null && currentJSONContent !== lastJSONContent) {
+                // Refresh the page
+                window.location.reload();
+            }
+
+            lastJSONContent = currentJSONContent;
+        }).catch(error => {
+            console.error('Error reading the JSON file:', error);
+        });
+    };
 
   </script>
 
