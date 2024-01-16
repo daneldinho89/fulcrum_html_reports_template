@@ -11,6 +11,8 @@
  *                          qualifier_names()
  *                          attribute_names()
  *                          row_categories()
+ *                          row_names_in_category()
+ *                          row_names_in_colour()
  *                          qualifier_categories()
  *                          qualifier_names_in_category()
  *                          attribute_categories()
@@ -21,6 +23,7 @@
  *      CALC FUNCTIONS:     count_clips()
  *                          count_qualifiers()
  *                          count_qualifier_patterns()
+ *                          count_attributes()
  *                          sum_clip_durations()
  *                          all_row_durations()
  *                          count_clips_table()
@@ -295,7 +298,7 @@ function attribute_names_in_category(data, category) {
 * ---------------------------------------------------------------
 * Function to return an array of clip details such as time_start
 ****************************************************************/
-function clip_extract(data, clip_row_name = "", detail) {
+function clip_extract(data, clip_row_name = "", detail = "") {
     let clip_details = [];
     for (row of data.rows) {
         // If a specific row name is provided and doesn't match the current row, skip this row.
@@ -305,6 +308,8 @@ function clip_extract(data, clip_row_name = "", detail) {
         if (!row.clips) continue;
         
         for (clip of row.clips) {
+            // if there are no details for the clip skip to next clip
+            if (!clip[detail]) continue;
             clip_details.push(clip[detail])
         }
     };
@@ -332,14 +337,14 @@ function clip_extract(data, clip_row_name = "", detail) {
 *                    ])
 *
 ****************************************************************/
-function count_clips(data, clip_row_name = "", search_criteria = [], time_start = 0, time_end = Infinity) {
+function count_clips(data, clip_row_name = "", search_criteria = [], time_start = 0, time_end = Infinity, row_cat = "") {
     // Initialize the clip_count to 0
     let clip_count = 0;
 
     // Loop through each row in the data
     for (row of data.rows) {
-        // If the row_name does not match the clip_row_name, skip to the next row
-        if (clip_row_name !== "" && row.row_name !== clip_row_name) continue;
+        // Check for row name and category match
+        if ((clip_row_name !== "" && row.row_name !== clip_row_name) || (row_cat !== "" && row.row_category !== row_cat)) continue;
 
         // If the row does not have any clips, skip to the next row
         if (!row.clips) continue;
@@ -351,6 +356,7 @@ function count_clips(data, clip_row_name = "", search_criteria = [], time_start 
 
             // If search_criteria is not empty, filter clips based on search criteria
             if (search_criteria.length > 0) {
+                // Skip if clip has no qualifiers
                 if (!clip.qualifiers || !clip.qualifiers.qualifiers_array) continue;
 
                 let matched_criteria_count = 0;
@@ -382,6 +388,7 @@ function count_clips(data, clip_row_name = "", search_criteria = [], time_start 
                                     break;
                                 }
                             } else {
+                                // If no attributes are specified in the criteria, count the qualifier match
                                 matched_criteria_count++;
                                 break;
                             }
@@ -626,6 +633,41 @@ function count_qualifier_patterns(data, clip_row_name = "", search_criteria = []
 };
 
 /****************************************************************
+* COUNT ATTRIBUTES
+* ---------------------------------------------------------------
+* Function to return the number of attributes which appear in
+* clips which match the specific search criteria
+*
+****************************************************************/
+function count_attributes(data, attributeCategory = "" , attributeName = "") {
+    let attributeCount = 0;
+
+    for (const row of data.rows) {
+        if (!row.clips) continue;
+
+        for (const clip of row.clips) {
+            if (!clip.qualifiers || !clip.qualifiers.qualifiers_array) continue;
+
+            for (const qualifier of clip.qualifiers.qualifiers_array) {
+                if (!qualifier.qualifier_attributes) continue;
+
+                for (const attribute of qualifier.qualifier_attributes) {
+                    // Check if either the category or the name matches, if they are provided
+                    const categoryMatch = attributeCategory ? attribute.category === attributeCategory : true;
+                    const nameMatch = attributeName ? attribute.name === attributeName : true;
+
+                    if (categoryMatch && nameMatch) {
+                        attributeCount++;
+                    }
+                }
+            }
+        }
+    }
+
+    return attributeCount;
+}
+
+/****************************************************************
 * SUM CLIP DURATIONS
 * ---------------------------------------------------------------
 * Function to return the cumulative sum of clip durations which
@@ -859,7 +901,7 @@ function read_config_variables(config, data) {
 function create_data_table(id, title, data_table, location_id, colour) {
     // Add title to the location div
     d3.select(location_id)
-        .attr("style", "overflow-x: auto; width: 100%")
+        .attr("style", "overflow-x: auto;")
         .append("h5")
         .text(title)
 
@@ -915,10 +957,11 @@ function create_data_card(id, title, data, location_id, colour = "#532CEB", text
         .attr("class", "card-body d-flex flex-column justify-content-center align-items-center")
         .append("h5")
         .attr("class", "card-title text-center")
+        .attr("style", "font-size:" + height/6 + "px;")
         .text(title)
         .append("p")
         .attr("class", "card-text")
-        .attr("style", "font-size:" + height/2.5 + "px;")
+        .attr("style", "font-size:" + height/4 + "px;")
         .text(data)
 };
 
@@ -1678,14 +1721,14 @@ function calculate_xg(chance_name, xg_name,  chance_names, xg_names, xg_matrix) 
 * example callback:
 *
 ****************************************************************/
-function extract_clip_data(data, clip_row_name) {
+function extract_clip_data(data, clip_row_name, clip_category = "") {
     row_extract = []
     // Loop through each row
     for (row of data.rows) {
         // Define the row name into a var
         let row_name = row.row_name
         // Only execute for the given row name 'clip_row_name'
-        if (row_name === clip_row_name) {
+        if (row_name === clip_row_name && (clip_category == row.row_category || clip_category == "")) {
             // Check if any clips exists for the given row
             if ("clips" in row) {
                 // Loop through each clip
@@ -1709,6 +1752,12 @@ function extract_clip_data(data, clip_row_name) {
                                 // If cartesian data on the qualifier then append this too
                                 if ("x" in qualifier) {
                                     clip_extract.push(qualifier.x, qualifier.y)
+                                }
+                                attrs = qualifier.qualifier_attributes
+                                if (!attrs) continue;
+                                for (attr of attrs) {
+                                    clip_extract.push(attr.name)
+                                    clip_extract.push(attr.category)
                                 }
                                 }
                     }
