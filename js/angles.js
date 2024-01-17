@@ -1329,7 +1329,8 @@ function create_bootstrap_grid(rows, columns) {
 /****************************************************************
 * CREATE UPDATE BUTTON
 * ---------------------------------------------------------------
-* Function to create a switch button to regenerate vizualisations
+* Function to create a button to run a js function such as regenerate vizualisations
+* (Not available when using config_X.json files)
 ****************************************************************/
 function create_update_button(button_text, button_id, location_id, update_div_function) {
     // Select the HTML element with the specified selector
@@ -1346,7 +1347,7 @@ function create_update_button(button_text, button_id, location_id, update_div_fu
 /****************************************************************
 * CREATE BUTTON LINK
 * ---------------------------------------------------------------
-* Function to create a switch button to regenerate vizualisations
+* Function to create a button to link to another page or refresh the current page
 ****************************************************************/
 function create_button_link(id, button_text, location_id, link_path) {
     // Select the HTML element with the specified selector
