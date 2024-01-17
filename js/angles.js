@@ -361,8 +361,8 @@ function count_clips(data, clip_row_name = "", search_criteria = [], time_start 
 
                 // Iterate through each search criteria
                 for (const criteria of search_criteria) {
-                    const category = criteria.category || "";
-                    const value = criteria.name || "";
+                    const category = Object.keys(criteria)[0] || "";
+                    const value = criteria[category] || "";
                     const attributes = criteria.attributes || {};
 
                     // Iterate through each qualifier in the clip
