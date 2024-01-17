@@ -837,19 +837,22 @@ function count_clips_table(data, rows, columns, time_start = 0, time_end = Infin
         qualifiers = qualifier_names(data)
     } else { qualifiers = columns;}
 
-    // Create data table
-    data_table = {};
-    // Set 'Players' property to players array
-    data_table.Clips = clips;
+    // Create data table as a Map
+    let data_table = new Map();
+
+    // Set 'Clips' property to clips array
+    data_table.set('Clips', clips);
+
     // Loop over actions array and count clips for each player
     for (let qualifier of qualifiers) {
-        let clip_qualifier_count = 0;
-        data_table[qualifier] = [];
+        let clip_qualifier_counts = [];
         for (let row of clips) {
-            clip_qualifier_count = count_clips(data, row, [{"":qualifier}], time_start, time_end)
-            data_table[qualifier].push(clip_qualifier_count)
+            let clip_qualifier_count = count_clips(data, row, [{"": qualifier}], time_start, time_end);
+            clip_qualifier_counts.push(clip_qualifier_count);
         }
+        data_table.set(qualifier, clip_qualifier_counts);
     }
+
     return data_table;
 };
 
@@ -955,8 +958,8 @@ function create_data_table(id, title, data_table, location_id, colour) {
                         .append("tr")
 
     // Define headers and add them from the data table
-    let header_data = Object.keys(data_table)
-    const table_length = data_table[header_data[0]].length
+    let header_data = Array.from(data_table.keys());
+    const table_length = data_table.get(header_data[0]).length
 
     header_row.selectAll("th")
         .data(header_data)
@@ -974,7 +977,7 @@ function create_data_table(id, title, data_table, location_id, colour) {
         let row = t_body.append("tr")
         for (td of header_data) {row
                                     .append("td")
-                                    .text(data_table[td][i])}
+                                    .text(data_table.get(td)[i])}
     };
 };
 
