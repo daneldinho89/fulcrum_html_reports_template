@@ -392,7 +392,7 @@ function count_clips(data, clip_row_name = "", search_criteria = [], time_start 
                                 }
 
                                 // If all specified attributes match, increment the criteria match count
-                                if (attribute_match_count === Object.keys(attributes).length) {
+                                if (attribute_match_count >= Object.keys(attributes).length) {
                                     matched_criteria_count++;
                                     break;
                                 }
@@ -492,7 +492,7 @@ function count_qualifiers(data, clip_row_name = "", search_criteria = [], time_s
                         }
 
                         // If all attributes match, increment the qualifier count for the current criteria
-                        if (attribute_match_count === Object.keys(attributes).length) {
+                        if (attribute_match_count >= Object.keys(attributes).length) {
                             qualifier_count++;
                         }
                     }
@@ -754,7 +754,7 @@ function sum_clip_durations(data, clip_row_name = "", search_criteria = [], time
                                     }
                                 }
 
-                                if (attribute_match_count === Object.keys(attributes).length) {
+                                if (attribute_match_count >= Object.keys(attributes).length) {
                                     matched_criteria_count++;
                                     break;
                                 }
