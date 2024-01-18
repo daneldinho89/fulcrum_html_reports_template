@@ -938,7 +938,7 @@ function read_config_variables(config, data) {
 * ---------------------------------------------------------------
 * Function to create a table from an object called "data_table"
 ****************************************************************/
-function create_data_table(id, title, data_table, location_id, colour) {
+function create_data_table(id, title, data_table, location_id, colour, switch_axis = false) {
     // Add title to the location div
     d3.select(location_id)
         .attr("style", "overflow-x: auto;")
@@ -957,27 +957,61 @@ function create_data_table(id, title, data_table, location_id, colour) {
                         .attr("style", "background-color: " + colour + ";color: #fff")
                         .append("tr")
 
-    // Define headers and add them from the data table
-    let header_data = Array.from(data_table.keys());
-    const table_length = data_table.get(header_data[0]).length
+    if (switch_axis === true) {
+        // Define headers and add them from the data table
+        let col1_data = Array.from(data_table.keys());
 
-    header_row.selectAll("th")
-        .data(header_data)
-        .enter()
-        .append("th")
-        .attr("scope", "col")
-        .attr("onclick", function (d, i) {return "sortTable('"+id+"', "+i+")";})
-        .text(function (d) {return d;});
+        // Add a table body
+        let t_body = table.append("tbody")
 
-    // Add a table body
-    let t_body = table.append("tbody")
+        // Add data to table
+        for (tr_name of col1_data) {
+            if (tr_name == "Clips") {
+                header_row.append("th")
+                    .attr("scope", "col")
+                    .attr("onclick", "sortTable('"+id+"', "+0+")")
+                    .text("");    
+                for (i in  data_table.get(tr_name)) {
+                        var col_index = +i+1;
+                        console.log(col_index)
+                        header_row.append("th")
+                            .attr("scope", "col")
+                            .attr("onclick", "sortTable('"+id+"', "+ col_index +")")
+                            .text(data_table.get(tr_name)[i])
+                }    
 
-    // Add data to table
-    for (let i=0; i < table_length; i++) {
-        let row = t_body.append("tr")
-        for (td of header_data) {row
-                                    .append("td")
-                                    .text(data_table.get(td)[i])}
+            } else {
+                let row = t_body.append("tr")
+                row.append("td")
+                    .text(tr_name)
+                for (i in data_table.get(tr_name)) {
+                        row.append("td")
+                            .text(data_table.get(tr_name)[i])
+                }
+            }
+        }
+    } else {
+        // Define headers and add them from the data table
+        let header_data = Array.from(data_table.keys());
+        const table_length = data_table.get(header_data[0]).length
+
+        header_row.selectAll("th")
+            .data(header_data)
+            .enter()
+            .append("th")
+            .attr("scope", "col")
+            .attr("onclick", function (d, i) {return "sortTable('"+id+"', "+i+")";})
+            .text(function (d) {return d;});
+
+        // Add a table body
+        let t_body = table.append("tbody")
+
+        // Add data to table
+        for (let i=0; i < table_length; i++) {
+            let row = t_body.append("tr")
+            for (td of header_data) {row.append("td")
+                                        .text(data_table.get(td)[i])}
+        };
     };
 };
 
@@ -1476,7 +1510,8 @@ function create_config_content(config, var_results) {
                     var location_id = config.content[el][3];
                     var custom_colour = config.content[el][4] ? config.content[el][4] : "#532CEB"
                     var colour = config.colours[custom_colour] ? config.colours[custom_colour] : custom_colour;
-                    create_data_table(id, title, table_data, location_id, colour);
+                    var switch_axis = config.content[el][5];
+                    create_data_table(id, title, table_data, location_id, colour, switch_axis);
                     break;
                 case "create_button_link":
                     var id = el;
