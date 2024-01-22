@@ -1218,6 +1218,120 @@ function create_contest_bar(id, title, success_val, failure_val, location_id, wi
 };
 
 /****************************************************************
+* POSSESSION BAR
+* ---------------------------------------------------------------
+* Function to create a horizontal elliptical bar with 2 values -
+* success/fail
+****************************************************************/
+function create_possession_bar(id, title, success_val, failure_val, location_id, width, height, colour = "#532CEB") {
+
+    var success_mins = Math.floor(success_val/60);
+    var success_secs_unformat = Math.round(success_val % 60)
+    var success_secs = success_secs_unformat < 10 ? '0' + success_secs_unformat : success_secs_unformat.toString();
+    var failure_mins = Math.floor(failure_val/60);
+    var failure_secs_unformat = Math.round(failure_val % 60)
+    var failure_secs = failure_secs_unformat < 10 ? '0' + failure_secs_unformat : failure_secs_unformat.toString();
+
+    // Create array of data values
+    let data_values = [success_mins + ":" + success_secs
+                        , failure_mins + ":" + failure_secs
+                        , "(" + percentage(success_val,success_val+failure_val) + "%)"
+                        , "(" + percentage(failure_val,success_val+failure_val) + "%)"
+                    ]
+    let meet_point = percentage(success_val,(success_val+failure_val))/100
+    let bar_corner_radius = width/15
+
+    // Create an svg in the body element
+    let graph = d3.select(location_id)
+            .append("div")
+            .attr("id", id)
+            .attr("class","d-flex py-1 justify-content-center")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .attr("class", "fluid");
+
+    // Create a 'g' group for each data key
+    let bar = graph.append("g")
+            .attr("transform", function(d, i) {
+                    return "translate(0," + i * height + ")";
+            }); 
+
+    // Draw background bar
+    let back_bar = bar.append("rect")
+            .attr("height", height)
+            .attr("width", width)
+            .attr("fill", "#efefef")
+            .attr("rx", bar_corner_radius)
+            .attr("ry", bar_corner_radius);
+
+    // Draw the contest bars over the grey bar width 0 ready to animate
+    let rect = bar.selectAll("rect.bars")
+            .data(data_values)
+            .enter()
+            .append("rect")
+            .attr("id", function(d) {return d;})
+            .attr("x", function(d, i) { if (i==0) { return 0;} else { return width;}})
+            .attr("y", 0)
+            .attr("width", 0)
+            .attr("height", height)
+            .attr("fill", function(d, i) { if (i==0) { return colour} else {return "#efefef00"}})
+            .attr("fill-opacity", 0)
+            .attr("rx", bar_corner_radius)
+            .attr("ry", bar_corner_radius)
+
+    // Transition of rectangles to 'grow' in from LHS one after the other
+    rect.transition()
+        .ease(d3.easeLinear)
+        .duration(1500)
+        .attr("x", function(d, i) { if (i==0) { return 0;} else { return meet_point*width;}})
+        .attr("width", function(d, i) { if (i==0) { return meet_point*width;} else { return width-meet_point*width;}})
+        .attr("fill-opacity", 1)
+
+    // Add data label text onto the end each bar group
+    let bar_text = bar.selectAll("text")
+            .data(data_values)
+            .enter()
+            .append("text")
+            .attr("x", function(d, i) {      
+                switch(i) {
+                    case 0: return "15%";
+                    case 1: return "85%";
+                    case 2: return "30%";
+                    case 3: return "70%";
+                }
+            })
+            .attr("y", "50%")
+            .attr("text-anchor", function(d, i) { if (i==1 || i==3) { return "start";} else { return "end";}})
+            .attr("dominant-baseline", "middle")
+            .attr("font-size", height*0.4)
+            .attr("fill", "#ffffff")
+            .text(function(d, i) { return data_values[i];})
+            .style("opacity", 0); // starts invisible
+
+    bar.append("text")
+            .text(title)
+            .attr("font-size", height*0.4)
+            .attr("fill", "#ffffff")
+            .attr("x", "50%")
+            .attr("y", "50%")
+            .attr("text-anchor", "middle")
+            .attr("dominant-baseline", "middle")
+
+    //Transition of text from invisible to visible one after the other
+    bar_text.transition()
+        .duration(1500)
+        .style("opacity", 1)
+
+        //Transition of text from invisible to visible one after the other
+    back_bar.transition()
+        .duration(1500)
+        .attr("fill", "#bfbfbf")
+
+};
+
+
+/****************************************************************
 * SCATTER PLOT
 * ---------------------------------------------------------------
 * Function to create a scatter plot of two respective team's data
@@ -1484,6 +1598,21 @@ function create_config_content(config, var_results) {
                     var custom_colour = config.content[el][7] ? config.content[el][7] : "#532CEB"
                     var colour = config.colours[custom_colour] ? config.colours[custom_colour] : custom_colour;
                     create_contest_bar(id, title, success_val, failure_val, location_id, width, height, colour);
+                    break;
+                case "create_possession_bar":
+                    var id = el;
+                    var title = config.content[el][1];
+                    var var1 = eval(config.content[el][2]);
+                    var success_val = typeof var1 === "number" ? var1 : var_results[var1];
+                    var var2 = eval(config.content[el][3]);
+                    var failure_val = typeof var2 === "number" ? var2 : var_results[var2];
+                    var location_id = config.content[el][4];
+                    var width = config.content[el][5] ? config.content[el][5] : 200;
+                    var height = config.content[el][6] ? config.content[el][6] : 40;
+                    var custom_colour = config.content[el][7] ? config.content[el][7] : "#532CEB"
+                    var colour = config.colours[custom_colour] ? config.colours[custom_colour] : custom_colour;
+                    console.log("creatin")
+                    create_possession_bar(id, title, success_val, failure_val, location_id, width, height, colour);
                     break;
                 case "create_text":
                     var id = el;
