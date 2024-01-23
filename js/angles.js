@@ -1611,7 +1611,6 @@ function create_config_content(config, var_results) {
                     var height = config.content[el][6] ? config.content[el][6] : 40;
                     var custom_colour = config.content[el][7] ? config.content[el][7] : "#532CEB"
                     var colour = config.colours[custom_colour] ? config.colours[custom_colour] : custom_colour;
-                    console.log("creatin")
                     create_possession_bar(id, title, success_val, failure_val, location_id, width, height, colour);
                     break;
                 case "create_text":
