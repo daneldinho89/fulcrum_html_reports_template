@@ -857,6 +857,74 @@ function count_clips_table(data, rows, columns, time_start = 0, time_end = Infin
 };
 
 /****************************************************************
+* CARTESIAN EXTRACT
+* ---------------------------------------------------------------
+* Function to return an array of x,y co-ordinates
+****************************************************************/
+function cartesian_extract(data, clip_row_name = "", cartesian_name="", x_max = 1, y_max = 1) {
+    let cartesian_details = [];
+    for (row of data.rows) {
+        // If a specific row name is provided and doesn't match the current row, skip this row.
+        if (clip_row_name !== "" && row.row_name !== clip_row_name) continue;
+        
+        // If the row does not have any clips, skip to the next row
+        if (!row.clips) continue;
+        
+        for (clip of row.clips) {
+            clip_info = {}
+
+            if (!clip.qualifiers) continue;
+            for (q of clip.qualifiers.qualifiers_array) {
+                if (q.name == cartesian_name && q.x) {
+                    clip_info.row_name = row.row_name
+                    clip_info.row_color = row.color
+                    clip_info.clip_time_start = clip.time_start
+                    clip_info.clip_time_end = clip.time_end
+                    clip_info.clip_color = clip.color
+                    clip_info.qualifier_name = q.name
+                    clip_info.qualifier_color = q.color
+                    clip_info.qualifier_time = q.time
+                    clip_info.cartesian_name = q.name
+                    clip_info.cartesian_color = q.color
+                    clip_info.cartesian_time = q.time
+                    clip_info.x = q.x
+                    clip_info.y = q.y
+                    cartesian_details.push(clip_info)
+                }
+
+                if (!q.qualifier_attributes) continue;
+                for (a of q.qualifier_attributes) {
+                    if (a.name == cartesian_name && a.x) {
+                        clip_info.row_name = row.row_name
+                        clip_info.row_color = row.color
+                        clip_info.clip_time_start = clip.time_start
+                        clip_info.clip_time_end = clip.time_end
+                        clip_info.clip_color = clip.color    
+                        clip_info.qualifier_name = q.name
+                        clip_info.qualifier_color = q.color
+                        clip_info.qualifier_time = q.time
+                        clip_info.cartesian_name = a.name
+                        clip_info.cartesian_color = a.color
+                        clip_info.cartesian_time = a.time
+                        clip_info.x = a.x
+                        clip_info.y = a.y
+                        cartesian_details.push(clip_info)
+                    }    
+                }
+
+            }
+
+        }
+    };
+
+    var cartesian_array = [];
+    for (point of cartesian_details) {
+        cartesian_array.push([point.x/x_max, point.y/y_max, point.clip_time_start])
+    }
+    return cartesian_array;
+};
+
+/****************************************************************
 * READ CONFIG VARIABLES -----------------------------------------
 * Function to process the config json file for a html page. This
 * returns a results object to be used in 'create_config_content'
@@ -919,6 +987,17 @@ function read_config_variables(config, data) {
                   });
                 eval(`var ${each} = ${res[max]};`);
                 var_res[each] = res[max];
+                break;
+            case "cartesian_extract":
+                var cartesian_name = config.variables[each][2];
+                var x_max = config.variables[each][3];
+                var y_max = config.variables[each][4];
+                var res = cartesian_extract(data, row_name, cartesian_name, x_max, y_max)
+                res.sort(function(a, b) {
+                    return a - b;
+                    });
+                eval(`var ${each} = ${res[max]};`);
+                var_res[each] = res;
                 break;
         }
     }
@@ -1336,7 +1415,7 @@ function create_possession_bar(id, title, success_val, failure_val, location_id,
 * ---------------------------------------------------------------
 * Function to create a scatter plot of two respective team's data
 ****************************************************************/
-function create_scatter_plot(id, team1_data, team2_data, background_image_path = "images/map_football_horiz.png", location_id, width, height, colour1 = "yellow", colour2 = "red") {
+function create_scatter_plot(id, team1_data, team2_data, location_id, background_image_path = "images/map_football_horiz.png", width, height, colour1 = "yellow", colour2 = "red") {
 
     // set the dimensions and margins of the graph
     var margin = {top: 10, right: 30, bottom: 60, left: 60},
@@ -1352,36 +1431,36 @@ function create_scatter_plot(id, team1_data, team2_data, background_image_path =
         .style("border", "solid")
         .style("border-width", "1px")
         .style("border-radius", "5px")
-        .style("padding", "10px")
+        .style("padding", "0px")
         .style("position", "absolute")
-        .style("width", width*0.25 + "px");
+        .style("width", width*0.3 + "px")
+        .style("font-size", width*0.04 + "px");;
 
     // Mouse interaction functions
     var mouseover = function(d) {
         tooltip.style("opacity", 1)
     }
 
-    var mousemove_team1 = function(d) {
-        var [x, y] = d3.pointer(event)
+    var mousemove_team1 = function(event, d) {
         tooltip
-        .html("<b>Team 1</b><br>" +
-                "time: " + ((d.target.__data__[2] / 60).toFixed(0)) + " mins" + "<br>" +
-                "x: " + (d.target.__data__[0].toFixed(2)) + "<br>" +
-                "y: " + (d.target.__data__[1].toFixed(2)))
-        .style("left", (event.offsetX + 10) + "px") 
-        .style("top", (event.offsetY + 10)  + "px")
+            .html("<b>Team 1</b><br>" +
+                "time: " + ((d[2] / 60).toFixed(0)) + " mins" + "<br>" +
+                "x: " + (d[0].toFixed(2)) + "<br>" +
+                "y: " + (d[1].toFixed(2)))
+            .style("left", (event.pageX + 10) + "px") // Adjust the 10px for desired offset
+            .style("top", (event.pageY + 10) + "px"); // Adjust the 10px for desired offset
     }
     
-    var mousemove_team2 = function(d) {
-        var [x, y] = d3.pointer(event)
+    var mousemove_team2 = function(event, d) {
         tooltip
-        .html("<b>Team 2</b><br>" +
-                "time: " + ((d.target.__data__[2] / 60).toFixed(0)) + " mins" + "<br>" +
-                "x: " + (d.target.__data__[0].toFixed(2)) + "<br>" +
-                "y: " + (d.target.__data__[1].toFixed(2)))
-        .style("left", (event.offsetX + 10) + "px") 
-        .style("top", (event.offsetY + 10)  + "px")
+            .html("<b>Team 2</b><br>" +
+                "time: " + ((d[2] / 60).toFixed(0)) + " mins" + "<br>" +
+                "x: " + (d[0].toFixed(2)) + "<br>" +
+                "y: " + (d[1].toFixed(2)))
+            .style("left", (event.pageX + 10) + "px") // Adjust the 10px for desired offset
+            .style("top", (event.pageY + 10) + "px"); // Adjust the 10px for desired offset
     }
+    
 
     var mouseleave = function(d) {
         tooltip
@@ -1557,7 +1636,6 @@ function create_config_content(config, var_results) {
             eval(`var ${key} = var_results[key];`);
         }
     }
-
     for (el in config.content) {
         switch (config.content[el][0]) {
                 case "create_data_card":
@@ -1647,6 +1725,23 @@ function create_config_content(config, var_results) {
                     var location_id = config.content[el][2];
                     var link_path = config.content[el][3];
                     create_button_link("id", text, location_id, link_path);
+                    break;
+                case "create_scatter_plot":
+                    var id = el;
+                    var team1_var_name = config.content[el][1];
+                    var team1_data = var_results[team1_var_name];
+                    console.log(team1_data)
+                    var team2_var_name = config.content[el][2];
+                    var team2_data = var_results[team2_var_name];
+                    var location_id = config.content[el][3];
+                    var background_image_path = config.content[el][4];
+                    var width = config.content[el][5] ? config.content[el][5] : 200;
+                    var height = config.content[el][6] ? config.content[el][6] : 200;
+                    var custom_colour1 = config.content[el][7] ? config.content[el][7] : "#532CEB"
+                    var colour1 = config.colours[custom_colour1] ? config.colours[custom_colour1] : custom_colour1;
+                    var custom_colour2 = config.content[el][8] ? config.content[el][8] : "yellow"
+                    var colour2 = config.colours[custom_colour2] ? config.colours[custom_colour2] : custom_colour2;
+                    create_scatter_plot(id, team1_data, team2_data, location_id, background_image_path, width, height, colour1, colour2)
                     break;
                 default:
                     console.log("Unable to add content: "+el);
