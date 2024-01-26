@@ -1413,9 +1413,14 @@ function create_possession_bar(id, title, success_val, failure_val, location_id,
 /****************************************************************
 * SCATTER PLOT
 * ---------------------------------------------------------------
-* Function to create a scatter plot of two respective team's data
+* Function to create a scatter plot of multiple cartesian data
 ****************************************************************/
-function create_scatter_plot(id, team1_data, team2_data, location_id, background_image_path = "images/map_football_horiz.png", width, height, colour1 = "yellow", colour2 = "red") {
+function create_scatter_plot(id, cartesian_array_names, cartesian_arrays, location_id, background_image_path = "images/map_football_horiz.png", width, height, colors) {
+
+    // Check if there are enough colors for the data arrays
+    if (colors.length < cartesian_arrays.length) {
+        console.error("SCATTER PLOT ERROR: Not enough colors for the provided data sets.");
+    }
 
     // set the dimensions and margins of the graph
     var margin = {top: 10, right: 30, bottom: 60, left: 60},
@@ -1441,20 +1446,11 @@ function create_scatter_plot(id, team1_data, team2_data, location_id, background
         tooltip.style("opacity", 1)
     }
 
-    var mousemove_team1 = function(event, d) {
+    var mousemove = function(event, d, teamIndex) {
+        var teamName = cartesian_array_names[teamIndex];
         tooltip
-            .html("<b>Team 1</b><br>" +
-                "time: " + ((d[2] / 60).toFixed(0)) + " mins" + "<br>" +
-                "x: " + (d[0].toFixed(2)) + "<br>" +
-                "y: " + (d[1].toFixed(2)))
-            .style("left", (event.pageX + 10) + "px") // Adjust the 10px for desired offset
-            .style("top", (event.pageY + 10) + "px"); // Adjust the 10px for desired offset
-    }
-    
-    var mousemove_team2 = function(event, d) {
-        tooltip
-            .html("<b>Team 2</b><br>" +
-                "time: " + ((d[2] / 60).toFixed(0)) + " mins" + "<br>" +
+            .html("<b>" + teamName + "</b><br>" +
+                ((d[2] / 60).toFixed(0)) + " mins" + "<br>" +
                 "x: " + (d[0].toFixed(2)) + "<br>" +
                 "y: " + (d[1].toFixed(2)))
             .style("left", (event.pageX + 10) + "px") // Adjust the 10px for desired offset
@@ -1485,33 +1481,21 @@ function create_scatter_plot(id, team1_data, team2_data, location_id, background
         .attr("width", width)
         .attr("preserveAspectRatio", "none");
 
-    // Add dots for Team 1
-    svg.append('g')
-        .selectAll("dot")
-        .data(team1_data)
-        .enter()
-        .append("circle")
-            .attr("cx", function (d) { return d[0] * width; } )
-            .attr("cy", function (d) { return (1 - d[1]) * height; } )
-            .attr("r", 5)
-            .style("fill", colour1)
-        .on("mouseover", mouseover )
-        .on("mousemove", mousemove_team1 )
-        .on("mouseleave", mouseleave );
-
-    // Add dots for Team 2
-    svg.append('g')
-        .selectAll("dot")
-        .data(team2_data)
-        .enter()
-        .append("circle")
-            .attr("cx", function (d) { return d[0] * width; } )
-            .attr("cy", function (d) { return (1 - d[1]) * height; } )
-            .attr("r", 5)
-            .style("fill", colour2)
-        .on("mouseover", mouseover )
-        .on("mousemove", mousemove_team2 )
-        .on("mouseleave", mouseleave );
+    // Add dots for each cartesian array
+    cartesian_arrays.forEach(function(dataArray, index) {
+        svg.append('g')
+            .selectAll("dot")
+            .data(dataArray)
+            .enter()
+            .append("circle")
+                .attr("cx", function (d) { return d[0] * width; } )
+                .attr("cy", function (d) { return (1 - d[1]) * height; } )
+                .attr("r", 5)
+                .style("fill", colors[index])
+            .on("mouseover", mouseover )
+            .on("mousemove", function(event, d) { mousemove(event, d, index); })
+            .on("mouseleave", mouseleave );
+    });
 
 }
 
@@ -1728,20 +1712,15 @@ function create_config_content(config, var_results) {
                     break;
                 case "create_scatter_plot":
                     var id = el;
-                    var team1_var_name = config.content[el][1];
-                    var team1_data = var_results[team1_var_name];
-                    console.log(team1_data)
-                    var team2_var_name = config.content[el][2];
-                    var team2_data = var_results[team2_var_name];
-                    var location_id = config.content[el][3];
-                    var background_image_path = config.content[el][4];
-                    var width = config.content[el][5] ? config.content[el][5] : 200;
-                    var height = config.content[el][6] ? config.content[el][6] : 200;
-                    var custom_colour1 = config.content[el][7] ? config.content[el][7] : "#532CEB"
-                    var colour1 = config.colours[custom_colour1] ? config.colours[custom_colour1] : custom_colour1;
-                    var custom_colour2 = config.content[el][8] ? config.content[el][8] : "yellow"
-                    var colour2 = config.colours[custom_colour2] ? config.colours[custom_colour2] : custom_colour2;
-                    create_scatter_plot(id, team1_data, team2_data, location_id, background_image_path, width, height, colour1, colour2)
+                    var cartesian_array_names = config.content[el][1];
+                    var cartesian_arrays = cartesian_array_names.map(name => var_results[name]);
+                    var location_id = config.content[el][2];
+                    var background_image_path = config.content[el][3];
+                    var width = config.content[el][4] ? config.content[el][4] : 200;
+                    var height = config.content[el][5] ? config.content[el][5] : 200;
+                    var custom_colours = config.content[el][6];
+                    var colours = custom_colours.map(colour => config.colours[colour] ? config.colours[colour] : colour);
+                    create_scatter_plot(id, cartesian_array_names, cartesian_arrays, location_id, background_image_path, width, height, colours)
                     break;
                 default:
                     console.log("Unable to add content: "+el);
