@@ -861,68 +861,113 @@ function count_clips_table(data, rows, columns, time_start = 0, time_end = Infin
 * ---------------------------------------------------------------
 * Function to return an array of x,y co-ordinates
 ****************************************************************/
-function cartesian_extract(data, clip_row_name = "", cartesian_name="", x_max = 1, y_max = 1) {
+function cartesian_extract(data, clip_row_name = "", search_criteria = [], cartesian_name = "", x_max = 1, y_max = 1) {
     let cartesian_details = [];
-    for (row of data.rows) {
-        // If a specific row name is provided and doesn't match the current row, skip this row.
-        if (clip_row_name !== "" && row.row_name !== clip_row_name) continue;
-        
-        // If the row does not have any clips, skip to the next row
-        if (!row.clips) continue;
-        
-        for (clip of row.clips) {
-            clip_info = {}
 
-            if (!clip.qualifiers) continue;
-            for (q of clip.qualifiers.qualifiers_array) {
+    for (const row of data.rows) {
+        // Skip row if row name doesn't match
+        if (clip_row_name !== "" && row.row_name !== clip_row_name) continue;
+        // Skip if row has no clips
+        if (!row.clips) continue;
+
+        for (const clip of row.clips) {
+            // Skip if clip has no qualifiers
+            if (!clip.qualifiers || !clip.qualifiers.qualifiers_array) continue;
+
+            let matchesSearchCriteria = search_criteria.length === 0;
+
+            // Iterate through search criteria
+            for (const criteria of search_criteria) {
+                const category = Object.keys(criteria)[0] || "";
+                const value = criteria[category] || "";
+                const attributes = criteria.attributes || {};
+
+                for (const qualifier of clip.qualifiers.qualifiers_array) {
+                    const categoryMatch = category === "" || qualifier.category === category;
+                    const valueMatch = value === "" || qualifier.name === value;
+
+                    if (categoryMatch && valueMatch) {
+                        let attribute_match_count = 0;
+                        if (Object.keys(attributes).length > 0 && qualifier.qualifier_attributes) {
+                            for (const attribute of qualifier.qualifier_attributes) {
+                                for (const [attr_category, attr_value] of Object.entries(attributes)) {
+                                    const attributeCatMatch = attr_category === "" || attribute.category === attr_category;
+                                    const attributeNameMatch = attr_value === "" || attribute.name === attr_value;
+
+                                    if (attributeCatMatch && attributeNameMatch) {
+                                        attribute_match_count++;
+                                    }
+                                }
+                            }
+
+                            if (attribute_match_count === Object.keys(attributes).length) {
+                                matchesSearchCriteria = true;
+                                break;
+                            }
+                        } else {
+                            matchesSearchCriteria = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (matchesSearchCriteria) break;
+            }
+
+            if (!matchesSearchCriteria) continue;
+
+            // Process the clip if it matches the search criteria
+            for (const q of clip.qualifiers.qualifiers_array) {
                 if (q.name == cartesian_name && q.x) {
-                    clip_info.row_name = row.row_name
-                    clip_info.row_color = row.color
-                    clip_info.clip_time_start = clip.time_start
-                    clip_info.clip_time_end = clip.time_end
-                    clip_info.clip_color = clip.color
-                    clip_info.qualifier_name = q.name
-                    clip_info.qualifier_color = q.color
-                    clip_info.qualifier_time = q.time
-                    clip_info.cartesian_name = q.name
-                    clip_info.cartesian_color = q.color
-                    clip_info.cartesian_time = q.time
-                    clip_info.x = q.x
-                    clip_info.y = q.y
-                    cartesian_details.push(clip_info)
+                    let clip_info = { row_name: row.row_name,
+                                        row_color: row.color,
+                                        clip_time_start: clip.time_start,
+                                        clip_time_end: clip.time_end,
+                                        clip_color: clip.color,
+                                        qualifier_name: q.name,
+                                        qualifier_color: q.color,
+                                        qualifier_time: q.time,
+                                        cartesian_name: q.name,
+                                        cartesian_color: q.color,
+                                        cartesian_time: q.time,
+                                        x: q.x,
+                                        y: q.y
+                                    };
+                    cartesian_details.push(clip_info);
                 }
 
                 if (!q.qualifier_attributes) continue;
-                for (a of q.qualifier_attributes) {
+                for (const a of q.qualifier_attributes) {
                     if (a.name == cartesian_name && a.x) {
-                        clip_info.row_name = row.row_name
-                        clip_info.row_color = row.color
-                        clip_info.clip_time_start = clip.time_start
-                        clip_info.clip_time_end = clip.time_end
-                        clip_info.clip_color = clip.color    
-                        clip_info.qualifier_name = q.name
-                        clip_info.qualifier_color = q.color
-                        clip_info.qualifier_time = q.time
-                        clip_info.cartesian_name = a.name
-                        clip_info.cartesian_color = a.color
-                        clip_info.cartesian_time = a.time
-                        clip_info.x = a.x
-                        clip_info.y = a.y
-                        cartesian_details.push(clip_info)
-                    }    
+                        let clip_info = { row_name: row.row_name,
+                            row_color: row.color,
+                            clip_time_start: clip.time_start,
+                            clip_time_end: clip.time_end,
+                            clip_color: clip.color,
+                            qualifier_name: q.name,
+                            qualifier_color: q.color,
+                            qualifier_time: q.time,
+                            cartesian_name: a.name,
+                            cartesian_color: a.color,
+                            cartesian_time: a.time,
+                            x: a.x,
+                            y: a.y
+                        };
+                    cartesian_details.push(clip_info);
+                    }
                 }
-
             }
-
         }
-    };
+    }
 
     var cartesian_array = [];
-    for (point of cartesian_details) {
-        cartesian_array.push([point.x/x_max, point.y/y_max, point.clip_time_start])
+    for (const point of cartesian_details) {
+        cartesian_array.push([point.x / x_max, point.y / y_max, point.clip_time_start]);
     }
+
     return cartesian_array;
-};
+}
+
 
 /****************************************************************
 * READ CONFIG VARIABLES -----------------------------------------
@@ -937,37 +982,57 @@ function read_config_variables(config, data) {
         var rows = config.variables[each][1];
         var search_criteria = config.variables[each][2] ? config.variables[each][2] : [];
         var cols = config.variables[each][2] ? config.variables[each][2] : [];
-        var time_start_read = config.variables[each][3] ? config.variables[each][3]: 0;
-        time_start = eval(time_start_read);
-        var time_end_read = config.variables[each][4] ? config.variables[each][4] : Infinity;
-        time_end = eval(time_end_read)
         switch (func) {
             case "count_clips":
+                var time_start_read = config.variables[each][3] ? config.variables[each][3]: 0;
+                time_start = eval(time_start_read);
+                var time_end_read = config.variables[each][4] ? config.variables[each][4] : Infinity;
+                time_end = eval(time_end_read)
                 var res = count_clips(data, row_name, search_criteria, time_start, time_end)
                 eval(`var ${each} = ${res};`);
                 var_res[each] = res;
                 break;
             case "count_qualifiers":
+                var time_start_read = config.variables[each][3] ? config.variables[each][3]: 0;
+                time_start = eval(time_start_read);
+                var time_end_read = config.variables[each][4] ? config.variables[each][4] : Infinity;
+                time_end = eval(time_end_read)
                 var res = count_qualifiers(data, row_name, search_criteria, time_start, time_end)
                 eval(`var ${each} = ${res};`);
                 var_res[each] = res;
                 break;
             case "count_qualifier_patterns":
+                var time_start_read = config.variables[each][3] ? config.variables[each][3]: 0;
+                time_start = eval(time_start_read);
+                var time_end_read = config.variables[each][4] ? config.variables[each][4] : Infinity;
+                time_end = eval(time_end_read)
                 var res = count_qualifier_patterns(data, row_name, search_criteria, time_start, time_end)
                 eval(`var ${each} = ${res};`);
                 var_res[each] = res;
                 break;
             case "count_attributes":
+                var time_start_read = config.variables[each][3] ? config.variables[each][3]: 0;
+                time_start = eval(time_start_read);
+                var time_end_read = config.variables[each][4] ? config.variables[each][4] : Infinity;
+                time_end = eval(time_end_read)
                 var res = count_attributes(data, row_name, search_criteria, time_start, time_end)
                 eval(`var ${each} = ${res};`);
                 var_res[each] = res;
                 break;    
                 case "sum_clip_durations":
+                var time_start_read = config.variables[each][3] ? config.variables[each][3]: 0;
+                time_start = eval(time_start_read);
+                var time_end_read = config.variables[each][4] ? config.variables[each][4] : Infinity;
+                time_end = eval(time_end_read)
                 var res = sum_clip_durations(data, row_name, search_criteria, time_start, time_end)
                 eval(`var ${each} = ${res};`);
                 var_res[each] = res;
                 break;
             case "count_clips_table":
+                var time_start_read = config.variables[each][3] ? config.variables[each][3]: 0;
+                time_start = eval(time_start_read);
+                var time_end_read = config.variables[each][4] ? config.variables[each][4] : Infinity;
+                time_end = eval(time_end_read)
                 var res = count_clips_table(data, rows, cols, time_start, time_end)
                 var_res[each] = res;
                 break;
@@ -989,10 +1054,10 @@ function read_config_variables(config, data) {
                 var_res[each] = res[max];
                 break;
             case "cartesian_extract":
-                var cartesian_name = config.variables[each][2];
-                var x_max = config.variables[each][3];
-                var y_max = config.variables[each][4];
-                var res = cartesian_extract(data, row_name, cartesian_name, x_max, y_max)
+                var cartesian_name = config.variables[each][3];
+                var x_max = config.variables[each][4];
+                var y_max = config.variables[each][5];
+                var res = cartesian_extract(data, row_name, search_criteria, cartesian_name, x_max, y_max)
                 res.sort(function(a, b) {
                     return a - b;
                     });
