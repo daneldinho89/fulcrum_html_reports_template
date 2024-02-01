@@ -1164,7 +1164,7 @@ function create_data_table(id, title, data_table, location_id, colour, switch_ax
 * ---------------------------------------------------------------
 * Function to create a data card with a single data value
 ****************************************************************/
-function create_data_card(id, title, data, location_id, colour = "#532CEB", textcolour = "white", height= "100") {
+function create_data_card(id, title, data, location_id, colour = "#532CEB", textcolour = "white", height= "100", time = false) {
     // Create a card element
     d3.select(location_id)
         .append("div")
@@ -1180,7 +1180,7 @@ function create_data_card(id, title, data, location_id, colour = "#532CEB", text
         .append("p")
         .attr("class", "card-text")
         .attr("style", "font-size:" + height/4 + "px;")
-        .text(data)
+        .text(time ? sec2time_mmss(data) : data)
 };
 
 /****************************************************************
@@ -1715,7 +1715,9 @@ function create_config_content(config, var_results) {
                     var colour = config.colours[custom_colour] ? config.colours[custom_colour] : custom_colour;
                     var custom_textcolour = config.content[el][5] ? config.content[el][5] : "white";
                     var textcolour = config.colours[custom_textcolour] ? config.colours[custom_textcolour] : custom_textcolour;
-                    create_data_card(id, title, value, location_id, colour, textcolour);
+                    var height = config.content[el][6] ? config.content[el][6] : "100";
+                    var time_bool = config.content[el][7] ? config.content[el][7] : false;
+                    create_data_card(id, title, value, location_id, colour, textcolour, height, time_bool);
                     break;
                 case "create_success_donut":
                     var id = el;
@@ -1843,6 +1845,21 @@ function percentage (numerator, denominator) {
         return percent
     }
 };
+
+/****************************************************************
+* SEC2TIME_MMSS
+* ---------------------------------------------------------------
+* Function to return a time in minutes and seconds when only secs
+****************************************************************/
+function sec2time_mmss(timeInSeconds) {
+    var pad = function(num, size) { return ('000' + num).slice(size * -1); },
+    time = parseFloat(timeInSeconds).toFixed(3),
+    hours = Math.floor(time / 60 / 60),
+    minutes = Math.floor(time / 60) % 60,
+    seconds = Math.floor(time - minutes * 60),
+    milliseconds = time.slice(-3);
+    return pad(hours*60 + minutes, 2) + ':' + pad(seconds, 2);
+}
 
 /****************************************************************
 * SEND TO CLIPBOARD
