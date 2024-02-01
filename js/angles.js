@@ -1480,7 +1480,7 @@ function create_possession_bar(id, title, success_val, failure_val, location_id,
 * ---------------------------------------------------------------
 * Function to create a scatter plot of multiple cartesian data
 ****************************************************************/
-function create_scatter_plot(id, cartesian_array_names, cartesian_arrays, location_id, background_image_path = "images/map_football_horiz.jpeg", width, height, colors, circle_size = 5) {
+function create_scatter_plot(id, cartesian_array_names, cartesian_arrays, location_id, background_image_path = "images/map_football_horiz.jpeg", width, height, colors, circle_size = 5, heatmap_mode = false) {
 
     // Check if there are enough colors for the data arrays
     if (colors.length < cartesian_arrays.length) {
@@ -1573,8 +1573,9 @@ function create_scatter_plot(id, cartesian_array_names, cartesian_arrays, locati
                 .attr("cx", function (d) { return d[0] * width; } )
                 .attr("cy", function (d) { return (1 - d[1]) * height; } )
                 .attr("r", circle_size)
-                .style("fill", "url(#radial-gradient)")
-            .on("mouseover", mouseover )
+                .style("fill", function (d) { return heatmap_mode ? "url(#radial-gradient)" : colors[index]; })
+                .style("stroke", function (d) { return heatmap_mode ? "none" : "white"; })
+                .on("mouseover", mouseover )
             .on("mousemove", function(event, d) { mousemove(event, d, index); })
             .on("mouseleave", mouseleave );
     });
@@ -1803,7 +1804,8 @@ function create_config_content(config, var_results) {
                     var custom_colours = config.content[el][6];
                     var colours = custom_colours.map(colour => config.colours[colour] ? config.colours[colour] : colour);
                     var circle_size = config.content[el][7] ? config.content[el][7] : 5;
-                    create_scatter_plot(id, cartesian_array_names, cartesian_arrays, location_id, background_image_path, width, height, colours, circle_size)
+                    var heatmap_mode = config.content[el][8] ? config.content[el][8] : false;
+                    create_scatter_plot(id, cartesian_array_names, cartesian_arrays, location_id, background_image_path, width, height, colours, circle_size, heatmap_mode)
                     break;
                 default:
                     console.log("Unable to add content: "+el);
