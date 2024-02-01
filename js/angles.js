@@ -1480,7 +1480,7 @@ function create_possession_bar(id, title, success_val, failure_val, location_id,
 * ---------------------------------------------------------------
 * Function to create a scatter plot of multiple cartesian data
 ****************************************************************/
-function create_scatter_plot(id, cartesian_array_names, cartesian_arrays, location_id, background_image_path = "images/map_football_horiz.png", width, height, colors) {
+function create_scatter_plot(id, cartesian_array_names, cartesian_arrays, location_id, background_image_path = "images/map_football_horiz.jpeg", width, height, colors, circle_size = 5) {
 
     // Check if there are enough colors for the data arrays
     if (colors.length < cartesian_arrays.length) {
@@ -1548,6 +1548,23 @@ function create_scatter_plot(id, cartesian_array_names, cartesian_arrays, locati
 
     // Add dots for each cartesian array
     cartesian_arrays.forEach(function(dataArray, index) {
+
+        // Define the radial gradient
+        svg.append("defs")
+            .append("radialGradient")
+            .attr("id", "radial-gradient")
+            .selectAll("stop")
+            .data([
+                {offset: "0%", color: colors[index], opacity: "0.5"},
+                {offset: "50%", color: colors[index], opacity: "0.5"},
+                {offset: "100%", color: colors[index], opacity: "0.25"}
+            ])
+            .enter().append("stop")
+            .attr("offset", function(d) { return d.offset; })
+            .attr("stop-color", function(d) { return d.color; })
+            .attr("stop-opacity", function(d) { return d.opacity; });
+
+        
         svg.append('g')
             .selectAll("dot")
             .data(dataArray)
@@ -1555,8 +1572,8 @@ function create_scatter_plot(id, cartesian_array_names, cartesian_arrays, locati
             .append("circle")
                 .attr("cx", function (d) { return d[0] * width; } )
                 .attr("cy", function (d) { return (1 - d[1]) * height; } )
-                .attr("r", 5)
-                .style("fill", colors[index])
+                .attr("r", circle_size)
+                .style("fill", "url(#radial-gradient)")
             .on("mouseover", mouseover )
             .on("mousemove", function(event, d) { mousemove(event, d, index); })
             .on("mouseleave", mouseleave );
@@ -1780,12 +1797,13 @@ function create_config_content(config, var_results) {
                     var cartesian_array_names = config.content[el][1];
                     var cartesian_arrays = cartesian_array_names.map(name => var_results[name]);
                     var location_id = config.content[el][2];
-                    var background_image_path = config.content[el][3];
+                    var background_image_path = config.content[el][3] ? config.content[el][3] : "images/map_football_horiz.jpeg"
                     var width = config.content[el][4] ? config.content[el][4] : 200;
                     var height = config.content[el][5] ? config.content[el][5] : 200;
                     var custom_colours = config.content[el][6];
                     var colours = custom_colours.map(colour => config.colours[colour] ? config.colours[colour] : colour);
-                    create_scatter_plot(id, cartesian_array_names, cartesian_arrays, location_id, background_image_path, width, height, colours)
+                    var circle_size = config.content[el][7] ? config.content[el][7] : 5;
+                    create_scatter_plot(id, cartesian_array_names, cartesian_arrays, location_id, background_image_path, width, height, colours, circle_size)
                     break;
                 default:
                     console.log("Unable to add content: "+el);
