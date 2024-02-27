@@ -369,7 +369,42 @@ function count_clips(data, clip_row_name = "", search_criteria = [], time_start 
                     for (const qualifier of clip.qualifiers.qualifiers_array) {
                         // Check for category and name matches, allowing for unspecified (any) matches
                         const categoryMatch = category === "" || qualifier.category === category;
-                        const valueMatch = value === "" || qualifier.name === value;
+                        let valueMatch = false; // Default to false
+
+                        if (value.startsWith("*") && value.endsWith("*")) {
+                            // If value has wildcards at both ends, use includes for comparison
+                            // Remove the wildcard characters and compare
+                            const valueToMatch = value.slice(1, -1);
+                            valueMatch = qualifier.name.includes(valueToMatch);
+                        } else if (value.startsWith("*")) {
+                            // If value starts with *, use endsWith for comparison
+                            // Remove the wildcard character and compare
+                            const valueToMatch = value.slice(1);
+                            valueMatch = qualifier.name.endsWith(valueToMatch);
+                        } else if (value.endsWith("*")) {
+                            // If value ends with *, use startsWith for comparison
+                            // Remove the wildcard character and compare
+                            const valueToMatch = value.slice(0, -1);
+                            valueMatch = qualifier.name.startsWith(valueToMatch);
+                        } else if (value.includes("*")) {
+                            // Handle case where wildcard is in the middle
+                            const parts = value.split("*");
+                            if (parts.length === 2) { // Ensure there's only one asterisk
+                                const startPart = parts[0];
+                                const endPart = parts[1];
+                                valueMatch = qualifier.name.startsWith(startPart) && qualifier.name.endsWith(endPart);
+                            } else if (parts.length === 3) { // Ensure there's only two asterisks
+                                const startPart = parts[0];
+                                const midPart = parts[1];
+                                const endPart = parts[2];
+                                valueMatch = qualifier.name.startsWith(startPart) && qualifier.name.includes(midPart) && qualifier.name.endsWith(endPart);
+                            } else {
+                                console.warn("Multiple asterisks in the middle are not supported in this example.");
+                            }
+                        } else {
+                            // If no wildcard, perform direct comparison
+                            valueMatch = value === "" || qualifier.name === value;
+                        }
 
                         if (categoryMatch && valueMatch) {
                             // If there are attributes in the criteria
@@ -968,6 +1003,118 @@ function cartesian_extract(data, clip_row_name = "", search_criteria = [], carte
     return cartesian_array;
 }
 
+/****************************************************************
+* CARTESIAN LINE EXTRACT
+* ---------------------------------------------------------------
+* Function to return an array of start and end pairs of x,y
+* co-ordinates to build a set of lines on a scatter plot
+****************************************************************/
+function cartesian_line_extract(data, clip_row_name = "", search_criteria = [], cartesian_start_name = "", cartesian_end_name = "", x_max = 1, y_max = 1) {
+    let cartesian_details = [];
+
+    for (const row of data.rows) {
+        // Skip row if row name doesn't match
+        if (clip_row_name !== "" && row.row_name !== clip_row_name) continue;
+        // Skip if row has no clips
+        if (!row.clips) continue;
+
+        for (const clip of row.clips) {
+            // Skip if clip has no qualifiers
+            if (!clip.qualifiers || !clip.qualifiers.qualifiers_array) continue;
+
+            let matchesSearchCriteria = search_criteria.length === 0;
+
+            // Iterate through search criteria
+            for (const criteria of search_criteria) {
+                const category = Object.keys(criteria)[0] || "";
+                const value = criteria[category] || "";
+                const attributes = criteria.attributes || {};
+
+                for (const qualifier of clip.qualifiers.qualifiers_array) {
+                    const categoryMatch = category === "" || qualifier.category === category;
+                    const valueMatch = value === "" || qualifier.name === value;
+
+                    if (categoryMatch && valueMatch) {
+                        let attribute_match_count = 0;
+                        if (Object.keys(attributes).length > 0 && qualifier.qualifier_attributes) {
+                            for (const attribute of qualifier.qualifier_attributes) {
+                                for (const [attr_category, attr_value] of Object.entries(attributes)) {
+                                    const attributeCatMatch = attr_category === "" || attribute.category === attr_category;
+                                    const attributeNameMatch = attr_value === "" || attribute.name === attr_value;
+
+                                    if (attributeCatMatch && attributeNameMatch) {
+                                        attribute_match_count++;
+                                    }
+                                }
+                            }
+
+                            if (attribute_match_count === Object.keys(attributes).length) {
+                                matchesSearchCriteria = true;
+                                break;
+                            }
+                        } else {
+                            matchesSearchCriteria = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (matchesSearchCriteria) break;
+            }
+
+            if (!matchesSearchCriteria) continue;
+
+            // Process the clip if it matches the search criteria
+            for (const q of clip.qualifiers.qualifiers_array) {
+                if (q.name == cartesian_start_name && q.x) {
+                    let clip_info = { row_name: row.row_name,
+                                        row_color: row.color,
+                                        clip_time_start: clip.time_start,
+                                        clip_time_end: clip.time_end,
+                                        clip_color: clip.color,
+                                        qualifier_name: q.name,
+                                        qualifier_color: q.color,
+                                        qualifier_time: q.time,
+                                        cartesian_name: q.name,
+                                        cartesian_color: q.color,
+                                        cartesian_time: q.time,
+                                        x: q.x,
+                                        y: q.y
+                                    };
+                    cartesian_details.push(clip_info);
+                }
+
+                if (!q.qualifier_attributes) continue;
+                for (const a of q.qualifier_attributes) {
+                    if (a.name == cartesian_start_name && a.x) {
+                        let clip_info = { row_name: row.row_name,
+                            row_color: row.color,
+                            clip_time_start: clip.time_start,
+                            clip_time_end: clip.time_end,
+                            clip_color: clip.color,
+                            qualifier_name: q.name,
+                            qualifier_color: q.color,
+                            qualifier_time: q.time,
+                            cartesian_name: a.name,
+                            cartesian_color: a.color,
+                            cartesian_time: a.time,
+                            x: a.x,
+                            y: a.y
+                        };
+                    cartesian_details.push(clip_info);
+                    }
+                }
+            }
+        }
+    }
+
+    var cartesian_array = [];
+    for (const point of cartesian_details) {
+        cartesian_array.push([point.x / x_max, point.y / y_max, point.clip_time_start]);
+    }
+
+    return cartesian_array;
+}
 
 /****************************************************************
 * READ CONFIG VARIABLES -----------------------------------------
@@ -1058,6 +1205,18 @@ function read_config_variables(config, data) {
                 var x_max = config.variables[each][4];
                 var y_max = config.variables[each][5];
                 var res = cartesian_extract(data, row_name, search_criteria, cartesian_name, x_max, y_max)
+                res.sort(function(a, b) {
+                    return a - b;
+                    });
+                eval(`var ${each} = ${res[max]};`);
+                var_res[each] = res;
+                break;
+            case "cartesian_line_extract":
+                var cartesian_start_name = config.variables[each][3];
+                var cartesian_end_name = config.variables[each][4];
+                var x_max = config.variables[each][5];
+                var y_max = config.variables[each][6];
+                var res = cartesian_line_extract(data, row_name, search_criteria, cartesian_start_name, cartesian_end_name, x_max, y_max)
                 res.sort(function(a, b) {
                     return a - b;
                     });
@@ -1879,78 +2038,43 @@ function send_to_clipboard(text) {
 * Function to sort a HTML table using it's id, column number 'n'
 * and if specified the initial direction for the sort order.
 ****************************************************************/
-function sortTable(tableid, n, initialDir = "desc") {
-    var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+function sortTable(tableid, n) {
+    var table, rows, switching, i, shouldSwitch, dir;
     table = document.getElementById(tableid);
     switching = true;
-    // Set the sorting direction to the provided initialDir or default to "desc":
-    dir = initialDir;
-    /* Make a loop that will continue until
-    no switching has been done: */
+    
+    // Check if the table already has a sort direction for this column
+    if (table.getAttribute("data-sort-dir") === "desc") {
+        dir = "asc";
+    } else {
+        dir = "desc";
+    }
+    // Update the table attribute to the new sort direction
+    table.setAttribute("data-sort-dir", dir);
+
     while (switching) {
-        // Start by saying: no switching is done:
         switching = false;
-        tab_rows = table.rows;
-        /* Loop through all table rows (except the
-        first, which contains table headers): */
-        for (i = 1; i < (tab_rows.length - 1); i++) {
-            // Start by saying there should be no switching:
+        rows = table.rows;
+
+        for (i = 1; i < rows.length - 1; i++) {
             shouldSwitch = false;
-            /* Get the two elements you want to compare,
-            one from current row and one from the next: */
-            x = tab_rows[i].getElementsByTagName("TD")[n];
-            y = tab_rows[i + 1].getElementsByTagName("TD")[n];
-            if (Number.isNaN(Number(x.innerHTML))) {
-                /* Check if the two rows should switch place,
-                based on the direction, asc or desc: */
-                if (dir == "asc") {
-                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-                        // If so, mark as a switch and break the loop:
-                        shouldSwitch = true;
-                        break;
-                    }
-                } else if (dir == "desc") {
-                    if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-                        // If so, mark as a switch and break the loop:
-                        shouldSwitch = true;
-                        break;
-                    }
-                }
-            }
-            // Otherwise we sort numerically as the number test was positive
-            else {
-                if (dir == "asc") {
-                    if (Number(x.innerHTML) > Number(y.innerHTML)) {
-                        //if so, mark as a switch and break the loop:
-                        shouldSwitch = true;
-                        break;
-                    }
-                } else if (dir == "desc") {
-                    if (Number(x.innerHTML) < Number(y.innerHTML)) {
-                        //if so, mark as a switch and break the loop:
-                        shouldSwitch = true;
-                        break;  
-                    }
-                }
+            let x = rows[i].getElementsByTagName("TD")[n];
+            let y = rows[i + 1].getElementsByTagName("TD")[n];
+
+            var xContent = isNaN(Number(x.innerHTML)) ? x.innerHTML.toLowerCase() : +x.innerHTML;
+            var yContent = isNaN(Number(y.innerHTML)) ? y.innerHTML.toLowerCase() : +y.innerHTML;
+
+            if (dir == "asc" && xContent > yContent) {
+                shouldSwitch = true;
+                break;
+            } else if (dir == "desc" && xContent < yContent) {
+                shouldSwitch = true;
+                break;
             }
         }
         if (shouldSwitch) {
-            /* If a switch has been marked, make the switch
-            and mark that a switch has been done: */
-            tab_rows[i].parentNode.insertBefore(tab_rows[i + 1], tab_rows[i]);
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
             switching = true;
-            // Each time a switch is done, increase this count by 1:
-            switchcount ++;
-        } else {
-            /* If no switching has been done AND the direction is "desc",
-            set the direction to "asc" and run the while loop again. */
-            if (switchcount == 0 && dir == "desc") {
-                dir = "asc";
-                switching = true;
-            } else if (switchcount == 0 && dir == "asc") {
-                dir = "desc";
-                switching = true;
-            }
         }
     }
 }
