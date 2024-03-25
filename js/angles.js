@@ -1119,7 +1119,7 @@ function cartesian_line_extract(data, clip_row_name = "", search_criteria = [], 
             // Add more series as needed
             ];
 ****************************************************************/
-function create_line_graph_data_durationlast5(data, row_names, start_clip) {
+function create_graph_data(data, row_names, start_clip, aggregate_type = "duration", timeframe_s = 300) {
     let data_arrays = [];
     let start_time = 0;
 
@@ -1137,16 +1137,19 @@ function create_line_graph_data_durationlast5(data, row_names, start_clip) {
         const clip_row = data.rows.find(row => row.row_name === rname);
         const last_clip_index = clip_row.clips.length - 1;
         let timeframe_start = start_time
-        let timeframe_s = 300;
-        let duration_value = 0;
+        let graph_value = 0;
 
         // Calculate the sum of the clips for each timeframe
         while (timeframe_start <= clip_row.clips[last_clip_index].time_start) {       
-            duration_value = sum_clip_durations(data, rname, [], timeframe_start, timeframe_start + timeframe_s)
+            if (aggregate_type === "duration") {
+                graph_value = sum_clip_durations(data, rname, [], timeframe_start, timeframe_start + timeframe_s)
+            } else if (aggregate_type === "count_clips") {
+                graph_value = count_clips(data, rname, [], timeframe_start, timeframe_start + timeframe_s)
+            }
             timeframe_start_m = Math.round(timeframe_start / 60)
             
             // Create clip object and add to the series array
-            let clip_obj = {time: timeframe_start_m, value: duration_value}
+            let clip_obj = {time: timeframe_start_m, value: graph_value}
             rname_obj_series.values.push(clip_obj);
 
             // Increment timeframe
@@ -1268,9 +1271,13 @@ function read_config_variables(config, data) {
                 eval(`var ${each} = ${res[max]};`);
                 var_res[each] = res;
                 break;
-            case "create_line_graph_data_durationlast5":
-                var start_clip = config.variables[each][3];
-                var res = create_line_graph_data_durationlast5(data, row_name, start_clip)
+            case "create_graph_data":
+                var start_clip = config.variables[each][2];
+                var aggregate_type = config.variables[each][3];
+                var timeframe_s = config.variables[each][4];
+                console.log(aggregate_type)
+                console.log(timeframe_s)
+                var res = create_graph_data(data, row_name, start_clip, aggregate_type, timeframe_s)
                 var_res[each] = res;
                 break;
         }
@@ -2025,6 +2032,119 @@ function create_line_graph(id, data_arrays, axis_titles = ["x axis", "y axis"], 
 }
 
 /****************************************************************
+* CREATE BAR GRAPH
+* ---------------------------------------------------------------
+* Function to create a bar graph
+* INPUT EXAMPLE FOR DATA_ARRAYS:
+        var graph_dataSeries = [
+            { name: "Poss A", values: [{ time: 5, value: 30 }, { time: 8, value: 40 }, { time: 10, value: 75 }, { time: 15, value: 70 }] },
+            { name: "Series 2", values: [{ time: 15, value: 20 }, { time: 40, value: 60 }] }
+            // Add more series as needed
+            ];
+****************************************************************/
+function create_bar_graph(id, data_arrays, axis_titles = ["x axis", "y axis"], location_id, colours, bar_padding = 0.1, legend_location = "bottom") {
+    // Access the container element, get its dimensions for responsive sizing
+    const container = document.getElementById(location_id.slice(1));
+    const containerWidth = container.clientWidth;
+    const containerHeight = container.clientHeight;
+
+    // Set margins around the graph, calculate effective width and height
+    var margin = { top: 20, right: 20, bottom: 70, left: 40 },
+        width = containerWidth - margin.left - margin.right,
+        height = containerHeight - margin.top - margin.bottom;
+
+    // Create SVG element for the graph, set dimensions, and append a 'g' element for the graph content
+    var svg = d3.select(location_id).append("svg")
+        .attr("id", id)
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", 
+              "translate(" + margin.left + "," + margin.top + ")");
+
+    // Define the main x scale for categories, and a secondary x scale for series within categories
+    var x0 = d3.scaleBand()
+        .rangeRound([0, width])
+        .paddingInner(0.1);
+
+    var x1 = d3.scaleBand()
+        .padding(0.05);
+
+    // Define the y scale for values
+    var y = d3.scaleLinear()
+        .rangeRound([height, 0]);
+
+    // Define axes based on the scales
+    var xAxis = d3.axisBottom(x0),
+        yAxis = d3.axisLeft(y);
+
+    // Process data: extract unique categories and series names, set domain for scales
+    var categories = [...new Set(data_arrays.flatMap(d => d.values.map(v => v.time)))];
+    var seriesNames = data_arrays.map(d => d.name);
+    x0.domain(categories);
+    x1.domain(seriesNames).rangeRound([0, x0.bandwidth()]);
+    y.domain([0, d3.max(data_arrays, d => d3.max(d.values, v => v.value))]).nice();
+
+    // Append x and y axes to the SVG
+    svg.append("g")
+       .attr("class", "x axis")
+       .attr("transform", "translate(0," + height + ")")
+       .call(xAxis);
+
+    svg.append("g")
+       .attr("class", "y axis")
+       .call(yAxis);
+
+    // Bind data to groups for each series, set positions
+    var serie = svg.selectAll(".serie")
+        .data(data_arrays)
+        .enter().append("g")
+        .attr("class", "serie")
+        .attr("transform", d => `translate(${x1(d.name)},0)`);
+
+    // For each series, append rect elements for bars, position and size them, and set their colors
+    serie.selectAll("rect")
+        .data(d => d.values.map(v => ({ key: d.name, value: v.value, time: v.time })))
+        .enter().append("rect")
+        .attr("width", x1.bandwidth())
+        .attr("x", d => x0(d.time))
+        .attr("y", d => y(d.value))
+        .attr("height", d => height - y(d.value))
+        .attr("fill", (d, i) => colours[data_arrays.findIndex(dat => dat.name === d.key)]);
+
+    // Add labels for the x and y axes
+    svg.append("text")
+        .attr("text-anchor", "middle")
+        .attr("transform", `translate(${width / 2}, ${height + margin.bottom * 0.8})`)
+        .text(axis_titles[0]);
+
+    svg.append("text")
+        .attr("text-anchor", "middle")
+        .attr("transform", `translate(${-margin.left*0.6}, ${height/2}) rotate(-90)`)
+        .text(axis_titles[1]);
+
+    // Add legend (assuming legend_location = "bottom" for simplicity)
+    const legend = svg.selectAll(".legend")
+        .data(data_arrays)
+        .enter().append("g")
+        .attr("class", "legend")
+        .attr("transform", (d, i) => `translate(0, ${i * 20})`);
+
+    legend.append("rect")
+        .attr("x", width - 18)
+        .attr("width", 18)
+        .attr("height", 18)
+        .style("fill", (d, i) => colours[i]);
+
+    legend.append("text")
+        .attr("x", width - 24)
+        .attr("y", 9)
+        .attr("dy", ".35em")
+        .style("text-anchor", "end")
+        .text(d => d.name);
+}
+
+/****************************************************************
 * CREATE BOOTSTRAP GRID
 * ---------------------------------------------------------------
 * Function to create a booptstrap grid with id's A1, A2, B1...etc
@@ -2064,6 +2184,7 @@ function create_bootstrap_grid(rows, columns) {
         }
     }
 };
+
 
 /****************************************************************
 * CREATE UPDATE BUTTON
@@ -2275,6 +2396,18 @@ function create_config_content(config, var_results) {
                     var line_size = config.content[el][5] ? config.content[el][5] : 1;
                     var legend_location = config.content[el][6] ? config.content[el][6] : "bottom";
                     create_line_graph(id, data_arrays, axis_titles, location_id, colours, line_size, legend_location)
+                    break;
+                case "create_bar_graph":
+                    var id = el;
+                    var data_array_name = config.content[el][1];
+                    var data_arrays = var_results[data_array_name];
+                    var axis_titles = config.content[el][2] ? config.content[el][2] : ["x axis", "y axis"]
+                    var location_id = config.content[el][3];
+                    var custom_colours = config.content[el][4];
+                    var colours = custom_colours.map(colour => config.colours[colour] ? config.colours[colour] : colour);
+                    var line_size = config.content[el][5] ? config.content[el][5] : 1;
+                    var legend_location = config.content[el][6] ? config.content[el][6] : "bottom";
+                    create_bar_graph(id, data_arrays, axis_titles, location_id, colours, line_size, legend_location)
                     break;
                 default:
                     console.log("Unable to add content: "+el);
