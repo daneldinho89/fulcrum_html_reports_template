@@ -899,6 +899,7 @@ function count_clips_table(data, rows, columns, time_start = 0, time_end = Infin
 function cartesian_extract(data, clip_row_name = "", search_criteria = [], cartesian_name = "", x_max = 1, y_max = 1) {
     // Initialize an array to store extracted clip information
     let cartesian_details = [];
+    search_criteria = search_criteria.length ? search_criteria : [{"":""}];
 
     // Loop through each row in the data
     for (const row of data.rows) {
@@ -923,7 +924,6 @@ function cartesian_extract(data, clip_row_name = "", search_criteria = [], carte
                 for (const qualifier of clip.qualifiers.qualifiers_array) {
                     const categoryMatch = category === "" || qualifier.category === category;
                     const valueMatch = value === "" || qualifier.name === value;
-
                     // Check if qualifier matches the search criteria
                     if (categoryMatch && valueMatch) {
                         clip_info = {}
@@ -992,6 +992,7 @@ function cartesian_extract(data, clip_row_name = "", search_criteria = [], carte
 function cartesian_line_extract(data, clip_row_name = "", search_criteria = [], cartesian_start_name = "", cartesian_end_name = "", x_max = 1, y_max = 1) {
     // Initialize an array to store extracted clip information
     let cartesian_details = [];
+    search_criteria = search_criteria.length ? search_criteria : [{"":""}];
 
     // Loop through each row in the data
     for (const row of data.rows) {
@@ -1791,6 +1792,114 @@ function create_scatter_plot(id, cartesian_array_names, cartesian_arrays, locati
 }
 
 /****************************************************************
+* VECTOR PLOT
+* ---------------------------------------------------------------
+* Function to create a vector plot of multiple cartesian data
+* with a straight line between the start and end co-ordinate
+****************************************************************/
+function create_vector_plot(id, cartesian_array_names, cartesian_arrays, location_id, background_image_path = "images/map_football_horiz.jpeg", width, height, colors, line_size = 2) {
+
+    // Check if there are enough colors for the data arrays
+    if (colors.length < cartesian_arrays.length) {
+        console.error("VECTOR PLOT ERROR: Not enough colors for the provided data sets.");
+        return;
+    }
+
+    // Set the dimensions and margins of the graph
+    var margin = {top: 10, right: 30, bottom: 60, left: 60},
+        width = width - margin.left - margin.right,
+        height = height - margin.top - margin.bottom;
+
+    // Tooltip setup
+    var tooltip = d3.select(location_id)
+        .append("div")
+        .style("opacity", 0)
+        .attr("class", "tooltip")
+        .style("background-color", "white")
+        .style("border", "solid")
+        .style("border-width", "1px")
+        .style("border-radius", "5px")
+        .style("padding", "10px")
+        .style("position", "absolute");
+
+    // Mouse interaction functions
+    var mouseover = function(d) {
+        tooltip.style("opacity", 1);
+    }
+
+    var mousemove = function(event, d, teamIndex) {
+        var teamName = cartesian_array_names[teamIndex];
+        tooltip
+            .html("<b>" + teamName + "</b><br>" + "Start: (" + d[0].toFixed(2) + ", " + d[1].toFixed(2) + ")" + "<br>" + "End: (" + d[2].toFixed(2) + ", " + d[3].toFixed(2) + ")")
+            .style("left", (event.pageX + 10) + "px")
+            .style("top", (event.pageY + 10) + "px");
+    }
+
+    var mouseleave = function(d) {
+        tooltip
+            .transition()
+            .duration(200)
+            .style("opacity", 0);
+    }
+
+    // Append svg to specified location
+    var svg = d3.select(location_id)
+        .append("svg")
+            .attr("id", id)
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    // Append image to svg
+    svg.append("image")
+        .attr("href", background_image_path)
+        .attr("height", height)
+        .attr("width", width)
+        .attr("preserveAspectRatio", "none");
+
+    // Ensure arrowheads are visible at lineSize = 1 by setting a minimum size
+    var arrow_size = Math.max(line_size, 5); // Adjust minimum size as needed
+
+    // Define arrowheads
+    svg.append("defs").selectAll("marker")
+        .data(colors) // Using colors array to create a unique marker for each set
+        .enter().append("marker")
+            .attr("id", function(d, i) { return "arrowhead-" + i; }) // Unique ID for referencing
+            .attr("viewBox", "0 -5 10 10")
+            .attr("refX", line_size) // Positioning arrow based on line size
+            .attr("refY", 0)
+            .attr("markerWidth", arrow_size) // Scale arrow size with lineSize
+            .attr("markerHeight", arrow_size)
+            .attr("orient", "auto")
+            .append("path")
+                .attr("fill", "none") // No fill for a "V" shape
+                .attr("stroke", function(d) { return d; }) // Use line color for the "V"
+                .attr("stroke-width", arrow_size) // Match line width for consistency
+                .attr("d", "M0,0 L-5,-5 L-5,5 Z"); // Path for "V" shape
+
+    // Draw lines with arrows for each cartesian array
+    cartesian_arrays.forEach(function(dataArray, index) {
+        svg.selectAll("line" + index)
+            .data(dataArray)
+            .enter()
+            .append("line")
+                .attr("x1", function(d) { return d[0] * width; })
+                .attr("y1", function(d) { return (1 - d[1]) * height; })
+                .attr("x2", function(d) { return d[2] * width; })
+                .attr("y2", function(d) { return (1 - d[3]) * height; })
+                .attr("stroke", colors[index])
+                .attr("stroke-width", line_size) // Use lineSize parameter
+                .attr("marker-end", function(d) { return "url(#arrowhead-" + index + ")"; }) // Reference the arrowhead
+                .on("mouseover", mouseover)
+                .on("mousemove", function(event, d) { mousemove(event, d, index); })
+                .on("mouseleave", mouseleave);
+    });
+}
+
+
+
+/****************************************************************
 * CREATE LINE GRAPH
 * ---------------------------------------------------------------
 * Function to create a line graph
@@ -2141,6 +2250,19 @@ function create_config_content(config, var_results) {
                     var circle_size = config.content[el][7] ? config.content[el][7] : 5;
                     var heatmap_mode = config.content[el][8] ? config.content[el][8] : false;
                     create_scatter_plot(id, cartesian_array_names, cartesian_arrays, location_id, background_image_path, width, height, colours, circle_size, heatmap_mode)
+                    break;
+                case "create_vector_plot":
+                    var id = el;
+                    var cartesian_array_names = config.content[el][1];
+                    var cartesian_arrays = cartesian_array_names.map(name => var_results[name]);
+                    var location_id = config.content[el][2];
+                    var background_image_path = config.content[el][3] ? config.content[el][3] : "images/map_football_horiz.jpeg"
+                    var width = config.content[el][4] ? config.content[el][4] : 200;
+                    var height = config.content[el][5] ? config.content[el][5] : 200;
+                    var custom_colours = config.content[el][6];
+                    var colours = custom_colours.map(colour => config.colours[colour] ? config.colours[colour] : colour);
+                    var circle_size = config.content[el][7] ? config.content[el][7] : 5;
+                    create_vector_plot(id, cartesian_array_names, cartesian_arrays, location_id, background_image_path, width, height, colours, circle_size)
                     break;
                 case "create_line_graph":
                     var id = el;
