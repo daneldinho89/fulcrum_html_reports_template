@@ -1146,6 +1146,7 @@ function create_graph_data(data, row_names, start_clip, aggregate_type = "durati
             } else if (aggregate_type === "count_clips") {
                 graph_value = count_clips(data, rname, [], timeframe_start, timeframe_start + timeframe_s)
             }
+
             timeframe_start_m = Math.round(timeframe_start / 60)
             
             // Create clip object and add to the series array
@@ -1275,8 +1276,6 @@ function read_config_variables(config, data) {
                 var start_clip = config.variables[each][2];
                 var aggregate_type = config.variables[each][3];
                 var timeframe_s = config.variables[each][4];
-                console.log(aggregate_type)
-                console.log(timeframe_s)
                 var res = create_graph_data(data, row_name, start_clip, aggregate_type, timeframe_s)
                 var_res[each] = res;
                 break;
@@ -1374,6 +1373,19 @@ function create_data_table(id, title, data_table, location_id, colour, switch_ax
         };
     };
 };
+
+/****************************************************************
+* CREATE DIV BACKGROUND
+* ---------------------------------------------------------------
+* Function to add a background image to a div
+****************************************************************/
+function create_div_background(id, background_image_path, location_id) {
+    d3.select(location_id)
+        .append("div")
+        .attr("class", "row")
+        .attr("style", "background-image: url('" + background_image_path + "'); background-size: 100% 100%; background-repeat: no-repeat;")
+        .attr("id", id)
+}
 
 /****************************************************************
 * CREATE DATA CARD
@@ -2185,6 +2197,40 @@ function create_bootstrap_grid(rows, columns) {
     }
 };
 
+/****************************************************************
+* CREATE BOOTSTRAP COLUMNS
+* ---------------------------------------------------------------
+* Function to create a booptstrap columns in a bootstrap row with
+*  id's "name_" + "x"
+****************************************************************/
+function create_bootstrap_columns(col_name_suffix, no_cols, location_id) {
+    var col_size = Math.round(12/no_cols,0);
+
+    for (let i = 1; i <= no_cols; i++) {
+        d3.select(location_id)
+            .append("div")
+            .attr("class", "col-md-" + col_size + " py-2")
+            .attr("id", col_name_suffix + "_" + i)
+    }
+
+}
+
+/****************************************************************
+* CREATE BOOTSTRAP ROWS
+* ---------------------------------------------------------------
+* Function to create a booptstrap rows in a bootstrap row with
+*  id's "name_" + "x"
+****************************************************************/
+function create_bootstrap_rows(row_name_suffix, no_rows, location_id) {
+
+    for (let i = 1; i <= no_rows; i++) {
+        d3.select(location_id)
+            .append("div")
+            .attr("class", "row my-1")
+            .attr("id", row_name_suffix + "_" + i)
+    }
+
+}
 
 /****************************************************************
 * CREATE UPDATE BUTTON
@@ -2268,6 +2314,24 @@ function create_config_content(config, var_results) {
     }
     for (el in config.content) {
         switch (config.content[el][0]) {
+                case "create_div_background":
+                    var id = el;
+                    var background_image_path = config.content[el][1];
+                    var location_id = config.content[el][2];
+                    create_div_background(id, background_image_path, location_id);
+                    break;
+                case "create_bootstrap_rows":
+                    var row_name_suffix = el;
+                    var no_rows = config.content[el][1];
+                    var location_id = config.content[el][2];
+                    create_bootstrap_rows(row_name_suffix, no_rows, location_id);
+                    break;
+                case "create_bootstrap_columns":
+                    var col_name_suffix = el;
+                    var no_cols = config.content[el][1];
+                    var location_id = config.content[el][2];
+                    create_bootstrap_columns(col_name_suffix, no_cols, location_id);
+                    break;
                 case "create_data_card":
                     var id = el;
                     var title = config.content[el][1];
