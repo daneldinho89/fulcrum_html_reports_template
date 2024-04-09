@@ -491,16 +491,17 @@ function count_qualifiers(data, clip_row_name = "", search_criteria = [], time_s
             for (const clip of clips) {
                 if (clip.time_start < time_start || clip.time_end > time_end) continue;
 
-                const qualifiers = clip.qualifiers?.qualifiers_array || [];
+                const qualifiers = clip.qualifiers.qualifiers_array || [];
 
                 // Iterate through each qualifier in the clip
                 for (const qualifier of qualifiers) {
                     if (qualifier.time < time_start || qualifier.time > time_end) continue;
 
                     // Optional: Check if qualifier category and name are part of the search criteria
-                    const category = criteria.category || "";
-                    const value = criteria.name || "";
-
+                    const category = Object.keys(criteria)[0] || "";
+                    const value = criteria[category] || "";
+                    const attributes = criteria.attributes || {};
+                    
                     // Determine if there's a match on category and name
                     const categoryMatch = category === "" || qualifier.category === category;
                     const nameMatch = value === "" || qualifier.name === value;
@@ -1382,10 +1383,11 @@ function create_data_table(id, title, data_table, location_id, colour, switch_ax
 function create_div_background(id, background_image_path, location_id) {
     d3.select(location_id)
         .append("div")
-        .attr("class", "row")
+        .attr("class", "row m-2")
         .attr("style", "background-image: url('" + background_image_path + "'); background-size: 100% 100%; background-repeat: no-repeat;")
         .attr("id", id)
 }
+
 
 /****************************************************************
 * CREATE DATA CARD
@@ -1397,7 +1399,7 @@ function create_data_card(id, title, data, location_id, colour = "#532CEB", text
     d3.select(location_id)
         .append("div")
         .attr("class", "card m-1")
-        .attr("style", "background-color:" + colour + "; color:" + textcolour +"; height:" + height + "px")
+        .attr("style", "background-color:" + colour + "; color:" + textcolour +"; height:" + height + "px; border: none;")
         .attr("id", id)
         .append("div")
         .attr("class", "card-body d-flex flex-column justify-content-center align-items-center")
@@ -1929,30 +1931,33 @@ function create_vector_plot(id, cartesian_array_names, cartesian_arrays, locatio
             // Add more series as needed
             ];
 ****************************************************************/
-function create_line_graph(id, data_arrays, axis_titles = ["x axis", "y axis"], location_id, colours, line_size = 1, legend_location = "bottom") {
-    // Get the size of the container to make the visualization responsive
+function create_line_graph(id, data_arrays, axis_titles = ["x axis", "y axis"], location_id, colours, line_size = 1, given_width = "default", given_height = "default", legend_location = "bottom") {
+    // Accesses the container element based on 'location_id' and determines its dimensions,
+    // allowing for explicit overrides via 'given_width' and 'given_height'.
     const container = document.getElementById(location_id.slice(1));
-    const containerWidth = container.clientWidth;
-    const containerHeight = container.clientHeight;
+    let containerHeight = container.clientHeight
+    let containerWidth = container.clientWidth
+    if (given_height !== "default") {containerHeight = given_height}
+    if (given_width !== "default") {containerWidth = given_width}
 
-    // Define scales and axis and add them 
-    var margin = { top: containerHeight*0.05, right: containerWidth*0.15, bottom: containerHeight*0.2, left: containerWidth*0.1 },
+    // Sets up margins around the graph, calculates the effective width and height of the drawing area.
+    var margin = { top: containerHeight*0.05, right: containerWidth*0.2, bottom: containerHeight*0.2, left: containerWidth*0.15 },
     width = containerWidth - margin.left - margin.right,
     height = containerHeight - margin.top - margin.bottom;
 
-    // Create reponsive svg container
-    let svg = d3.select(location_id)
-        .attr("display", "flex")
-        .attr("justify-content", "center")
-        .attr("align-items", "center")
-        .append("svg")
+    // Centers the content within the specified location.
+    d3.select(location_id).attr("style", "text-align: center;");
+
+    // Initializes the SVG container for the graph, setting its dimensions and transforming the coordinate system for the margin.
+    var svg = d3.select(location_id).append("svg")
         .attr("id", id)
-        .attr("width", "90%")
-        .attr("height", "75%")
-        .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
- 
+
+
+    // Defines the scales for the x and y axes based on the data provided, ensuring the axes span the full range of the data.
     var x = d3.scaleLinear()
         .domain([
             d3.min(data_arrays, series => d3.min(series.values, d => d.time)),
@@ -1968,32 +1973,35 @@ function create_line_graph(id, data_arrays, axis_titles = ["x axis", "y axis"], 
         ])
         .range([height, 0]);
     
+    // Adjusts the font size of the axes based on the dimensions of the graph.
+    const text_scaler = Math.min(width, height) / 20
 
-    let svg_axes = svg.append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-    svg_axes.append("g")
+    // Appends and styles the x and y axes to the graph, including labels with adjusted positioning and font size
+    svg.append("g")
         .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x));
+        .call(d3.axisBottom(x))
+        .style("font-size", text_scaler + "px");
 
-    svg_axes.append("text")
+    svg.append("text")
         .attr("text-anchor", "middle") // Center the text
-        .attr("transform", `translate(${width / 2}, ${height + margin.bottom*0.5})`) // Position at the middle-bottom of the chart
-        .attr("dy", "1em") // Adjust spacing from the x-axis
+        .attr("transform", `translate(${width / 2}, ${height})`) // Position at the middle-bottom of the chart
+        .attr("dy", "3em") // Adjust spacing from the x-axis
         .text(axis_titles[0])
-        .style("font-size", "8px")
+        .style("font-size", text_scaler + "px")
     
-    svg_axes.append("g")
-        .call(d3.axisLeft(y));
+    svg.append("g")
+        .call(d3.axisLeft(y))
+        .style("font-size", text_scaler + "px");
 
-    svg_axes.append("text")
+    svg.append("text")
         .attr("text-anchor", "middle") // Center the text
-        .attr("transform", `translate(${-margin.left*0.5}, ${height / 2}) rotate(-90)`) // Position to the left, rotated
-        .attr("dy", "-1em") // Adjust spacing from the y-axis
+        .attr("transform", `translate(0, ${height / 2}) rotate(-90)`) // Position to the left, rotated
+        .attr("dy", "-3em") // Adjust spacing from the y-axis
         .text(axis_titles[1])
-        .style("font-size", "8px")
+        .style("font-size", text_scaler + "px")
 
-    var series = svg_axes.selectAll(".series")
+    // Binds the data to 'series' elements and appends 'path' elements for each series, setting their styles and the 'd' attribute for the line shape.
+    var series = svg.selectAll(".series")
         .data(data_arrays) // Bind your series data here
         .enter().append("g")
         .attr("class", "series");
@@ -2009,36 +2017,27 @@ function create_line_graph(id, data_arrays, axis_titles = ["x axis", "y axis"], 
         .attr("stroke-width", line_size)
         .attr("d", function(d) { return line(d.values); }); // Ensure 'line' is defined with the correct x and y accessors.
 
-    // Assuming legend_location = "bottom" for this example
-
-    // Calculate legend positioning
-    const legendPadding = 5; // Space between legend items
-    const legendXStart = width * 0.90; // Starting X position for the legend
-    const legendYStart = 0; // Adjust this based on your actual layout needs
-
-    // Create a legend group
-    const legend = svg_axes.selectAll(".legend")
+    // Creates a legend by appending 'g' elements for each series, positioning them and adding colored rectangles and text labels for each series.
+    const legend = svg.selectAll(".legend")
         .data(data_arrays)
         .enter().append("g")
         .attr("class", "legend")
-        .attr("transform", (d, i) => `translate(${legendXStart}, ${legendYStart + i * 20})`); // Adjust spacing based on index
+        .attr("transform", (d, i) => `translate(0, ${i * text_scaler * 1.5})`);
 
-
-    // Append a colored line or symbol for each legend item
     legend.append("rect")
-        .attr("x", 0)
-        .attr("y", 0)
-        .attr("width", 18)
-        .attr("height", 4)
-        .style("fill", (d, i) => colours[i]);
+        .attr("x", width)
+        .attr("width", text_scaler + 1)
+        .attr("height", text_scaler)
+        .style("fill", (d, i) => colours[i])
+        .style("rx", (text_scaler / 5) + "px");
 
-    // Append text labels for each legend item
     legend.append("text")
-        .attr("x", 24)
-        .attr("y", 0)
-        .attr("dy", "0.32em") // Vertically center text with the symbol
+        .attr("x", width + text_scaler + 2)
+        .attr("y", text_scaler / 2)
+        .attr("dy", ".35em")
+        .style("text-anchor", "end")
         .text(d => d.name)
-        .style("font-size", "12px")
+        .style("font-size", text_scaler + "px")
         .style("text-anchor", "start");
 
 }
@@ -2054,25 +2053,29 @@ function create_line_graph(id, data_arrays, axis_titles = ["x axis", "y axis"], 
             // Add more series as needed
             ];
 ****************************************************************/
-function create_bar_graph(id, data_arrays, axis_titles = ["x axis", "y axis"], location_id, colours, bar_padding = 0.1, legend_location = "bottom") {
-    // Access the container element, get its dimensions for responsive sizing
+function create_bar_graph(id, data_arrays, axis_titles = ["x axis", "y axis"], location_id, colours, given_width = "default", given_height = "default", bar_padding = 0.1, legend_location = "bottom") {
+    // Get the size of the container to make the visualization responsive
     const container = document.getElementById(location_id.slice(1));
-    const containerWidth = container.clientWidth;
-    const containerHeight = container.clientHeight;
+    let containerHeight = container.clientHeight
+    let containerWidth = container.clientWidth
+    if (given_height !== "default") {containerHeight = given_height}
+    if (given_width !== "default") {containerWidth = given_width}
 
-    // Set margins around the graph, calculate effective width and height
-    var margin = { top: 20, right: 20, bottom: 70, left: 40 },
-        width = containerWidth - margin.left - margin.right,
-        height = containerHeight - margin.top - margin.bottom;
+    // Define scales and axis and add them 
+    var margin = { top: containerHeight*0.05, right: containerWidth*0.2, bottom: containerHeight*0.2, left: containerWidth*0.15 },
+    width = containerWidth - margin.left - margin.right,
+    height = containerHeight - margin.top - margin.bottom;
 
-    // Create SVG element for the graph, set dimensions, and append a 'g' element for the graph content
+    // Centralise the content in the location_id
+    d3.select(location_id).attr("style", "text-align: center;");
+
+    // Correctly set SVG dimensions including margins
     var svg = d3.select(location_id).append("svg")
         .attr("id", id)
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
-        .attr("transform", 
-              "translate(" + margin.left + "," + margin.top + ")");
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     // Define the main x scale for categories, and a secondary x scale for series within categories
     var x0 = d3.scaleBand()
@@ -2097,15 +2100,7 @@ function create_bar_graph(id, data_arrays, axis_titles = ["x axis", "y axis"], l
     x1.domain(seriesNames).rangeRound([0, x0.bandwidth()]);
     y.domain([0, d3.max(data_arrays, d => d3.max(d.values, v => v.value))]).nice();
 
-    // Append x and y axes to the SVG
-    svg.append("g")
-       .attr("class", "x axis")
-       .attr("transform", "translate(0," + height + ")")
-       .call(xAxis);
-
-    svg.append("g")
-       .attr("class", "y axis")
-       .call(yAxis);
+    const text_scaler = Math.min(width, height) / 20
 
     // Bind data to groups for each series, set positions
     var serie = svg.selectAll(".serie")
@@ -2122,38 +2117,59 @@ function create_bar_graph(id, data_arrays, axis_titles = ["x axis", "y axis"], l
         .attr("x", d => x0(d.time))
         .attr("y", d => y(d.value))
         .attr("height", d => height - y(d.value))
-        .attr("fill", (d, i) => colours[data_arrays.findIndex(dat => dat.name === d.key)]);
+        .attr("fill", (d, i) => colours[data_arrays.findIndex(dat => dat.name === d.key)])
+        .style("rx", (text_scaler / 10) + "px");
+    
+    // Append x and y axes to the SVG
+    svg.append("g")
+       .attr("class", "x axis")
+       .attr("transform", "translate(0," + height + ")")
+       .call(xAxis)
+       .style("font-size", text_scaler + "px");
+
+    svg.append("g")
+       .attr("class", "y axis")
+       .call(yAxis)
+       .style("font-size", text_scaler + "px");
 
     // Add labels for the x and y axes
     svg.append("text")
-        .attr("text-anchor", "middle")
-        .attr("transform", `translate(${width / 2}, ${height + margin.bottom * 0.8})`)
-        .text(axis_titles[0]);
+        .attr("text-anchor", "middle") // Center the text
+        .attr("transform", `translate(${width / 2}, ${height})`) // Position at the middle-bottom of the chart
+        .attr("dy", "3em") // Adjust spacing from the x-axis
+        .text(axis_titles[0])
+        .style("font-size", text_scaler + "px")
 
     svg.append("text")
         .attr("text-anchor", "middle")
-        .attr("transform", `translate(${-margin.left*0.6}, ${height/2}) rotate(-90)`)
-        .text(axis_titles[1]);
+        .attr("transform", `translate(0, ${height / 2}) rotate(-90)`)
+        .attr("dy", "-3em") // Adjust spacing from the y-axis
+        .text(axis_titles[1])
+        .style("font-size", text_scaler + "px");
 
     // Add legend (assuming legend_location = "bottom" for simplicity)
     const legend = svg.selectAll(".legend")
         .data(data_arrays)
         .enter().append("g")
         .attr("class", "legend")
-        .attr("transform", (d, i) => `translate(0, ${i * 20})`);
+        .attr("transform", (d, i) => `translate(0, ${i * text_scaler * 1.5})`);
 
     legend.append("rect")
-        .attr("x", width - 18)
-        .attr("width", 18)
-        .attr("height", 18)
-        .style("fill", (d, i) => colours[i]);
+        .attr("x", width + 1)
+        .attr("width", text_scaler)
+        .attr("height", text_scaler)
+        .style("fill", (d, i) => colours[i])
+        .style("rx", (text_scaler / 5) + "px");
 
     legend.append("text")
-        .attr("x", width - 24)
-        .attr("y", 9)
+        .attr("x", width + text_scaler + 2)
+        .attr("y", text_scaler / 2)
         .attr("dy", ".35em")
         .style("text-anchor", "end")
-        .text(d => d.name);
+        .text(d => d.name)
+        .style("font-size", text_scaler + "px")
+        .style("text-anchor", "start");
+
 }
 
 /****************************************************************
@@ -2226,7 +2242,7 @@ function create_bootstrap_rows(row_name_suffix, no_rows, location_id) {
     for (let i = 1; i <= no_rows; i++) {
         d3.select(location_id)
             .append("div")
-            .attr("class", "row my-1")
+            .attr("class", "row m-1")
             .attr("id", row_name_suffix + "_" + i)
     }
 
@@ -2458,8 +2474,10 @@ function create_config_content(config, var_results) {
                     var custom_colours = config.content[el][4];
                     var colours = custom_colours.map(colour => config.colours[colour] ? config.colours[colour] : colour);
                     var line_size = config.content[el][5] ? config.content[el][5] : 1;
-                    var legend_location = config.content[el][6] ? config.content[el][6] : "bottom";
-                    create_line_graph(id, data_arrays, axis_titles, location_id, colours, line_size, legend_location)
+                    var width = config.content[el][6] ? config.content[el][6] : "default";
+                    var height = config.content[el][7] ? config.content[el][7] : "default";
+                    var legend_location = config.content[el][8] ? config.content[el][8] : "bottom";
+                    create_line_graph(id, data_arrays, axis_titles, location_id, colours, line_size, width, height, legend_location)
                     break;
                 case "create_bar_graph":
                     var id = el;
@@ -2469,9 +2487,11 @@ function create_config_content(config, var_results) {
                     var location_id = config.content[el][3];
                     var custom_colours = config.content[el][4];
                     var colours = custom_colours.map(colour => config.colours[colour] ? config.colours[colour] : colour);
-                    var line_size = config.content[el][5] ? config.content[el][5] : 1;
-                    var legend_location = config.content[el][6] ? config.content[el][6] : "bottom";
-                    create_bar_graph(id, data_arrays, axis_titles, location_id, colours, line_size, legend_location)
+                    var width = config.content[el][5] ? config.content[el][5] : "default";
+                    var height = config.content[el][6] ? config.content[el][6] : "default";
+                    var bar_padding = config.content[el][7] ? config.content[el][7] : 1;
+                    var legend_location = config.content[el][8] ? config.content[el][8] : "bottom";
+                    create_bar_graph(id, data_arrays, axis_titles, location_id, colours, width, height, bar_padding, legend_location)
                     break;
                 default:
                     console.log("Unable to add content: "+el);
