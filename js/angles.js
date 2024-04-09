@@ -2173,6 +2173,122 @@ function create_bar_graph(id, data_arrays, axis_titles = ["x axis", "y axis"], l
 }
 
 /****************************************************************
+* PIE CHART
+* ---------------------------------------------------------------
+* Function to create a pie or donut chart with 2+ values
+* inner radius is a % 0-100
+****************************************************************/
+function create_pie_chart(id, titles, values, location_id, colours, given_width, given_height, innerRadius = 0, legend = true) {
+    
+    // Get the size of the container to make the visualization responsive
+    const container = document.getElementById(location_id.slice(1));
+    let containerHeight = container.clientHeight
+    let containerWidth = container.clientWidth
+    if (given_height !== "default") {containerHeight = given_height}
+    if (given_width !== "default") {containerWidth = given_width}
+
+    // Define scales and axis and add them 
+    var margin = { top: containerHeight*0.05, right: containerWidth*0.2, bottom: containerHeight*0.2, left: containerWidth*0.15 },
+    width = containerWidth - margin.left - margin.right,
+    height = containerHeight - margin.top - margin.bottom;
+
+    // Centralise the content in the location_id
+    d3.select(location_id).attr("style", "text-align: center;");
+
+    // Chart dimensions and radius calculation
+    var radius = Math.min(width, height) / 2;
+
+    // Color scale based on the colors array
+    var color = d3.scaleOrdinal(colours);
+
+    // Pie layout with optional sorting
+    var pie = d3.pie().sort(null);
+
+    // Arc generator for paths
+    var arc = d3.arc()
+                 .outerRadius(radius)
+                 .innerRadius(innerRadius);
+
+    // Create SVG element for the chart
+    var svg = d3.select(location_id).append("svg")
+        .attr("id", id)
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    // Bind data and create arcs
+    var arcs = svg.selectAll(".arc")
+                  .data(pie(values))
+                  .enter()
+                  .append("g")
+                  .attr("class", "arc")
+                  .attr("transform", "translate(" + width/2 + "," + height/2 + ")");
+
+    // Draw arc paths with sequential rotating transition
+    arcs.append("path")
+        .attr("fill", (d, i) => color(i))
+        .each(function(d, i) {
+            this._current = {startAngle: d.startAngle, endAngle: d.startAngle}; // initialize transition state
+        })
+        .transition()
+        .delay( d => 2000*(d.startAngle) / (2 * Math.PI)) // delay each segment
+        .duration( d => 2000*(d.endAngle - d.startAngle) / (2 * Math.PI))
+        .ease(d3.easeLinear) // Apply linear easing for smooth transitions
+        .attrTween('d', function(d) {
+            var interpolate = d3.interpolate(this._current, d);
+            this._current = interpolate(1); // update transition state
+            return function(t) {
+                return arc(interpolate(t));
+            };
+        });
+
+    // Adjusts the font size of the axes based on the dimensions of the graph.
+    const text_scaler = Math.min(width, height) / 15
+
+    // Calculate and filter labels for segments > 10%
+    arcs.filter(d => (d.endAngle - d.startAngle) / (2 * Math.PI) > 0.1)
+        .append("text")
+        .style("font-size", text_scaler + "px")
+        .attr("transform", d => `translate(${arc.centroid(d)})`)
+        .attr("dy", "0.35em")
+        .style("text-anchor", "middle")
+        .style("opacity", 0) // Initially set opacity to 0 for the fade-in effect
+        .text(d => `${Math.round((d.endAngle - d.startAngle) / (2 * Math.PI) * 100)}%`)
+        .style("fill", "white")
+        .transition()
+        .delay( d => 2500*(d.startAngle) / (2 * Math.PI)) // delay each segment
+        .duration( d => 2500*(d.endAngle - d.startAngle) / (2 * Math.PI))
+        .style("opacity", 1); // Transition to full opacity;
+
+    // Add legend if turned on
+    if (legend === true) {
+        const legend = svg.selectAll(".legend")
+            .data(titles)
+            .enter().append("g")
+            .attr("class", "legend")
+            .attr("transform", (d, i) => `translate(${text_scaler + width / 2 + radius}, ${i * text_scaler * 1.5})`); // Position right of the pie
+
+        legend.append("rect")
+            .attr("x", 0) // Positioning relative to the translated group
+            .attr("width", text_scaler)
+            .attr("height", text_scaler)
+            .style("fill", (d, i) => colours[i])
+            .style("rx", (text_scaler / 5) + "px");
+
+        legend.append("text")
+            .attr("x", text_scaler + 2) // Offset text to the right of the rectangle
+            .attr("y", text_scaler / 2) // Center text vertically within the rectangle
+            .attr("dy", ".35em")
+            .style("text-anchor", "start")
+            .text((d, i) => titles[i])
+            .style("font-size", text_scaler + "px");
+    }
+
+}
+
+
+/****************************************************************
 * CREATE BOOTSTRAP GRID
 * ---------------------------------------------------------------
 * Function to create a booptstrap grid with id's A1, A2, B1...etc
@@ -2493,8 +2609,22 @@ function create_config_content(config, var_results) {
                     var legend_location = config.content[el][8] ? config.content[el][8] : "bottom";
                     create_bar_graph(id, data_arrays, axis_titles, location_id, colours, width, height, bar_padding, legend_location)
                     break;
+                case "create_pie_chart":
+                    var id = el;
+                    var titles = config.content[el][1];
+                    var values_array = config.content[el][2];
+                    var values = values_array.map(name => math.evaluate(name,var_results));
+                    var location_id = config.content[el][3];
+                    var custom_colours = config.content[el][4];
+                    var colours = custom_colours.map(colour => config.colours[colour] ? config.colours[colour] : colour);
+                    var width = config.content[el][5] ? config.content[el][5] : "default";
+                    var height = config.content[el][6] ? config.content[el][6] : "default";
+                    var innerRadius = config.content[el][7] ? config.content[el][7] : 0;
+                    var legend = config.content[el][8] ? config.content[el][8] : true;
+                    create_pie_chart(id, titles, values, location_id, colours, width, height, innerRadius, legend)
+                    break;
                 default:
-                    console.log("Unable to add content: "+el);
+                    console.log("Unable to add content: " + el);
                     break;
             }
     }
