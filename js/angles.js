@@ -491,7 +491,7 @@ function count_qualifiers(data, clip_row_name = "", search_criteria = [], time_s
             for (const clip of clips) {
                 if (clip.time_start < time_start || clip.time_end > time_end) continue;
 
-                const qualifiers = clip.qualifiers.qualifiers_array || [];
+                const qualifiers = clip.qualifiers?.qualifiers_array || [];
 
                 // Iterate through each qualifier in the clip
                 for (const qualifier of qualifiers) {
@@ -500,7 +500,6 @@ function count_qualifiers(data, clip_row_name = "", search_criteria = [], time_s
                     // Optional: Check if qualifier category and name are part of the search criteria
                     const category = Object.keys(criteria)[0] || "";
                     const value = criteria[category] || "";
-                    const attributes = criteria.attributes || {};
                     
                     // Determine if there's a match on category and name
                     const categoryMatch = category === "" || qualifier.category === category;
