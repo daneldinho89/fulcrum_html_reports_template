@@ -861,7 +861,7 @@ function all_row_durations(data, rows) {
 * should be passed to 'rows' and an array of qualifier names
 * should be passed to 'columns' for this to work correctly
 ****************************************************************/
-function count_clips_table(data, rows, columns, time_start = 0, time_end = Infinity) {
+function count_clips_table(data, rows, columns = [""], time_start = 0, time_end = Infinity) {
     var clips = [];
     var qualifiers = [];
 
@@ -870,6 +870,8 @@ function count_clips_table(data, rows, columns, time_start = 0, time_end = Infin
     } else { clips = rows; }
     if (columns[0] === "all_qualifiers") {
         qualifiers = qualifier_names(data)
+    } else if (columns[0] === "") {
+        qualifiers = [""]
     } else { qualifiers = columns;}
 
     // Create data table as a Map
@@ -878,6 +880,14 @@ function count_clips_table(data, rows, columns, time_start = 0, time_end = Infin
     // Set 'Clips' property to clips array
     data_table.set('Clips', clips);
 
+    if (qualifiers.length === 0) {
+        let clip_qualifier_counts = [];
+        for (let row of clips) {
+            let clip_qualifier_count = count_clips(data, row, [{"": ""}], time_start, time_end);
+            clip_qualifier_counts.push(clip_qualifier_count);
+        }
+        data_table.set('Total', clip_qualifier_counts);
+}
     // Loop over actions array and count clips for each player
     for (let qualifier of qualifiers) {
         let clip_qualifier_counts = [];
@@ -1239,54 +1249,54 @@ function read_config_variables(config, data) {
         switch (func) {
             case "count_clips":
                 var time_start_read = config.variables[each][3] ? config.variables[each][3]: 0;
-                time_start = eval(time_start_read);
+                time_start = var_res[time_start_read] ? var_res[time_start_read] : eval(time_start_read);
                 var time_end_read = config.variables[each][4] ? config.variables[each][4] : Infinity;
-                time_end = eval(time_end_read)
+                time_end = var_res[time_end_read] ? var_res[time_end_read] : eval(time_end_read);
                 var res = count_clips(data, row_name, search_criteria, time_start, time_end)
                 eval(`var ${each} = ${res};`);
                 var_res[each] = res;
                 break;
             case "count_qualifiers":
                 var time_start_read = config.variables[each][3] ? config.variables[each][3]: 0;
-                time_start = eval(time_start_read);
+                time_start = var_res[time_start_read] ? var_res[time_start_read] : eval(time_start_read);
                 var time_end_read = config.variables[each][4] ? config.variables[each][4] : Infinity;
-                time_end = eval(time_end_read)
+                time_end = var_res[time_end_read] ? var_res[time_end_read] : eval(time_end_read);
                 var res = count_qualifiers(data, row_name, search_criteria, time_start, time_end)
                 eval(`var ${each} = ${res};`);
                 var_res[each] = res;
                 break;
             case "count_qualifier_patterns":
                 var time_start_read = config.variables[each][3] ? config.variables[each][3]: 0;
-                time_start = eval(time_start_read);
+                time_start = var_res[time_start_read] ? var_res[time_start_read] : eval(time_start_read);
                 var time_end_read = config.variables[each][4] ? config.variables[each][4] : Infinity;
-                time_end = eval(time_end_read)
+                time_end = var_res[time_end_read] ? var_res[time_end_read] : eval(time_end_read);
                 var res = count_qualifier_patterns(data, row_name, search_criteria, time_start, time_end)
                 eval(`var ${each} = ${res};`);
                 var_res[each] = res;
                 break;
             case "count_attributes":
                 var time_start_read = config.variables[each][3] ? config.variables[each][3]: 0;
-                time_start = eval(time_start_read);
+                time_start = var_res[time_start_read] ? var_res[time_start_read] : eval(time_start_read);
                 var time_end_read = config.variables[each][4] ? config.variables[each][4] : Infinity;
-                time_end = eval(time_end_read)
+                time_end = var_res[time_end_read] ? var_res[time_end_read] : eval(time_end_read);
                 var res = count_attributes(data, row_name, search_criteria, time_start, time_end)
                 eval(`var ${each} = ${res};`);
                 var_res[each] = res;
                 break;    
-                case "sum_clip_durations":
+            case "sum_clip_durations":
                 var time_start_read = config.variables[each][3] ? config.variables[each][3]: 0;
-                time_start = eval(time_start_read);
+                time_start = var_res[time_start_read] ? var_res[time_start_read] : eval(time_start_read);
                 var time_end_read = config.variables[each][4] ? config.variables[each][4] : Infinity;
-                time_end = eval(time_end_read)
+                time_end = var_res[time_end_read] ? var_res[time_end_read] : eval(time_end_read);
                 var res = sum_clip_durations(data, row_name, search_criteria, time_start, time_end)
                 eval(`var ${each} = ${res};`);
                 var_res[each] = res;
                 break;
             case "count_clips_table":
                 var time_start_read = config.variables[each][3] ? config.variables[each][3]: 0;
-                time_start = eval(time_start_read);
+                time_start = var_res[time_start_read] ? var_res[time_start_read] : eval(time_start_read);
                 var time_end_read = config.variables[each][4] ? config.variables[each][4] : Infinity;
-                time_end = eval(time_end_read)
+                time_end = var_res[time_end_read] ? var_res[time_end_read] : eval(time_end_read);
                 var res = count_clips_table(data, rows, cols, time_start, time_end)
                 var_res[each] = res;
                 break;
@@ -1300,7 +1310,7 @@ function read_config_variables(config, data) {
                 break;
             case "max_time_end":
                 var res = clip_extract(data, row_name, "time_end")
-                var max = res.length;
+                var max = res.length - 1;
                 res.sort(function(a, b) {
                     return a - b;
                   });
