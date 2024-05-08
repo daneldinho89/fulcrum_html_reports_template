@@ -1664,7 +1664,7 @@ function create_contest_bar(id, title, success_val, failure_val, location_id, wi
 * Function to create a horizontal elliptical bar with 2 values -
 * success/fail
 ****************************************************************/
-function create_possession_bar(id, title, success_val, failure_val, location_id, width, height, colour = "#532CEB") {
+function create_possession_bar(id, title, success_val, failure_val, location_id, width, height, colours = ["#532CEB", "#C34247"]) {
 
     var success_mins = Math.floor(success_val/60);
     var success_secs_unformat = Math.round(success_val % 60)
@@ -1676,11 +1676,11 @@ function create_possession_bar(id, title, success_val, failure_val, location_id,
     // Create array of data values
     let data_values = [success_mins + ":" + success_secs
                         , failure_mins + ":" + failure_secs
-                        , "(" + percentage(success_val,success_val+failure_val) + "%)"
-                        , "(" + percentage(failure_val,success_val+failure_val) + "%)"
+                        , percentage(success_val,success_val+failure_val) + "%"
+                        , percentage(failure_val,success_val+failure_val) + "%"
                     ]
     let meet_point = percentage(success_val,(success_val+failure_val))/100
-    let bar_corner_radius = width/15
+    let bar_corner_radius = 2
 
     // Create an svg in the body element
     let graph = d3.select(location_id)
@@ -1691,7 +1691,7 @@ function create_possession_bar(id, title, success_val, failure_val, location_id,
             .attr("width", width)
             .attr("height", height)
             .attr("class", "fluid");
-
+    
     // Create a 'g' group for each data key
     let bar = graph.append("g")
             .attr("transform", function(d, i) {
@@ -1716,7 +1716,7 @@ function create_possession_bar(id, title, success_val, failure_val, location_id,
             .attr("y", 0)
             .attr("width", 0)
             .attr("height", height)
-            .attr("fill", function(d, i) { if (i==0) { return colour} else {return "#efefef00"}})
+            .attr("fill", function(d, i) { if (i<2) { return colours[i]} else {return "#00000000"}})
             .attr("fill-opacity", 0)
             .attr("rx", bar_corner_radius)
             .attr("ry", bar_corner_radius)
@@ -1735,19 +1735,16 @@ function create_possession_bar(id, title, success_val, failure_val, location_id,
             .enter()
             .append("text")
             .attr("x", function(d, i) {      
-                switch(i) {
-                    case 0: return "15%";
-                    case 1: return "85%";
-                    case 2: return "30%";
-                    case 3: return "70%";
-                }
+                if (i === 3) {
+                    return "85%";
+                } else {return "15%";}
             })
             .attr("y", "50%")
-            .attr("text-anchor", function(d, i) { if (i==1 || i==3) { return "start";} else { return "end";}})
+            .attr("text-anchor", function(d, i) { if (i==3) { return "start";} else { return "end";}})
             .attr("dominant-baseline", "middle")
             .attr("font-size", height*0.4)
             .attr("fill", "#ffffff")
-            .text(function(d, i) { return data_values[i];})
+            .text(function(d, i) { if (i>1) {return data_values[i];}})
             .style("opacity", 0); // starts invisible
 
     bar.append("text")
@@ -1764,12 +1761,13 @@ function create_possession_bar(id, title, success_val, failure_val, location_id,
         .duration(1500)
         .style("opacity", 1)
 
-        //Transition of text from invisible to visible one after the other
+    //Transition of text from invisible to visible one after the other
     back_bar.transition()
         .duration(1500)
         .attr("fill", "#bfbfbf")
 
 };
+
 
 
 /****************************************************************
@@ -2694,7 +2692,7 @@ function create_config_content(config, var_results) {
                     var location_id = config.content[el][4];
                     var width = config.content[el][5] ? config.content[el][5] : 200;
                     var height = config.content[el][6] ? config.content[el][6] : 40;
-                    var custom_colour = config.content[el][7] ? config.content[el][7] : "#532CEB"
+                    var custom_colour = config.content[el][7] ? config.content[el][7] : ["#532CEB", "#C34247"]
                     var colour = config.colours[custom_colour] ? config.colours[custom_colour] : custom_colour;
                     create_possession_bar(id, title, success_val, failure_val, location_id, width, height, colour);
                     break;
