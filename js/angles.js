@@ -1775,7 +1775,7 @@ function create_possession_bar(id, title, success_val, failure_val, location_id,
 * ---------------------------------------------------------------
 * Function to create a scatter plot of multiple cartesian data
 ****************************************************************/
-function create_scatter_plot(id, cartesian_array_names, cartesian_arrays, location_id, background_image_path = "images/map_football_horiz.jpeg", given_width = "default", given_height = "default", colors, circle_size = 5, heatmap_mode = false, legend = true) {
+function create_scatter_plot(id, cartesian_array_names, cartesian_arrays, location_id, background_image_path = "images/map_football_horiz.jpeg", given_width = "default", given_height = "default", colors, circle_size = 5, legend = true, heatmap_mode = false) {
 
     // Check if there are enough colors for the data arrays
     if (colors.length < cartesian_arrays.length) {
@@ -2814,8 +2814,9 @@ function create_config_content(config, var_results) {
                     var custom_colours = config.content[el][6];
                     var colours = custom_colours.map(colour => config.colours[colour] ? config.colours[colour] : colour);
                     var circle_size = config.content[el][7] ? config.content[el][7] : 5;
-                    var heatmap_mode = config.content[el][8] ? config.content[el][8] : false;
-                    create_scatter_plot(id, cartesian_array_names, cartesian_arrays, location_id, background_image_path, width, height, colours, circle_size, heatmap_mode)
+                    var legend = config.content[el][8] ? config.content[el][8] : true;
+                    var heatmap_mode = config.content[el][8] ? config.content[el][9] : false;
+                    create_scatter_plot(id, cartesian_array_names, cartesian_arrays, location_id, background_image_path, width, height, colours, circle_size, legend, heatmap_mode)
                     break;
                 case "create_vector_plot":
                     var id = el;
@@ -2828,7 +2829,8 @@ function create_config_content(config, var_results) {
                     var custom_colours = config.content[el][6];
                     var colours = custom_colours.map(colour => config.colours[colour] ? config.colours[colour] : colour);
                     var circle_size = config.content[el][7] ? config.content[el][7] : 5;
-                    create_vector_plot(id, cartesian_array_names, cartesian_arrays, location_id, background_image_path, width, height, colours, circle_size)
+                    var legend = config.content[el][8] ? config.content[el][8] : true;
+                    create_vector_plot(id, cartesian_array_names, cartesian_arrays, location_id, background_image_path, width, height, colours, circle_size, legend)
                     break;
                 case "create_line_graph":
                     var id = el;
