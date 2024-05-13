@@ -498,9 +498,9 @@ function count_qualifiers(data, clip_row_name = "", search_criteria = [], time_s
                     if (qualifier.time < time_start || qualifier.time > time_end) continue;
 
                     // Optional: Check if qualifier category and name are part of the search criteria
-                    const category = criteria.category || "";
-                    const value = criteria.name || "";
-
+                    const category = Object.keys(criteria)[0] || "";
+                    const value = criteria[category] || "";
+                    
                     // Determine if there's a match on category and name
                     const categoryMatch = category === "" || qualifier.category === category;
                     const nameMatch = value === "" || qualifier.name === value;
@@ -861,7 +861,7 @@ function all_row_durations(data, rows) {
 * should be passed to 'rows' and an array of qualifier names
 * should be passed to 'columns' for this to work correctly
 ****************************************************************/
-function count_clips_table(data, rows, columns, time_start = 0, time_end = Infinity) {
+function count_clips_table(data, rows, columns = [""], time_start = 0, time_end = Infinity) {
     var clips = [];
     var qualifiers = [];
 
@@ -870,6 +870,8 @@ function count_clips_table(data, rows, columns, time_start = 0, time_end = Infin
     } else { clips = rows; }
     if (columns[0] === "all_qualifiers") {
         qualifiers = qualifier_names(data)
+    } else if (columns[0] === "") {
+        qualifiers = [""]
     } else { qualifiers = columns;}
 
     // Create data table as a Map
@@ -878,6 +880,14 @@ function count_clips_table(data, rows, columns, time_start = 0, time_end = Infin
     // Set 'Clips' property to clips array
     data_table.set('Clips', clips);
 
+    if (qualifiers.length === 0) {
+        let clip_qualifier_counts = [];
+        for (let row of clips) {
+            let clip_qualifier_count = count_clips(data, row, [{"": ""}], time_start, time_end);
+            clip_qualifier_counts.push(clip_qualifier_count);
+        }
+        data_table.set('Total', clip_qualifier_counts);
+}
     // Loop over actions array and count clips for each player
     for (let qualifier of qualifiers) {
         let clip_qualifier_counts = [];
@@ -897,109 +907,89 @@ function count_clips_table(data, rows, columns, time_start = 0, time_end = Infin
 * Function to return an array of x,y co-ordinates
 ****************************************************************/
 function cartesian_extract(data, clip_row_name = "", search_criteria = [], cartesian_name = "", x_max = 1, y_max = 1) {
+    // Initialize an array to store extracted clip information
     let cartesian_details = [];
+    search_criteria = search_criteria.length ? search_criteria : [{"":""}];
 
+    // Loop through each row in the data
     for (const row of data.rows) {
-        // Skip row if row name doesn't match
+        // Skip row if row name doesn't match the specified clip_row_name
         if (clip_row_name !== "" && row.row_name !== clip_row_name) continue;
         // Skip if row has no clips
         if (!row.clips) continue;
 
+        // Loop through each clip in the row
         for (const clip of row.clips) {
             // Skip if clip has no qualifiers
             if (!clip.qualifiers || !clip.qualifiers.qualifiers_array) continue;
 
-            let matchesSearchCriteria = search_criteria.length === 0;
-
-            // Iterate through search criteria
+            // Iterate through each search criteria
             for (const criteria of search_criteria) {
                 const category = Object.keys(criteria)[0] || "";
                 const value = criteria[category] || "";
-                const attributes = criteria.attributes || {};
+                
+                let clip_info = {};
 
+                // Iterate through each qualifier in the clip
                 for (const qualifier of clip.qualifiers.qualifiers_array) {
                     const categoryMatch = category === "" || qualifier.category === category;
                     const valueMatch = value === "" || qualifier.name === value;
-
+                    // Check if qualifier matches the search criteria
                     if (categoryMatch && valueMatch) {
-                        let attribute_match_count = 0;
-                        if (Object.keys(attributes).length > 0 && qualifier.qualifier_attributes) {
-                            for (const attribute of qualifier.qualifier_attributes) {
-                                for (const [attr_category, attr_value] of Object.entries(attributes)) {
-                                    const attributeCatMatch = attr_category === "" || attribute.category === attr_category;
-                                    const attributeNameMatch = attr_value === "" || attribute.name === attr_value;
-
-                                    if (attributeCatMatch && attributeNameMatch) {
-                                        attribute_match_count++;
-                                    }
-                                }
-                            }
-
-                            if (attribute_match_count === Object.keys(attributes).length) {
-                                matchesSearchCriteria = true;
-                                break;
-                            }
-                        } else {
-                            matchesSearchCriteria = true;
-                            break;
+                        clip_info = {}
+                        if (qualifier.name == cartesian_name && qualifier.x) {
+                            clip_info.row_name = row.row_name;
+                            clip_info.row_color = row.color;
+                            clip_info.clip_time_start = clip.time_start;
+                            clip_info.clip_time_end = clip.time_end;
+                            clip_info.clip_color = clip.color;
+                            clip_info.qualifier_name = qualifier.name;
+                            clip_info.qualifier_color = qualifier.color;
+                            clip_info.qualifier_time = qualifier.time;
+                            clip_info.cartesian_name = qualifier.name;
+                            clip_info.cartesian_color = qualifier.color;
+                            clip_info.cartesian_time = qualifier.time;
+                            clip_info.x = qualifier.x;
+                            clip_info.y = qualifier.y;
+                            cartesian_details.push(clip_info);
                         }
-                    }
-                }
 
-                if (matchesSearchCriteria) break;
-            }
+                        // If qualifier has no attributes, continue to the next qualifier
+                        if (!qualifier.qualifier_attributes) continue;
 
-            if (!matchesSearchCriteria) continue;
-
-            // Process the clip if it matches the search criteria
-            for (const q of clip.qualifiers.qualifiers_array) {
-                if (q.name == cartesian_name && q.x) {
-                    let clip_info = { row_name: row.row_name,
-                                        row_color: row.color,
-                                        clip_time_start: clip.time_start,
-                                        clip_time_end: clip.time_end,
-                                        clip_color: clip.color,
-                                        qualifier_name: q.name,
-                                        qualifier_color: q.color,
-                                        qualifier_time: q.time,
-                                        cartesian_name: q.name,
-                                        cartesian_color: q.color,
-                                        cartesian_time: q.time,
-                                        x: q.x,
-                                        y: q.y
-                                    };
-                    cartesian_details.push(clip_info);
-                }
-
-                if (!q.qualifier_attributes) continue;
-                for (const a of q.qualifier_attributes) {
-                    if (a.name == cartesian_name && a.x) {
-                        let clip_info = { row_name: row.row_name,
-                            row_color: row.color,
-                            clip_time_start: clip.time_start,
-                            clip_time_end: clip.time_end,
-                            clip_color: clip.color,
-                            qualifier_name: q.name,
-                            qualifier_color: q.color,
-                            qualifier_time: q.time,
-                            cartesian_name: a.name,
-                            cartesian_color: a.color,
-                            cartesian_time: a.time,
-                            x: a.x,
-                            y: a.y
-                        };
-                    cartesian_details.push(clip_info);
+                        // Iterate through each attribute of the qualifier
+                        for (const attribute of qualifier.qualifier_attributes) {
+                            clip_info = {}
+                            if (attribute.name === cartesian_name && attribute.x) {
+                                clip_info.row_name = row.row_name;
+                                clip_info.row_color = row.color;
+                                clip_info.clip_time_start = clip.time_start;
+                                clip_info.clip_time_end = clip.time_end;
+                                clip_info.clip_color = clip.color;
+                                clip_info.qualifier_name = qualifier.name;
+                                clip_info.qualifier_color = qualifier.color;
+                                clip_info.qualifier_time = qualifier.time;
+                                clip_info.cartesian_name = attribute.name;
+                                clip_info.cartesian_color = attribute.color;
+                                clip_info.cartesian_time = attribute.time;
+                                clip_info.x = attribute.x;
+                                clip_info.y = attribute.y;
+                                cartesian_details.push(clip_info);
+                            }
+                        }
                     }
                 }
             }
         }
     }
 
+    // Convert cartesian_details into an array of normalized coordinates
     var cartesian_array = [];
     for (const point of cartesian_details) {
         cartesian_array.push([point.x / x_max, point.y / y_max, point.clip_time_start]);
     }
 
+    // Return the array of normalized coordinates
     return cartesian_array;
 }
 
@@ -1010,110 +1000,237 @@ function cartesian_extract(data, clip_row_name = "", search_criteria = [], carte
 * co-ordinates to build a set of lines on a scatter plot
 ****************************************************************/
 function cartesian_line_extract(data, clip_row_name = "", search_criteria = [], cartesian_start_name = "", cartesian_end_name = "", x_max = 1, y_max = 1) {
+    // Initialize an array to store extracted clip information
     let cartesian_details = [];
+    search_criteria = search_criteria.length ? search_criteria : [{"":""}];
 
+    // Loop through each row in the data
     for (const row of data.rows) {
-        // Skip row if row name doesn't match
+        // Skip row if row name doesn't match the specified clip_row_name
         if (clip_row_name !== "" && row.row_name !== clip_row_name) continue;
         // Skip if row has no clips
         if (!row.clips) continue;
 
+        // Loop through each clip in the row
         for (const clip of row.clips) {
             // Skip if clip has no qualifiers
             if (!clip.qualifiers || !clip.qualifiers.qualifiers_array) continue;
 
-            let matchesSearchCriteria = search_criteria.length === 0;
-
-            // Iterate through search criteria
+            // Iterate through each search criteria
             for (const criteria of search_criteria) {
                 const category = Object.keys(criteria)[0] || "";
                 const value = criteria[category] || "";
-                const attributes = criteria.attributes || {};
+                
+                let clip_info = {};
+                let clip_info_start_xy = false;
+                let clip_info_end_xy = false;
 
+                // Iterate through each qualifier in the clip
                 for (const qualifier of clip.qualifiers.qualifiers_array) {
                     const categoryMatch = category === "" || qualifier.category === category;
                     const valueMatch = value === "" || qualifier.name === value;
 
+                    // Check if qualifier matches the search criteria
                     if (categoryMatch && valueMatch) {
-                        let attribute_match_count = 0;
-                        if (Object.keys(attributes).length > 0 && qualifier.qualifier_attributes) {
-                            for (const attribute of qualifier.qualifier_attributes) {
-                                for (const [attr_category, attr_value] of Object.entries(attributes)) {
-                                    const attributeCatMatch = attr_category === "" || attribute.category === attr_category;
-                                    const attributeNameMatch = attr_value === "" || attribute.name === attr_value;
-
-                                    if (attributeCatMatch && attributeNameMatch) {
-                                        attribute_match_count++;
-                                    }
-                                }
-                            }
-
-                            if (attribute_match_count === Object.keys(attributes).length) {
-                                matchesSearchCriteria = true;
-                                break;
-                            }
-                        } else {
-                            matchesSearchCriteria = true;
-                            break;
+                        // Process the qualifier for start and end xy coordinates
+                        if (qualifier.name == cartesian_end_name) {
+                            clip_info.x_end = qualifier.x;
+                            clip_info.y_end = qualifier.y;
+                            clip_info_end_xy = true;
                         }
-                    }
-                }
+                        if (qualifier.name == cartesian_start_name && qualifier.x) {
+                            clip_info.row_name = row.row_name;
+                            clip_info.row_color = row.color;
+                            clip_info.clip_time_start = clip.time_start;
+                            clip_info.clip_time_end = clip.time_end;
+                            clip_info.clip_color = clip.color;
+                            clip_info.qualifier_name = qualifier.name;
+                            clip_info.qualifier_color = qualifier.color;
+                            clip_info.qualifier_time = qualifier.time;
+                            clip_info.cartesian_name = qualifier.name;
+                            clip_info.cartesian_color = qualifier.color;
+                            clip_info.cartesian_time = qualifier.time;
+                            clip_info.x = qualifier.x;
+                            clip_info.y = qualifier.y;
+                            clip_info_start_xy = true;
+                        }
 
-                if (matchesSearchCriteria) break;
-            }
+                        // If both start and end xy coordinates are found, add clip_info to cartesian_details
+                        if (clip_info_start_xy && clip_info_end_xy) {
+                            cartesian_details.push(clip_info);
+                            // Reset flags and clip_info object for the next qualifier
+                            clip_info_start_xy = false;
+                            clip_info_end_xy = false;
+                            clip_info = {};                
+                        }
 
-            if (!matchesSearchCriteria) continue;
+                        // If qualifier has no attributes, continue to the next qualifier
+                        if (!qualifier.qualifier_attributes) continue;
 
-            // Process the clip if it matches the search criteria
-            for (const q of clip.qualifiers.qualifiers_array) {
-                if (q.name == cartesian_start_name && q.x) {
-                    let clip_info = { row_name: row.row_name,
-                                        row_color: row.color,
-                                        clip_time_start: clip.time_start,
-                                        clip_time_end: clip.time_end,
-                                        clip_color: clip.color,
-                                        qualifier_name: q.name,
-                                        qualifier_color: q.color,
-                                        qualifier_time: q.time,
-                                        cartesian_name: q.name,
-                                        cartesian_color: q.color,
-                                        cartesian_time: q.time,
-                                        x: q.x,
-                                        y: q.y
-                                    };
-                    cartesian_details.push(clip_info);
-                }
-
-                if (!q.qualifier_attributes) continue;
-                for (const a of q.qualifier_attributes) {
-                    if (a.name == cartesian_start_name && a.x) {
-                        let clip_info = { row_name: row.row_name,
-                            row_color: row.color,
-                            clip_time_start: clip.time_start,
-                            clip_time_end: clip.time_end,
-                            clip_color: clip.color,
-                            qualifier_name: q.name,
-                            qualifier_color: q.color,
-                            qualifier_time: q.time,
-                            cartesian_name: a.name,
-                            cartesian_color: a.color,
-                            cartesian_time: a.time,
-                            x: a.x,
-                            y: a.y
-                        };
-                    cartesian_details.push(clip_info);
+                        // Iterate through each attribute of the qualifier
+                        for (const attribute of qualifier.qualifier_attributes) {
+                            if (attribute.name === cartesian_end_name && attribute.x) {
+                                clip_info.x_end = attribute.x;
+                                clip_info.y_end = attribute.y;
+                                clip_info_end_xy = true;
+                            }
+                            if (attribute.name === cartesian_start_name && attribute.x) {
+                                clip_info.row_name = row.row_name;
+                                clip_info.row_color = row.color;
+                                clip_info.clip_time_start = clip.time_start;
+                                clip_info.clip_time_end = clip.time_end;
+                                clip_info.clip_color = clip.color;
+                                clip_info.qualifier_name = qualifier.name;
+                                clip_info.qualifier_color = qualifier.color;
+                                clip_info.qualifier_time = qualifier.time;
+                                clip_info.cartesian_name = attribute.name;
+                                clip_info.cartesian_color = attribute.color;
+                                clip_info.cartesian_time = attribute.time;
+                                clip_info.x = attribute.x;
+                                clip_info.y = attribute.y;
+                                clip_info_start_xy = true;
+                            }
+                            // If both start and end xy coordinates are found, add clip_info to cartesian_details
+                            if (clip_info_start_xy && clip_info_end_xy) {
+                                cartesian_details.push(clip_info);
+                                // Reset flags and clip_info object for the next qualifier
+                                clip_info_start_xy = false;
+                                clip_info_end_xy = false;
+                                clip_info = {};                
+                            }
+                        }
                     }
                 }
             }
         }
     }
 
+    // Convert cartesian_details into an array of normalized coordinates
     var cartesian_array = [];
     for (const point of cartesian_details) {
-        cartesian_array.push([point.x / x_max, point.y / y_max, point.clip_time_start]);
+        cartesian_array.push([point.x / x_max, point.y / y_max, point.x_end / x_max, point.y_end / y_max, point.clip_time_start]);
     }
 
+    // Return the array of normalized coordinates
     return cartesian_array;
+}
+
+/****************************************************************
+* CREATE GRAPH DATA
+* ---------------------------------------------------------------
+* Function to return an array of objects of time-value points to
+* build a time-series chart with time as x-axis. Use this function with
+* the create_line_graph or create_time_bar_graph functions
+* EXAMPLE OUTPUT:
+        var graph_dataSeries = [
+            { name: "Player A", values: 40, qualifier1: 20, qualifier2: 12},
+            { name: "Player B", value: 40 },
+            // Add more series as needed
+            ];
+****************************************************************/
+function create_graph_data(data, row_names, start_clip, aggregate_type = "duration", timeframe_s = 300) {
+    let data_arrays = [];
+    let start_time = 0;
+
+    // Find the start time of the first clip of the 'start_clip' row
+    // let start_time = data.rows.find(row => row.row_name === start_clip).clips[0].time_start;
+    const start_clip_row = data.rows.find(row => row.row_name === start_clip);
+    if (start_clip_row && start_clip_row.clips && start_clip_row.clips.length > 0) {
+        start_time = start_clip_row.clips[0].time_start;
+    };
+
+    // For each of the series extract the start_time and duration for each clip
+    for (rname of row_names) {
+        // Create the series object and add the series name
+        let rname_obj_series = { name: rname , values: []};
+        const clip_row = data.rows.find(row => row.row_name === rname);
+        const last_clip_index = clip_row.clips.length - 1;
+        let timeframe_start = start_time
+        let graph_value = 0;
+
+        // Calculate the sum of the clips for each timeframe
+        while (timeframe_start <= clip_row.clips[last_clip_index].time_start) {       
+            if (aggregate_type === "duration") {
+                graph_value = sum_clip_durations(data, rname, [], timeframe_start, timeframe_start + timeframe_s)
+            } else if (aggregate_type === "count_clips") {
+                graph_value = count_clips(data, rname, [], timeframe_start, timeframe_start + timeframe_s)
+            }
+
+            timeframe_start_m = Math.round(timeframe_start / 60)
+            
+            // Create clip object and add to the series array
+            let clip_obj = {time: timeframe_start_m, value: graph_value}
+            rname_obj_series.values.push(clip_obj);
+
+            // Increment timeframe
+            timeframe_start += timeframe_s;
+        }
+        
+        // Add the series object to the data_arrays
+        data_arrays.push(rname_obj_series);
+    }
+
+    return data_arrays;
+
+}
+
+/****************************************************************
+* CREATE TIME GRAPH DATA
+* ---------------------------------------------------------------
+* Function to return an array of objects of time-value points to
+* build a time-series chart with time as x-axis. Use this function with
+* the create_line_graph or create_time_bar_graph functions
+* EXAMPLE OUTPUT:
+        var graph_dataSeries = [
+            { name: "Poss A", values: [{ time: 5, value: 30 }, { time: 8, value: 40 }, { time: 10, value: 75 }, { time: 15, value: 70 }, { time: 40, value: 80 }, { time: 50, value: 40 }] },
+            { name: "Series 2", values: [{ time: 15, value: 20 }, { time: 40, value: 60 }] }
+            // Add more series as needed
+            ];
+****************************************************************/
+function create_time_graph_data(data, row_names, start_clip, aggregate_type = "duration", timeframe_s = 300) {
+    let data_arrays = [];
+    let start_time = 0;
+
+    // Find the start time of the first clip of the 'start_clip' row
+    // let start_time = data.rows.find(row => row.row_name === start_clip).clips[0].time_start;
+    const start_clip_row = data.rows.find(row => row.row_name === start_clip);
+    if (start_clip_row && start_clip_row.clips && start_clip_row.clips.length > 0) {
+        start_time = start_clip_row.clips[0].time_start;
+    };
+
+    // For each of the series extract the start_time and duration for each clip
+    for (rname of row_names) {
+        // Create the series object and add the series name
+        let rname_obj_series = { name: rname , values: []};
+        const clip_row = data.rows.find(row => row.row_name === rname);
+        const last_clip_index = clip_row.clips.length - 1;
+        let timeframe_start = start_time
+        let graph_value = 0;
+
+        // Calculate the sum of the clips for each timeframe
+        while (timeframe_start <= clip_row.clips[last_clip_index].time_start) {       
+            if (aggregate_type === "duration") {
+                graph_value = sum_clip_durations(data, rname, [], timeframe_start, timeframe_start + timeframe_s)
+            } else if (aggregate_type === "count_clips") {
+                graph_value = count_clips(data, rname, [], timeframe_start, timeframe_start + timeframe_s)
+            }
+
+            timeframe_start_m = Math.round(timeframe_start / 60)
+            
+            // Create clip object and add to the series array
+            let clip_obj = {time: timeframe_start_m, value: graph_value}
+            rname_obj_series.values.push(clip_obj);
+
+            // Increment timeframe
+            timeframe_start += timeframe_s;
+        }
+        
+        // Add the series object to the data_arrays
+        data_arrays.push(rname_obj_series);
+    }
+
+    return data_arrays;
+
 }
 
 /****************************************************************
@@ -1132,54 +1249,54 @@ function read_config_variables(config, data) {
         switch (func) {
             case "count_clips":
                 var time_start_read = config.variables[each][3] ? config.variables[each][3]: 0;
-                time_start = eval(time_start_read);
+                time_start = var_res[time_start_read] ? var_res[time_start_read] : eval(time_start_read);
                 var time_end_read = config.variables[each][4] ? config.variables[each][4] : Infinity;
-                time_end = eval(time_end_read)
+                time_end = var_res[time_end_read] ? var_res[time_end_read] : eval(time_end_read);
                 var res = count_clips(data, row_name, search_criteria, time_start, time_end)
                 eval(`var ${each} = ${res};`);
                 var_res[each] = res;
                 break;
             case "count_qualifiers":
                 var time_start_read = config.variables[each][3] ? config.variables[each][3]: 0;
-                time_start = eval(time_start_read);
+                time_start = var_res[time_start_read] ? var_res[time_start_read] : eval(time_start_read);
                 var time_end_read = config.variables[each][4] ? config.variables[each][4] : Infinity;
-                time_end = eval(time_end_read)
+                time_end = var_res[time_end_read] ? var_res[time_end_read] : eval(time_end_read);
                 var res = count_qualifiers(data, row_name, search_criteria, time_start, time_end)
                 eval(`var ${each} = ${res};`);
                 var_res[each] = res;
                 break;
             case "count_qualifier_patterns":
                 var time_start_read = config.variables[each][3] ? config.variables[each][3]: 0;
-                time_start = eval(time_start_read);
+                time_start = var_res[time_start_read] ? var_res[time_start_read] : eval(time_start_read);
                 var time_end_read = config.variables[each][4] ? config.variables[each][4] : Infinity;
-                time_end = eval(time_end_read)
+                time_end = var_res[time_end_read] ? var_res[time_end_read] : eval(time_end_read);
                 var res = count_qualifier_patterns(data, row_name, search_criteria, time_start, time_end)
                 eval(`var ${each} = ${res};`);
                 var_res[each] = res;
                 break;
             case "count_attributes":
                 var time_start_read = config.variables[each][3] ? config.variables[each][3]: 0;
-                time_start = eval(time_start_read);
+                time_start = var_res[time_start_read] ? var_res[time_start_read] : eval(time_start_read);
                 var time_end_read = config.variables[each][4] ? config.variables[each][4] : Infinity;
-                time_end = eval(time_end_read)
+                time_end = var_res[time_end_read] ? var_res[time_end_read] : eval(time_end_read);
                 var res = count_attributes(data, row_name, search_criteria, time_start, time_end)
                 eval(`var ${each} = ${res};`);
                 var_res[each] = res;
                 break;    
-                case "sum_clip_durations":
+            case "sum_clip_durations":
                 var time_start_read = config.variables[each][3] ? config.variables[each][3]: 0;
-                time_start = eval(time_start_read);
+                time_start = var_res[time_start_read] ? var_res[time_start_read] : eval(time_start_read);
                 var time_end_read = config.variables[each][4] ? config.variables[each][4] : Infinity;
-                time_end = eval(time_end_read)
+                time_end = var_res[time_end_read] ? var_res[time_end_read] : eval(time_end_read);
                 var res = sum_clip_durations(data, row_name, search_criteria, time_start, time_end)
                 eval(`var ${each} = ${res};`);
                 var_res[each] = res;
                 break;
             case "count_clips_table":
                 var time_start_read = config.variables[each][3] ? config.variables[each][3]: 0;
-                time_start = eval(time_start_read);
+                time_start = var_res[time_start_read] ? var_res[time_start_read] : eval(time_start_read);
                 var time_end_read = config.variables[each][4] ? config.variables[each][4] : Infinity;
-                time_end = eval(time_end_read)
+                time_end = var_res[time_end_read] ? var_res[time_end_read] : eval(time_end_read);
                 var res = count_clips_table(data, rows, cols, time_start, time_end)
                 var_res[each] = res;
                 break;
@@ -1193,7 +1310,7 @@ function read_config_variables(config, data) {
                 break;
             case "max_time_end":
                 var res = clip_extract(data, row_name, "time_end")
-                var max = res.length;
+                var max = res.length - 1;
                 res.sort(function(a, b) {
                     return a - b;
                   });
@@ -1221,6 +1338,13 @@ function read_config_variables(config, data) {
                     return a - b;
                     });
                 eval(`var ${each} = ${res[max]};`);
+                var_res[each] = res;
+                break;
+            case "create_time_graph_data":
+                var start_clip = config.variables[each][2];
+                var aggregate_type = config.variables[each][3];
+                var timeframe_s = config.variables[each][4];
+                var res = create_time_graph_data(data, row_name, start_clip, aggregate_type, timeframe_s)
                 var_res[each] = res;
                 break;
         }
@@ -1319,6 +1443,20 @@ function create_data_table(id, title, data_table, location_id, colour, switch_ax
 };
 
 /****************************************************************
+* CREATE DIV BACKGROUND
+* ---------------------------------------------------------------
+* Function to add a background image to a div
+****************************************************************/
+function create_div_background(id, background_image_path, location_id) {
+    d3.select(location_id)
+        .append("div")
+        .attr("class", "row m-2")
+        .attr("style", "background-image: url('" + background_image_path + "'); background-size: 100% 100%; background-repeat: no-repeat;")
+        .attr("id", id)
+}
+
+
+/****************************************************************
 * CREATE DATA CARD
 * ---------------------------------------------------------------
 * Function to create a data card with a single data value
@@ -1328,7 +1466,7 @@ function create_data_card(id, title, data, location_id, colour = "#532CEB", text
     d3.select(location_id)
         .append("div")
         .attr("class", "card m-1")
-        .attr("style", "background-color:" + colour + "; color:" + textcolour +"; height:" + height + "px")
+        .attr("style", "background-color:" + colour + "; color:" + textcolour +"; height:" + height + "px; border: none;")
         .attr("id", id)
         .append("div")
         .attr("class", "card-body d-flex flex-column justify-content-center align-items-center")
@@ -1427,12 +1565,12 @@ function create_success_donut(id, title, success_val, failure_val, location_id, 
 * Function to create a horizontal elliptical bar with 2 values -
 * success/fail
 ****************************************************************/
-function create_contest_bar(id, title, success_val, failure_val, location_id, width, height, colour = "#532CEB") {
+function create_contest_bar(id, title, success_val, failure_val, location_id, width, height, colours = ["#532CEB", "#C34247"]) {
 
     // Create array of data values
     let data_values = [success_val, failure_val]
     let meet_point = percentage(success_val,(success_val+failure_val))/100
-    let bar_corner_radius = width/15
+    let bar_corner_radius = 2
 
     // Create an svg in the body element
     let graph = d3.select(location_id)
@@ -1468,7 +1606,7 @@ function create_contest_bar(id, title, success_val, failure_val, location_id, wi
             .attr("y", 0)
             .attr("width", 0)
             .attr("height", height)
-            .attr("fill", function(d, i) { if (i==0) { return colour} else {return "#efefef00"}})
+            .attr("fill", (d,i) => colours[i])
             .attr("fill-opacity", 0)
             .attr("rx", bar_corner_radius)
             .attr("ry", bar_corner_radius)
@@ -1513,7 +1651,7 @@ function create_contest_bar(id, title, success_val, failure_val, location_id, wi
         .duration(1500)
         .style("opacity", 1)
 
-        //Transition of text from invisible to visible one after the other
+    //Transition of text from invisible to visible one after the other
     back_bar.transition()
         .duration(1500)
         .attr("fill", "#bfbfbf")
@@ -1526,7 +1664,7 @@ function create_contest_bar(id, title, success_val, failure_val, location_id, wi
 * Function to create a horizontal elliptical bar with 2 values -
 * success/fail
 ****************************************************************/
-function create_possession_bar(id, title, success_val, failure_val, location_id, width, height, colour = "#532CEB") {
+function create_possession_bar(id, title, success_val, failure_val, location_id, width, height, colours = ["#532CEB", "#C34247"]) {
 
     var success_mins = Math.floor(success_val/60);
     var success_secs_unformat = Math.round(success_val % 60)
@@ -1538,11 +1676,11 @@ function create_possession_bar(id, title, success_val, failure_val, location_id,
     // Create array of data values
     let data_values = [success_mins + ":" + success_secs
                         , failure_mins + ":" + failure_secs
-                        , "(" + percentage(success_val,success_val+failure_val) + "%)"
-                        , "(" + percentage(failure_val,success_val+failure_val) + "%)"
+                        , percentage(success_val,success_val+failure_val) + "%"
+                        , percentage(failure_val,success_val+failure_val) + "%"
                     ]
     let meet_point = percentage(success_val,(success_val+failure_val))/100
-    let bar_corner_radius = width/15
+    let bar_corner_radius = 2
 
     // Create an svg in the body element
     let graph = d3.select(location_id)
@@ -1553,7 +1691,7 @@ function create_possession_bar(id, title, success_val, failure_val, location_id,
             .attr("width", width)
             .attr("height", height)
             .attr("class", "fluid");
-
+    
     // Create a 'g' group for each data key
     let bar = graph.append("g")
             .attr("transform", function(d, i) {
@@ -1578,7 +1716,7 @@ function create_possession_bar(id, title, success_val, failure_val, location_id,
             .attr("y", 0)
             .attr("width", 0)
             .attr("height", height)
-            .attr("fill", function(d, i) { if (i==0) { return colour} else {return "#efefef00"}})
+            .attr("fill", function(d, i) { if (i<2) { return colours[i]} else {return "#00000000"}})
             .attr("fill-opacity", 0)
             .attr("rx", bar_corner_radius)
             .attr("ry", bar_corner_radius)
@@ -1597,19 +1735,16 @@ function create_possession_bar(id, title, success_val, failure_val, location_id,
             .enter()
             .append("text")
             .attr("x", function(d, i) {      
-                switch(i) {
-                    case 0: return "15%";
-                    case 1: return "85%";
-                    case 2: return "30%";
-                    case 3: return "70%";
-                }
+                if (i === 3) {
+                    return "85%";
+                } else {return "15%";}
             })
             .attr("y", "50%")
-            .attr("text-anchor", function(d, i) { if (i==1 || i==3) { return "start";} else { return "end";}})
+            .attr("text-anchor", function(d, i) { if (i==3) { return "start";} else { return "end";}})
             .attr("dominant-baseline", "middle")
             .attr("font-size", height*0.4)
             .attr("fill", "#ffffff")
-            .text(function(d, i) { return data_values[i];})
+            .text(function(d, i) { if (i>1) {return data_values[i];}})
             .style("opacity", 0); // starts invisible
 
     bar.append("text")
@@ -1626,7 +1761,7 @@ function create_possession_bar(id, title, success_val, failure_val, location_id,
         .duration(1500)
         .style("opacity", 1)
 
-        //Transition of text from invisible to visible one after the other
+    //Transition of text from invisible to visible one after the other
     back_bar.transition()
         .duration(1500)
         .attr("fill", "#bfbfbf")
@@ -1634,22 +1769,31 @@ function create_possession_bar(id, title, success_val, failure_val, location_id,
 };
 
 
+
 /****************************************************************
 * SCATTER PLOT
 * ---------------------------------------------------------------
 * Function to create a scatter plot of multiple cartesian data
 ****************************************************************/
-function create_scatter_plot(id, cartesian_array_names, cartesian_arrays, location_id, background_image_path = "images/map_football_horiz.jpeg", width, height, colors, circle_size = 5, heatmap_mode = false) {
+function create_scatter_plot(id, cartesian_array_names, cartesian_arrays, location_id, background_image_path = "images/map_football_horiz.jpeg", given_width = "default", given_height = "default", colors, circle_size = 5, legend = true, heatmap_mode = false) {
 
     // Check if there are enough colors for the data arrays
     if (colors.length < cartesian_arrays.length) {
         console.error("SCATTER PLOT ERROR: Not enough colors for the provided data sets.");
     }
 
-    // set the dimensions and margins of the graph
-    var margin = {top: 10, right: 30, bottom: 60, left: 60},
-        width = width - margin.left - margin.right,
-        height = height - margin.top - margin.bottom;
+    // Accesses the container element based on 'location_id' and determines its dimensions,
+    // allowing for explicit overrides via 'given_width' and 'given_height'.
+    const container = document.getElementById(location_id.slice(1));
+    let containerHeight = container.clientHeight
+    let containerWidth = container.clientWidth
+    if (given_height !== "default") {containerHeight = given_height}
+    if (given_width !== "default") {containerWidth = given_width}
+
+    // Sets up margins around the graph, calculates the effective width and height of the drawing area.
+    var margin = { top: containerHeight*0.05, right: containerWidth*0.2, bottom: containerHeight*0.2, left: containerWidth*0.15 },
+    width = containerWidth - margin.left - margin.right,
+    height = containerHeight - margin.top - margin.bottom;
 
     // Tooltip setup
     var tooltip = d3.select(location_id)
@@ -1739,7 +1883,659 @@ function create_scatter_plot(id, cartesian_array_names, cartesian_arrays, locati
             .on("mouseleave", mouseleave );
     });
 
+    // Adjusts the font size of the axes based on the dimensions of the graph.
+    const text_scaler = Math.min(width, height) / 20
+
+    if (legend === true) {
+        // Creates a legend by appending 'g' elements for each series, positioning them and adding colored rectangles and text labels for each series.
+        const legend = svg.selectAll(".legend")
+            .data(cartesian_array_names)
+            .enter().append("g")
+            .attr("class", "legend")
+            .attr("transform", (d, i) => `translate(0, ${i * text_scaler * 1.5})`);
+
+        legend.append("rect")
+            .attr("x", width + 1)
+            .attr("width", text_scaler + 1)
+            .attr("height", text_scaler)
+            .style("fill", (d, i) => colors[i])
+            .style("rx", (text_scaler / 5) + "px");
+
+        legend.append("text")
+            .attr("x", width + text_scaler + 3)
+            .attr("y", text_scaler / 2)
+            .attr("dy", ".35em")
+            .style("text-anchor", "end")
+            .text(d => d)
+            .style("font-size", text_scaler + "px")
+            .style("text-anchor", "start");
+    }
+
 }
+
+/****************************************************************
+* VECTOR PLOT
+* ---------------------------------------------------------------
+* Function to create a vector plot of multiple cartesian data
+* with a straight line between the start and end co-ordinate
+****************************************************************/
+function create_vector_plot(id, cartesian_array_names, cartesian_arrays, location_id, background_image_path = "images/map_football_horiz.jpeg", given_width = "default", given_height = "default", colors, line_size = 2, legend = true) {
+
+    // Check if there are enough colors for the data arrays
+    if (colors.length < cartesian_arrays.length) {
+        console.error("VECTOR PLOT ERROR: Not enough colors for the provided data sets.");
+        return;
+    }
+
+    // Accesses the container element based on 'location_id' and determines its dimensions,
+    // allowing for explicit overrides via 'given_width' and 'given_height'.
+    const container = document.getElementById(location_id.slice(1));
+    let containerHeight = container.clientHeight
+    let containerWidth = container.clientWidth
+    if (given_height !== "default") {containerHeight = given_height}
+    if (given_width !== "default") {containerWidth = given_width}
+
+    // Sets up margins around the graph, calculates the effective width and height of the drawing area.
+    var margin = { top: containerHeight*0.05, right: containerWidth*0.2, bottom: containerHeight*0.2, left: containerWidth*0.15 },
+    width = containerWidth - margin.left - margin.right,
+    height = containerHeight - margin.top - margin.bottom;
+
+    // Tooltip setup
+    var tooltip = d3.select(location_id)
+        .append("div")
+        .style("opacity", 0)
+        .attr("class", "tooltip")
+        .style("background-color", "white")
+        .style("border", "solid")
+        .style("border-width", "1px")
+        .style("border-radius", "5px")
+        .style("padding", "10px")
+        .style("position", "absolute");
+
+    // Mouse interaction functions
+    var mouseover = function(d) {
+        tooltip.style("opacity", 1);
+    }
+
+    var mousemove = function(event, d, teamIndex) {
+        var teamName = cartesian_array_names[teamIndex];
+        tooltip
+            .html("<b>" + teamName + "</b><br>" + "Start: (" + d[0].toFixed(2) + ", " + d[1].toFixed(2) + ")" + "<br>" + "End: (" + d[2].toFixed(2) + ", " + d[3].toFixed(2) + ")")
+            .style("left", (event.pageX + 10) + "px")
+            .style("top", (event.pageY + 10) + "px");
+    }
+
+    var mouseleave = function(d) {
+        tooltip
+            .transition()
+            .duration(200)
+            .style("opacity", 0);
+    }
+
+    // Append svg to specified location
+    var svg = d3.select(location_id)
+        .append("svg")
+            .attr("id", id)
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    // Append image to svg
+    svg.append("image")
+        .attr("href", background_image_path)
+        .attr("height", height)
+        .attr("width", width)
+        .attr("preserveAspectRatio", "none");
+
+    // Ensure arrowheads are visible at lineSize = 1 by setting a minimum size
+    var arrow_size = Math.max(line_size, 5); // Adjust minimum size as needed
+
+    // Define arrowheads
+    svg.append("defs").selectAll("marker")
+        .data(colors) // Using colors array to create a unique marker for each set
+        .enter().append("marker")
+            .attr("id", function(d, i) { return "arrowhead-" + i; }) // Unique ID for referencing
+            .attr("viewBox", "0 -5 10 10")
+            .attr("refX", line_size) // Positioning arrow based on line size
+            .attr("refY", 0)
+            .attr("markerWidth", arrow_size) // Scale arrow size with lineSize
+            .attr("markerHeight", arrow_size)
+            .attr("orient", "auto")
+            .append("path")
+                .attr("fill", "none") // No fill for a "V" shape
+                .attr("stroke", function(d) { return d; }) // Use line color for the "V"
+                .attr("stroke-width", arrow_size) // Match line width for consistency
+                .attr("d", "M0,0 L-5,-5 L-5,5 Z"); // Path for "V" shape
+
+    // Draw lines with arrows for each cartesian array
+    cartesian_arrays.forEach(function(dataArray, index) {
+        svg.selectAll("line" + index)
+            .data(dataArray)
+            .enter()
+            .append("line")
+                .attr("x1", function(d) { return d[0] * width; })
+                .attr("y1", function(d) { return (1 - d[1]) * height; })
+                .attr("x2", function(d) { return d[2] * width; })
+                .attr("y2", function(d) { return (1 - d[3]) * height; })
+                .attr("stroke", colors[index])
+                .attr("stroke-width", line_size) // Use lineSize parameter
+                .attr("marker-end", function(d) { return "url(#arrowhead-" + index + ")"; }) // Reference the arrowhead
+                .on("mouseover", mouseover)
+                .on("mousemove", function(event, d) { mousemove(event, d, index); })
+                .on("mouseleave", mouseleave);
+    });
+
+    // Adjusts the font size of the axes based on the dimensions of the graph.
+    const text_scaler = Math.min(width, height) / 20
+
+    if (legend === true) {
+        // Creates a legend by appending 'g' elements for each series, positioning them and adding colored rectangles and text labels for each series.
+        const legend = svg.selectAll(".legend")
+            .data(cartesian_array_names)
+            .enter().append("g")
+            .attr("class", "legend")
+            .attr("transform", (d, i) => `translate(0, ${i * text_scaler * 1.5})`);
+
+        legend.append("rect")
+            .attr("x", width + 1)
+            .attr("width", text_scaler + 1)
+            .attr("height", text_scaler)
+            .style("fill", (d, i) => colors[i])
+            .style("rx", (text_scaler / 5) + "px");
+
+        legend.append("text")
+            .attr("x", width + text_scaler + 3)
+            .attr("y", text_scaler / 2)
+            .attr("dy", ".35em")
+            .style("text-anchor", "end")
+            .text(d => d)
+            .style("font-size", text_scaler + "px")
+            .style("text-anchor", "start");
+    }
+}
+
+
+
+/****************************************************************
+* CREATE LINE GRAPH
+* ---------------------------------------------------------------
+* Function to create a line graph
+* INPUT EXAMPLE FOR DATA_ARRAYS:
+        var graph_dataSeries = [
+            { name: "Poss A", values: [{ time: 5, value: 30 }, { time: 8, value: 40 }, { time: 10, value: 75 }, { time: 15, value: 70 }] },
+            { name: "Series 2", values: [{ time: 15, value: 20 }, { time: 40, value: 60 }] }
+            // Add more series as needed
+            ];
+****************************************************************/
+function create_line_graph(id, data_arrays, axis_titles = ["x axis", "y axis"], location_id, colours, line_size = 1, given_width = "default", given_height = "default", legend = true) {
+    // Accesses the container element based on 'location_id' and determines its dimensions,
+    // allowing for explicit overrides via 'given_width' and 'given_height'.
+    const container = document.getElementById(location_id.slice(1));
+    let containerHeight = container.clientHeight
+    let containerWidth = container.clientWidth
+    if (given_height !== "default") {containerHeight = given_height}
+    if (given_width !== "default") {containerWidth = given_width}
+
+    // Sets up margins around the graph, calculates the effective width and height of the drawing area.
+    var margin = { top: containerHeight*0.05, right: containerWidth*0.2, bottom: containerHeight*0.2, left: containerWidth*0.15 },
+    width = containerWidth - margin.left - margin.right,
+    height = containerHeight - margin.top - margin.bottom;
+
+    // Centers the content within the specified location.
+    d3.select(location_id).attr("style", "text-align: center;");
+
+    // Initializes the SVG container for the graph, setting its dimensions and transforming the coordinate system for the margin.
+    var svg = d3.select(location_id).append("svg")
+        .attr("id", id)
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+    // Defines the scales for the x and y axes based on the data provided, ensuring the axes span the full range of the data.
+    var x = d3.scaleLinear()
+        .domain([
+            d3.min(data_arrays, series => d3.min(series.values, d => d.time)),
+            d3.max(data_arrays, series => d3.max(series.values, d => d.time))
+        ])
+        .range([0, width]);
+    
+
+    var y = d3.scaleLinear()
+        .domain([
+            0,
+            d3.max(data_arrays, series => d3.max(series.values, d => d.value))
+        ])
+        .range([height, 0]);
+    
+    // Adjusts the font size of the axes based on the dimensions of the graph.
+    const text_scaler = Math.min(width, height) / 20
+
+    // Appends and styles the x and y axes to the graph, including labels with adjusted positioning and font size
+    svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x))
+        .style("font-size", text_scaler + "px");
+
+    svg.append("text")
+        .attr("text-anchor", "middle") // Center the text
+        .attr("transform", `translate(${width / 2}, ${height})`) // Position at the middle-bottom of the chart
+        .attr("dy", "3em") // Adjust spacing from the x-axis
+        .text(axis_titles[0])
+        .style("font-size", text_scaler + "px")
+    
+    svg.append("g")
+        .call(d3.axisLeft(y))
+        .style("font-size", text_scaler + "px");
+
+    svg.append("text")
+        .attr("text-anchor", "middle") // Center the text
+        .attr("transform", `translate(0, ${height / 2}) rotate(-90)`) // Position to the left, rotated
+        .attr("dy", "-3em") // Adjust spacing from the y-axis
+        .text(axis_titles[1])
+        .style("font-size", text_scaler + "px")
+
+    // Binds the data to 'series' elements and appends 'path' elements for each series, setting their styles and the 'd' attribute for the line shape.
+    var series = svg.selectAll(".series")
+        .data(data_arrays) // Bind your series data here
+        .enter().append("g")
+        .attr("class", "series");
+    
+    var line = d3.line()
+        .x(function(d) { return x(d.time); })
+        .y(function(d) { return y(d.value); })
+        .curve(d3.curveMonotoneX); // Add this line to make the lines smooth
+
+    series.append("path")
+        .attr("fill", "none")
+        .attr("stroke", function(d, i) { return colours[i]; })
+        .attr("stroke-width", line_size)
+        .attr("d", function(d) { return line(d.values); }); // Ensure 'line' is defined with the correct x and y accessors.
+
+    if (legend === true) {
+        // Creates a legend by appending 'g' elements for each series, positioning them and adding colored rectangles and text labels for each series.
+        const legend = svg.selectAll(".legend")
+            .data(data_arrays)
+            .enter().append("g")
+            .attr("class", "legend")
+            .attr("transform", (d, i) => `translate(0, ${i * text_scaler * 1.5})`);
+
+        legend.append("rect")
+            .attr("x", width)
+            .attr("width", text_scaler + 1)
+            .attr("height", text_scaler)
+            .style("fill", (d, i) => colours[i])
+            .style("rx", (text_scaler / 5) + "px");
+
+        legend.append("text")
+            .attr("x", width + text_scaler + 2)
+            .attr("y", text_scaler / 2)
+            .attr("dy", ".35em")
+            .style("text-anchor", "end")
+            .text(d => d.name)
+            .style("font-size", text_scaler + "px")
+            .style("text-anchor", "start");
+    }
+
+}
+
+/****************************************************************
+* CREATE TIME BAR GRAPH
+* ---------------------------------------------------------------
+* Function to create a bar graph
+* INPUT EXAMPLE FOR DATA_ARRAYS:
+        var graph_dataSeries = [
+            { name: "Poss A", values: [{ time: 5, value: 30 }, { time: 8, value: 40 }, { time: 10, value: 75 }, { time: 15, value: 70 }] },
+            { name: "Series 2", values: [{ time: 15, value: 20 }, { time: 40, value: 60 }] }
+            // Add more series as needed
+            ];
+****************************************************************/
+function create_time_bar_graph(id, data_arrays, axis_titles = ["x axis", "y axis"], location_id, colours, given_width = "default", given_height = "default", bar_padding = 0.1, legend = true) {
+    // Get the size of the container to make the visualization responsive
+    const container = document.getElementById(location_id.slice(1));
+    let containerHeight = container.clientHeight
+    let containerWidth = container.clientWidth
+    if (given_height !== "default") {containerHeight = given_height}
+    if (given_width !== "default") {containerWidth = given_width}
+
+    // Define scales and axis and add them 
+    var margin = { top: containerHeight*0.05, right: containerWidth*0.2, bottom: containerHeight*0.2, left: containerWidth*0.15 },
+    width = containerWidth - margin.left - margin.right,
+    height = containerHeight - margin.top - margin.bottom;
+
+    // Centralise the content in the location_id
+    d3.select(location_id).attr("style", "text-align: center;");
+
+    // Correctly set SVG dimensions including margins
+    var svg = d3.select(location_id).append("svg")
+        .attr("id", id)
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    // Define the main x scale for categories, and a secondary x scale for series within categories
+    var x0 = d3.scaleBand()
+        .rangeRound([0, width])
+        .paddingInner(0.1);
+
+    var x1 = d3.scaleBand()
+        .padding(0.05);
+
+    // Define the y scale for values
+    var y = d3.scaleLinear()
+        .rangeRound([height, 0]);
+
+    // Define axes based on the scales
+    var xAxis = d3.axisBottom(x0),
+        yAxis = d3.axisLeft(y);
+
+    // Process data: extract unique categories and series names, set domain for scales
+    var categories = [...new Set(data_arrays.flatMap(d => d.values.map(v => v.time)))];
+    var seriesNames = data_arrays.map(d => d.name);
+    x0.domain(categories);
+    x1.domain(seriesNames).rangeRound([0, x0.bandwidth()]);
+    y.domain([0, d3.max(data_arrays, d => d3.max(d.values, v => v.value))]).nice();
+
+    const text_scaler = Math.min(width, height) / 20
+
+    // Bind data to groups for each series, set positions
+    var serie = svg.selectAll(".serie")
+        .data(data_arrays)
+        .enter().append("g")
+        .attr("class", "serie")
+        .attr("transform", d => `translate(${x1(d.name)},0)`);
+
+    // For each series, append rect elements for bars, position and size them, and set their colors
+    serie.selectAll("rect")
+        .data(d => d.values.map(v => ({ key: d.name, value: v.value, time: v.time })))
+        .enter().append("rect")
+        .attr("width", x1.bandwidth())
+        .attr("x", d => x0(d.time))
+        .attr("y", d => y(d.value))
+        .attr("height", d => height - y(d.value))
+        .attr("fill", (d, i) => colours[data_arrays.findIndex(dat => dat.name === d.key)])
+        .style("rx", (text_scaler / 10) + "px");
+    
+    // Append x and y axes to the SVG
+    svg.append("g")
+       .attr("class", "x axis")
+       .attr("transform", "translate(0," + height + ")")
+       .call(xAxis)
+       .style("font-size", text_scaler + "px");
+
+    svg.append("g")
+       .attr("class", "y axis")
+       .call(yAxis)
+       .style("font-size", text_scaler + "px");
+
+    // Add labels for the x and y axes
+    svg.append("text")
+        .attr("text-anchor", "middle") // Center the text
+        .attr("transform", `translate(${width / 2}, ${height})`) // Position at the middle-bottom of the chart
+        .attr("dy", "3em") // Adjust spacing from the x-axis
+        .text(axis_titles[0])
+        .style("font-size", text_scaler + "px")
+
+    svg.append("text")
+        .attr("text-anchor", "middle")
+        .attr("transform", `translate(0, ${height / 2}) rotate(-90)`)
+        .attr("dy", "-3em") // Adjust spacing from the y-axis
+        .text(axis_titles[1])
+        .style("font-size", text_scaler + "px");
+
+    // Add legend if turned on
+    if (legend === true) {
+        const legend = svg.selectAll(".legend")
+            .data(data_arrays)
+            .enter().append("g")
+            .attr("class", "legend")
+            .attr("transform", (d, i) => `translate(0, ${i * text_scaler * 1.5})`);
+
+        legend.append("rect")
+            .attr("x", width + 1)
+            .attr("width", text_scaler)
+            .attr("height", text_scaler)
+            .style("fill", (d, i) => colours[i])
+            .style("rx", (text_scaler / 5) + "px");
+
+        legend.append("text")
+            .attr("x", width + text_scaler + 2)
+            .attr("y", text_scaler / 2)
+            .attr("dy", ".35em")
+            .style("text-anchor", "end")
+            .text(d => d.name)
+            .style("font-size", text_scaler + "px")
+            .style("text-anchor", "start");
+    }
+
+}
+
+/****************************************************************
+* CREATE SIMPLE BAR GRAPH
+* ---------------------------------------------------------------
+* Function to create a simple bar graph with names and values
+* INPUT EXAMPLE FOR series_names and series_values:
+        var series_names = ["Series A", "Series B", "Series C"];
+        var series_values = [30, 70, 50];
+****************************************************************/
+function create_simple_bar_graph(id, series_names, series_values, axis_titles = ["x axis", "y axis"], location_id, colours, given_width = "default", given_height = "default", legend = true) {
+    // Get the size of the container to make the visualization responsive
+    const container = document.getElementById(location_id.slice(1));
+    let containerHeight = container.clientHeight
+    let containerWidth = container.clientWidth
+    if (given_height !== "default") {containerHeight = given_height}
+    if (given_width !== "default") {containerWidth = given_width}
+
+    // Define scales and axis and add them 
+    var margin = { top: containerHeight*0.05, right: containerWidth*0.2, bottom: containerHeight*0.2, left: containerWidth*0.15 },
+    width = containerWidth - margin.left - margin.right,
+    height = containerHeight - margin.top - margin.bottom;
+
+    // Centralise the content in the location_id
+    d3.select(location_id).attr("style", "text-align: center;");
+
+    // Correctly set SVG dimensions including margins
+    var svg = d3.select(location_id).append("svg")
+        .attr("id", id)
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    // Define the main x scale for categories
+    var x = d3.scaleBand()
+        .rangeRound([0, width])
+        .padding(0.1)
+        .domain(series_names);
+
+    // Define the y scale for values
+    var y = d3.scaleLinear()
+        .rangeRound([height, 0])
+        .domain([0, d3.max(series_values)]).nice();
+        
+    // Bind data to rect elements for bars, position and size them, and set their colors
+    svg.selectAll(".bar")
+        .data(series_values)
+        .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", (d, i) => x(series_names[i]))
+        .attr("y", d => y(d))
+        .attr("width", x.bandwidth())
+        .attr("height", d => height - y(d))
+        .attr("fill", (d, i) => colours[i % colours.length]);
+
+    // Append x and y axes to the SVG
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x));
+
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(d3.axisLeft(y));
+
+    const text_scaler = Math.min(width, height) / 20
+
+    // Add labels for the x and y axes
+    svg.append("text")
+        .attr("text-anchor", "middle") // Center the text
+        .attr("transform", `translate(${width / 2}, ${height})`) // Position at the middle-bottom of the chart
+        .attr("dy", "3em") // Adjust spacing from the x-axis
+        .text(axis_titles[0])
+        .style("font-size", text_scaler + "px")
+
+    svg.append("text")
+        .attr("text-anchor", "middle")
+        .attr("transform", `translate(0, ${height / 2}) rotate(-90)`)
+        .attr("dy", "-3em") // Adjust spacing from the y-axis
+        .text(axis_titles[1])
+        .style("font-size", text_scaler + "px");
+
+    // Add legend if turned on
+    if (legend === true) {
+        const legend = svg.selectAll(".legend")
+            .data(series_values)
+            .enter().append("g")
+            .attr("class", "legend")
+            .attr("transform", (d, i) => `translate(0, ${i * text_scaler * 1.5})`);
+
+        legend.append("rect")
+            .attr("x", width + 1)
+            .attr("width", text_scaler)
+            .attr("height", text_scaler)
+            .style("fill", (d, i) => colours[i])
+            .style("rx", (text_scaler / 5) + "px");
+
+        legend.append("text")
+            .attr("x", width + text_scaler + 2)
+            .attr("y", text_scaler / 2)
+            .attr("dy", ".35em")
+            .style("text-anchor", "end")
+            .text((d, i) => series_names[i])
+            .style("font-size", text_scaler + "px")
+            .style("text-anchor", "start");
+    }
+}
+
+
+/****************************************************************
+* PIE CHART
+* ---------------------------------------------------------------
+* Function to create a pie or donut chart with 2+ values
+* inner radius is a % 0-100
+****************************************************************/
+function create_pie_chart(id, titles, values, location_id, colours, given_width, given_height, innerRadius = 0, legend = true) {
+    
+    // Get the size of the container to make the visualization responsive
+    const container = document.getElementById(location_id.slice(1));
+    let containerHeight = container.clientHeight
+    let containerWidth = container.clientWidth
+    if (given_height !== "default") {containerHeight = given_height}
+    if (given_width !== "default") {containerWidth = given_width}
+
+    // Define scales and axis and add them 
+    var margin = { top: containerHeight*0.05, right: containerWidth*0.2, bottom: containerHeight*0.2, left: containerWidth*0.15 },
+    width = containerWidth - margin.left - margin.right,
+    height = containerHeight - margin.top - margin.bottom;
+
+    // Centralise the content in the location_id
+    d3.select(location_id).attr("style", "text-align: center;");
+
+    // Chart dimensions and radius calculation
+    var radius = Math.min(width, height) / 2;
+
+    // Color scale based on the colors array
+    var color = d3.scaleOrdinal(colours);
+
+    // Pie layout with optional sorting
+    var pie = d3.pie().sort(null);
+
+    // Arc generator for paths
+    var arc = d3.arc()
+                 .outerRadius(radius)
+                 .innerRadius(innerRadius);
+
+    // Create SVG element for the chart
+    var svg = d3.select(location_id).append("svg")
+        .attr("id", id)
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    // Bind data and create arcs
+    var arcs = svg.selectAll(".arc")
+                  .data(pie(values))
+                  .enter()
+                  .append("g")
+                  .attr("class", "arc")
+                  .attr("transform", "translate(" + width/2 + "," + height/2 + ")");
+
+    // Draw arc paths with sequential rotating transition
+    arcs.append("path")
+        .attr("fill", (d, i) => color(i))
+        .each(function(d, i) {
+            this._current = {startAngle: d.startAngle, endAngle: d.startAngle}; // initialize transition state
+        })
+        .transition()
+        .delay( d => 2000*(d.startAngle) / (2 * Math.PI)) // delay each segment
+        .duration( d => 2000*(d.endAngle - d.startAngle) / (2 * Math.PI))
+        .ease(d3.easeLinear) // Apply linear easing for smooth transitions
+        .attrTween('d', function(d) {
+            var interpolate = d3.interpolate(this._current, d);
+            this._current = interpolate(1); // update transition state
+            return function(t) {
+                return arc(interpolate(t));
+            };
+        });
+
+    // Adjusts the font size of the axes based on the dimensions of the graph.
+    const text_scaler = Math.min(width, height) / 15
+
+    // Calculate and filter labels for segments > 10%
+    arcs.filter(d => (d.endAngle - d.startAngle) / (2 * Math.PI) > 0.1)
+        .append("text")
+        .style("font-size", text_scaler + "px")
+        .attr("transform", d => `translate(${arc.centroid(d)})`)
+        .attr("dy", "0.35em")
+        .style("text-anchor", "middle")
+        .style("opacity", 0) // Initially set opacity to 0 for the fade-in effect
+        .text(d => `${Math.round((d.endAngle - d.startAngle) / (2 * Math.PI) * 100)}%`)
+        .style("fill", "white")
+        .transition()
+        .delay( d => 2500*(d.startAngle) / (2 * Math.PI)) // delay each segment
+        .duration( d => 2500*(d.endAngle - d.startAngle) / (2 * Math.PI))
+        .style("opacity", 1); // Transition to full opacity;
+
+    // Add legend if turned on
+    if (legend === true) {
+        const legend = svg.selectAll(".legend")
+            .data(titles)
+            .enter().append("g")
+            .attr("class", "legend")
+            .attr("transform", (d, i) => `translate(${text_scaler + width / 2 + radius}, ${i * text_scaler * 1.5})`); // Position right of the pie
+
+        legend.append("rect")
+            .attr("x", 0) // Positioning relative to the translated group
+            .attr("width", text_scaler)
+            .attr("height", text_scaler)
+            .style("fill", (d, i) => colours[i])
+            .style("rx", (text_scaler / 5) + "px");
+
+        legend.append("text")
+            .attr("x", text_scaler + 2) // Offset text to the right of the rectangle
+            .attr("y", text_scaler / 2) // Center text vertically within the rectangle
+            .attr("dy", ".35em")
+            .style("text-anchor", "start")
+            .text((d, i) => titles[i])
+            .style("font-size", text_scaler + "px");
+    }
+
+}
+
 
 /****************************************************************
 * CREATE BOOTSTRAP GRID
@@ -1781,6 +2577,41 @@ function create_bootstrap_grid(rows, columns) {
         }
     }
 };
+
+/****************************************************************
+* CREATE BOOTSTRAP COLUMNS
+* ---------------------------------------------------------------
+* Function to create a booptstrap columns in a bootstrap row with
+*  id's "name_" + "x"
+****************************************************************/
+function create_bootstrap_columns(col_name_suffix, no_cols, location_id) {
+    var col_size = Math.round(12/no_cols,0);
+
+    for (let i = 1; i <= no_cols; i++) {
+        d3.select(location_id)
+            .append("div")
+            .attr("class", "col-md-" + col_size + " py-2")
+            .attr("id", col_name_suffix + "_" + i)
+    }
+
+}
+
+/****************************************************************
+* CREATE BOOTSTRAP ROWS
+* ---------------------------------------------------------------
+* Function to create a booptstrap rows in a bootstrap row with
+*  id's "name_" + "x"
+****************************************************************/
+function create_bootstrap_rows(row_name_suffix, no_rows, location_id) {
+
+    for (let i = 1; i <= no_rows; i++) {
+        d3.select(location_id)
+            .append("div")
+            .attr("class", "row m-1")
+            .attr("id", row_name_suffix + "_" + i)
+    }
+
+}
 
 /****************************************************************
 * CREATE UPDATE BUTTON
@@ -1864,6 +2695,24 @@ function create_config_content(config, var_results) {
     }
     for (el in config.content) {
         switch (config.content[el][0]) {
+                case "create_div_background":
+                    var id = el;
+                    var background_image_path = config.content[el][1];
+                    var location_id = config.content[el][2];
+                    create_div_background(id, background_image_path, location_id);
+                    break;
+                case "create_bootstrap_rows":
+                    var row_name_suffix = el;
+                    var no_rows = config.content[el][1];
+                    var location_id = config.content[el][2];
+                    create_bootstrap_rows(row_name_suffix, no_rows, location_id);
+                    break;
+                case "create_bootstrap_columns":
+                    var col_name_suffix = el;
+                    var no_cols = config.content[el][1];
+                    var location_id = config.content[el][2];
+                    create_bootstrap_columns(col_name_suffix, no_cols, location_id);
+                    break;
                 case "create_data_card":
                     var id = el;
                     var title = config.content[el][1];
@@ -1901,7 +2750,7 @@ function create_config_content(config, var_results) {
                     var location_id = config.content[el][4];
                     var width = config.content[el][5] ? config.content[el][5] : 200;
                     var height = config.content[el][6] ? config.content[el][6] : 40;
-                    var custom_colour = config.content[el][7] ? config.content[el][7] : "#532CEB"
+                    var custom_colour = config.content[el][7] ? config.content[el][7] : ["#532CEB", "#C34247"]
                     var colour = config.colours[custom_colour] ? config.colours[custom_colour] : custom_colour;
                     create_contest_bar(id, title, success_val, failure_val, location_id, width, height, colour);
                     break;
@@ -1915,7 +2764,7 @@ function create_config_content(config, var_results) {
                     var location_id = config.content[el][4];
                     var width = config.content[el][5] ? config.content[el][5] : 200;
                     var height = config.content[el][6] ? config.content[el][6] : 40;
-                    var custom_colour = config.content[el][7] ? config.content[el][7] : "#532CEB"
+                    var custom_colour = config.content[el][7] ? config.content[el][7] : ["#532CEB", "#C34247"]
                     var colour = config.colours[custom_colour] ? config.colours[custom_colour] : custom_colour;
                     create_possession_bar(id, title, success_val, failure_val, location_id, width, height, colour);
                     break;
@@ -1952,7 +2801,7 @@ function create_config_content(config, var_results) {
                     var text = config.content[el][1];
                     var location_id = config.content[el][2];
                     var link_path = config.content[el][3];
-                    create_button_link("id", text, location_id, link_path);
+                    create_button_link(id, text, location_id, link_path);
                     break;
                 case "create_scatter_plot":
                     var id = el;
@@ -1965,11 +2814,82 @@ function create_config_content(config, var_results) {
                     var custom_colours = config.content[el][6];
                     var colours = custom_colours.map(colour => config.colours[colour] ? config.colours[colour] : colour);
                     var circle_size = config.content[el][7] ? config.content[el][7] : 5;
-                    var heatmap_mode = config.content[el][8] ? config.content[el][8] : false;
-                    create_scatter_plot(id, cartesian_array_names, cartesian_arrays, location_id, background_image_path, width, height, colours, circle_size, heatmap_mode)
+                    var legend = config.content[el][8] ? config.content[el][8] : true;
+                    var heatmap_mode = config.content[el][8] ? config.content[el][9] : false;
+                    create_scatter_plot(id, cartesian_array_names, cartesian_arrays, location_id, background_image_path, width, height, colours, circle_size, legend, heatmap_mode)
+                    break;
+                case "create_vector_plot":
+                    var id = el;
+                    var cartesian_array_names = config.content[el][1];
+                    var cartesian_arrays = cartesian_array_names.map(name => var_results[name]);
+                    var location_id = config.content[el][2];
+                    var background_image_path = config.content[el][3] ? config.content[el][3] : "images/map_football_horiz.jpeg"
+                    var width = config.content[el][4] ? config.content[el][4] : 200;
+                    var height = config.content[el][5] ? config.content[el][5] : 200;
+                    var custom_colours = config.content[el][6];
+                    var colours = custom_colours.map(colour => config.colours[colour] ? config.colours[colour] : colour);
+                    var circle_size = config.content[el][7] ? config.content[el][7] : 5;
+                    var legend = config.content[el][8] ? config.content[el][8] : true;
+                    create_vector_plot(id, cartesian_array_names, cartesian_arrays, location_id, background_image_path, width, height, colours, circle_size, legend)
+                    break;
+                case "create_line_graph":
+                    var id = el;
+                    var data_array_name = config.content[el][1];
+                    var data_arrays = var_results[data_array_name];
+                    var axis_titles = config.content[el][2] ? config.content[el][2] : ["x axis", "y axis"]
+                    var location_id = config.content[el][3];
+                    var custom_colours = config.content[el][4];
+                    var colours = custom_colours.map(colour => config.colours[colour] ? config.colours[colour] : colour);
+                    var line_size = config.content[el][5] ? config.content[el][5] : 1;
+                    var width = config.content[el][6] ? config.content[el][6] : "default";
+                    var height = config.content[el][7] ? config.content[el][7] : "default";
+                    var legend = config.content[el][8] ? config.content[el][8] : true;
+                    create_line_graph(id, data_arrays, axis_titles, location_id, colours, line_size, width, height, legend)
+                    break;
+                case "create_time_bar_graph":
+                    var id = el;
+                    var data_array_name = config.content[el][1];
+                    var data_arrays = var_results[data_array_name];
+                    var axis_titles = config.content[el][2] ? config.content[el][2] : ["x axis", "y axis"]
+                    var location_id = config.content[el][3];
+                    var custom_colours = config.content[el][4];
+                    var colours = custom_colours.map(colour => config.colours[colour] ? config.colours[colour] : colour);
+                    var width = config.content[el][5] ? config.content[el][5] : "default";
+                    var height = config.content[el][6] ? config.content[el][6] : "default";
+                    var bar_padding = config.content[el][7] ? config.content[el][7] : 0.1;
+                    var legend = config.content[el][8] ? config.content[el][8] : true;
+                    create_time_bar_graph(id, data_arrays, axis_titles, location_id, colours, width, height, bar_padding, legend)
+                    break;
+                case "create_simple_bar_graph":
+                    var id = el;
+                    var series_names = config.content[el][1];
+                    var series_values = config.content[el][2];
+                    var series_values = series_values.map(name => math.evaluate(name,var_results));
+                    var axis_titles = config.content[el][3] ? config.content[el][3] : ["x axis", "y axis"]
+                    var location_id = config.content[el][4];
+                    var custom_colours = config.content[el][5];
+                    var colours = custom_colours.map(colour => config.colours[colour] ? config.colours[colour] : colour);
+                    var width = config.content[el][6] ? config.content[el][6] : "default";
+                    var height = config.content[el][7] ? config.content[el][7] : "default";
+                    var legend = config.content[el][8] ? config.content[el][8] : true;
+                    create_simple_bar_graph(id, series_names, series_values, axis_titles, location_id, colours, width, height, legend)
+                    break;
+                case "create_pie_chart":
+                    var id = el;
+                    var titles = config.content[el][1];
+                    var values_array = config.content[el][2];
+                    var values = values_array.map(name => math.evaluate(name,var_results));
+                    var location_id = config.content[el][3];
+                    var custom_colours = config.content[el][4];
+                    var colours = custom_colours.map(colour => config.colours[colour] ? config.colours[colour] : colour);
+                    var width = config.content[el][5] ? config.content[el][5] : "default";
+                    var height = config.content[el][6] ? config.content[el][6] : "default";
+                    var innerRadius = config.content[el][7] ? config.content[el][7] : 0;
+                    var legend = config.content[el][8] ? config.content[el][8] : true;
+                    create_pie_chart(id, titles, values, location_id, colours, width, height, innerRadius, legend)
                     break;
                 default:
-                    console.log("Unable to add content: "+el);
+                    console.log("Unable to add content: " + el);
                     break;
             }
     }
