@@ -1,18 +1,63 @@
 {
-    "json_file_path": "../exports/demo_data.json"
-    , "page_title": "html_pretty"
-    , "arrangement": {"rows": 2, "columns":1}
+    "json_file_path": "../exports/passing_seq.json"
+    , "page_title": ""
+    , "arrangement": {"rows": 5, "columns": [6, 3, 4, 6, 2]}
     , "colours": {"fulcrum":"#532CEB"
                 , "light_grey": "#EFEFEF"
+                , "transparent": "#EFEFEF00"
     }
-    , "variables": {"clip_total": ["count_clips", ""]
-                  , "FoulWon": ["cartesian_extract", "Foul Won", "", "location", 100, 100]
+    , "variables": {"clip_total": ["count_clips", "", ""]
+                  , "FoulWon": ["count_clips", "Foul Won"]
+                  , "carry_min": ["min_time_start", "Carry"]
+                  , "Carry": ["count_clips", "Carry", "", "carry_min+5000"]
+                  , "carry_sum": ["sum_clip_durations", "Carry", "", "carry_min"]
+                  , "Shots": ["cartesian_extract", "Possession", [{"":"Shot"}], "Pitch"]
                   , "Pass": ["cartesian_extract", "Possession", [{"":"Pass"}], "Pitch"]
-                
+                  , "graph_data_poss_last5": ["create_time_graph_data", ["Duel", "Ball Recovery", "Foul Won"], "Pass", "duration", 300]
+                  , "Shot_line_data": ["cartesian_line_extract", "In Possession", [{"Event":"Shot"}], "LOCATION", "LOCATION END", 1, 1]
+                  , "graph_data_poss_last10": ["create_time_graph_data", ["Duel", "Ball Recovery", "Foul Won"], "Pass", "count_clips", 600]                
 
     }
-    , "content": {"card_clip_total": ["create_data_card", "Total Clips", "clip_total", "#A1", "", "", ""]
-                , "scatter_plot": ["create_scatter_plot", ["FoulWon", "Pass"], "#A1", "", 800, 600, ["fulcrum", "yellow"], 10]
+    , "content": { "logo": ["create_image", "images/fulcrumfc.png", "#A1", 120]
+                , "card_goals_for": ["create_data_card", "Goals For", "carry_sum", "#B1", "", "", ""]
+                , "card_goals_against": ["create_data_card", "Goals Against", "clip_total", "#C1", "", "", ""]
+                , "card_game_time": ["create_data_card", "Game Time", "clip_total", "#D1", "", "", ""]
+                , "card_ball_inplay": ["create_data_card", "Ball in Play Time:", "clip_total", "#E1", "green", "", ""]
+                , "card_ball_inplay_pct": ["create_data_card", "BiP %", "clip_total", "#F1", "green", "", ""]
+
+                , "text_stats": ["create_text", "Summary Stats", "#A2", 16, "black", "center"]
+                , "contest_possession": ["create_possession_bar", "Possession", "clip_total", "clip_total", "#A2", "", 30]
+                , "contest_shots": ["create_contest_bar", "Shots", "clip_total", "clip_total", "#A2", "", 30]
+                , "contest_shots_on_t": ["create_contest_bar", "Shots on Target", "clip_total", "clip_total", "#A2", "", 30]
+                , "contest_xG": ["create_contest_bar", "xG", "clip_total", "clip_total+2000", "#A2", "", 30]
+                , "contest_corners": ["create_contest_bar", "Corners", "clip_total", "clip_total", "#A2", "", 30, ["#A0144F", "#1C1D5D"]]
+                , "contest_crosses": ["create_contest_bar", "Crosses", "clip_total", "clip_total", "#A2", "", 30]
+                , "contest_final_third_entries": ["create_contest_bar", "Final 3rd Entries", "clip_total", "clip_total", "#A2", "", 30]
+
+
+                , "text_momentum": ["create_text", "Momentum", "#B2", 16, "black", "center"]
+                , "card_poss_last10": ["create_data_card", "Game Time", "clip_total", "#B2", "", "", ""]
+                , "graph_bar_simple": ["create_simple_bar_graph", ["Fouls Won", "Carries", "TestVal"], ["FoulWon", "Carry", 30], ["", "Count"], "#B2", ["yellow", "fulcrum", "red"], 500, 300]
+                , "graph_last10": ["create_time_bar_graph", "graph_data_poss_last10", ["y_axis", "x_axis"], "#B2", ["yellow", "fulcrum", "green"], 500, 300]
+
+
+                , "text_last5": ["create_text", "Possession Last 5 mins", "#C2", 16, "black", "center"]
+                , "card_poss_last5": ["create_data_card", "Game Time", "clip_total", "#C2", "", "", ""]
+                , "line_graph_poss_last5": ["create_line_graph", "graph_data_poss_last5", ["Time (mins)", "Last 5m Totals (s)"], "#C2", ["yellow", "blue", "green"], 1, 400, 300]
+
+
+                , "text_shots": ["create_text", "Shots", "#A3", 16, "black", "center"]
+                , "text_xg": ["create_text", "xG Race", "#B3", 16, "black", "center"]
+                , "text_crossing": ["create_text", "Crossing", "#C3", 16, "black", "center"]
+                , "text_corners": ["create_text", "Corners", "#D3", 16, "black", "center"]
+
+                , "donut_shot_for_pct": ["create_success_donut", "", "clip_total", "clip_total", "#A4"]
+                , "donut_shot_against_pct": ["create_success_donut", "", "clip_total", "clip_total", "#A4"]
+                , "scatter_plot": ["create_scatter_plot", ["Shots", "Pass"], "#A2", "", 450, 250, ["fulcrum", "red"], 6, true]
+                , "vector_plot": ["create_vector_plot", ["Shot_line_data"], "#A2", "", 450, 300, ["red"], 2]
+
+                , "pie_chart1": ["create_pie_chart", ["val1", "val2", "val3"], ["clip_total", "clip_total", "clip_total+FoulWon"], "#E4", ["red", "grey", "blue"], 300, 300, 50]
+
 
     }
 }
