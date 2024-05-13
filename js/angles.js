@@ -1775,17 +1775,25 @@ function create_possession_bar(id, title, success_val, failure_val, location_id,
 * ---------------------------------------------------------------
 * Function to create a scatter plot of multiple cartesian data
 ****************************************************************/
-function create_scatter_plot(id, cartesian_array_names, cartesian_arrays, location_id, background_image_path = "images/map_football_horiz.jpeg", width, height, colors, circle_size = 5, heatmap_mode = false) {
+function create_scatter_plot(id, cartesian_array_names, cartesian_arrays, location_id, background_image_path = "images/map_football_horiz.jpeg", given_width = "default", given_height = "default", colors, circle_size = 5, heatmap_mode = false, legend = true) {
 
     // Check if there are enough colors for the data arrays
     if (colors.length < cartesian_arrays.length) {
         console.error("SCATTER PLOT ERROR: Not enough colors for the provided data sets.");
     }
 
-    // set the dimensions and margins of the graph
-    var margin = {top: 10, right: 30, bottom: 60, left: 60},
-        width = width - margin.left - margin.right,
-        height = height - margin.top - margin.bottom;
+    // Accesses the container element based on 'location_id' and determines its dimensions,
+    // allowing for explicit overrides via 'given_width' and 'given_height'.
+    const container = document.getElementById(location_id.slice(1));
+    let containerHeight = container.clientHeight
+    let containerWidth = container.clientWidth
+    if (given_height !== "default") {containerHeight = given_height}
+    if (given_width !== "default") {containerWidth = given_width}
+
+    // Sets up margins around the graph, calculates the effective width and height of the drawing area.
+    var margin = { top: containerHeight*0.05, right: containerWidth*0.2, bottom: containerHeight*0.2, left: containerWidth*0.15 },
+    width = containerWidth - margin.left - margin.right,
+    height = containerHeight - margin.top - margin.bottom;
 
     // Tooltip setup
     var tooltip = d3.select(location_id)
@@ -1875,6 +1883,34 @@ function create_scatter_plot(id, cartesian_array_names, cartesian_arrays, locati
             .on("mouseleave", mouseleave );
     });
 
+    // Adjusts the font size of the axes based on the dimensions of the graph.
+    const text_scaler = Math.min(width, height) / 20
+
+    if (legend === true) {
+        // Creates a legend by appending 'g' elements for each series, positioning them and adding colored rectangles and text labels for each series.
+        const legend = svg.selectAll(".legend")
+            .data(cartesian_array_names)
+            .enter().append("g")
+            .attr("class", "legend")
+            .attr("transform", (d, i) => `translate(0, ${i * text_scaler * 1.5})`);
+
+        legend.append("rect")
+            .attr("x", width + 1)
+            .attr("width", text_scaler + 1)
+            .attr("height", text_scaler)
+            .style("fill", (d, i) => colors[i])
+            .style("rx", (text_scaler / 5) + "px");
+
+        legend.append("text")
+            .attr("x", width + text_scaler + 3)
+            .attr("y", text_scaler / 2)
+            .attr("dy", ".35em")
+            .style("text-anchor", "end")
+            .text(d => d)
+            .style("font-size", text_scaler + "px")
+            .style("text-anchor", "start");
+    }
+
 }
 
 /****************************************************************
@@ -1883,7 +1919,7 @@ function create_scatter_plot(id, cartesian_array_names, cartesian_arrays, locati
 * Function to create a vector plot of multiple cartesian data
 * with a straight line between the start and end co-ordinate
 ****************************************************************/
-function create_vector_plot(id, cartesian_array_names, cartesian_arrays, location_id, background_image_path = "images/map_football_horiz.jpeg", width, height, colors, line_size = 2) {
+function create_vector_plot(id, cartesian_array_names, cartesian_arrays, location_id, background_image_path = "images/map_football_horiz.jpeg", given_width = "default", given_height = "default", colors, line_size = 2, legend = true) {
 
     // Check if there are enough colors for the data arrays
     if (colors.length < cartesian_arrays.length) {
@@ -1891,10 +1927,18 @@ function create_vector_plot(id, cartesian_array_names, cartesian_arrays, locatio
         return;
     }
 
-    // Set the dimensions and margins of the graph
-    var margin = {top: 10, right: 30, bottom: 60, left: 60},
-        width = width - margin.left - margin.right,
-        height = height - margin.top - margin.bottom;
+    // Accesses the container element based on 'location_id' and determines its dimensions,
+    // allowing for explicit overrides via 'given_width' and 'given_height'.
+    const container = document.getElementById(location_id.slice(1));
+    let containerHeight = container.clientHeight
+    let containerWidth = container.clientWidth
+    if (given_height !== "default") {containerHeight = given_height}
+    if (given_width !== "default") {containerWidth = given_width}
+
+    // Sets up margins around the graph, calculates the effective width and height of the drawing area.
+    var margin = { top: containerHeight*0.05, right: containerWidth*0.2, bottom: containerHeight*0.2, left: containerWidth*0.15 },
+    width = containerWidth - margin.left - margin.right,
+    height = containerHeight - margin.top - margin.bottom;
 
     // Tooltip setup
     var tooltip = d3.select(location_id)
@@ -1981,6 +2025,34 @@ function create_vector_plot(id, cartesian_array_names, cartesian_arrays, locatio
                 .on("mousemove", function(event, d) { mousemove(event, d, index); })
                 .on("mouseleave", mouseleave);
     });
+
+    // Adjusts the font size of the axes based on the dimensions of the graph.
+    const text_scaler = Math.min(width, height) / 20
+
+    if (legend === true) {
+        // Creates a legend by appending 'g' elements for each series, positioning them and adding colored rectangles and text labels for each series.
+        const legend = svg.selectAll(".legend")
+            .data(cartesian_array_names)
+            .enter().append("g")
+            .attr("class", "legend")
+            .attr("transform", (d, i) => `translate(0, ${i * text_scaler * 1.5})`);
+
+        legend.append("rect")
+            .attr("x", width + 1)
+            .attr("width", text_scaler + 1)
+            .attr("height", text_scaler)
+            .style("fill", (d, i) => colors[i])
+            .style("rx", (text_scaler / 5) + "px");
+
+        legend.append("text")
+            .attr("x", width + text_scaler + 3)
+            .attr("y", text_scaler / 2)
+            .attr("dy", ".35em")
+            .style("text-anchor", "end")
+            .text(d => d)
+            .style("font-size", text_scaler + "px")
+            .style("text-anchor", "start");
+    }
 }
 
 
