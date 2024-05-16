@@ -1,0 +1,748 @@
+{
+  "uuid_timeline" : "5D1BDC0E-C372-4DBE-B8D5-FB0F7215C7AF-1559-0000028EF29D0C74-[A]-248797228864843264",
+  "rows" : [
+    {
+      "uuid_row" : "2D16BC8D-936D-4AAA-905A-B1A25FECB3F5-1559-0000029687F69524",
+      "row_number" : 1,
+      "clips" : [
+        {
+          "edit_info" : {
+            "edit_seconds" : 1715855200.367085,
+            "author" : "danewilliamson"
+          },
+          "uuid" : "248798586004141856",
+          "time_start" : 1.0501066699999999,
+          "time_end" : 5.0501533700000003,
+          "color" : "0.7333,0.1956,0.7224"
+        },
+        {
+          "color" : "0.7333,0.1956,0.7224",
+          "edit_info" : {
+            "edit_seconds" : 1715855205.881671,
+            "author" : "danewilliamson"
+          },
+          "time_end" : 10.566979829999999,
+          "time_start" : 6.5669304200000003,
+          "uuid" : "248798591516577248"
+        },
+        {
+          "edit_info" : {
+            "edit_seconds" : 1715855212.2652049,
+            "author" : "danewilliamson"
+          },
+          "time_end" : 16.950512209999999,
+          "color" : "0.7333,0.1956,0.7224",
+          "qualifiers" : {
+            "qualifiers_array" : [
+              {
+                "name" : "Good",
+                "category" : "Outcome",
+                "time" : 16.333784789999999,
+                "uuid" : "248798599433245088",
+                "color" : "0.1524,0.6933,0.1294"
+              }
+            ]
+          },
+          "time_start" : 12.950424829999999,
+          "uuid" : "248798597899863360"
+        },
+        {
+          "color" : "0.7333,0.1956,0.7224",
+          "edit_info" : {
+            "author" : "danewilliamson",
+            "edit_seconds" : 1715855222.081315
+          },
+          "qualifiers" : {
+            "qualifiers_array" : [
+              {
+                "name" : "Good",
+                "uuid" : "248798608933395072",
+                "time" : 25.834062580000001,
+                "color" : "0.1524,0.6933,0.1294",
+                "category" : "Outcome"
+              }
+            ]
+          },
+          "uuid" : "248798607716589312",
+          "time_end" : 26.767442750000001,
+          "time_start" : 22.767365869999999
+        },
+        {
+          "time_end" : 33.234257290000002,
+          "edit_info" : {
+            "author" : "danewilliamson",
+            "edit_seconds" : 1715855228.5476809
+          },
+          "uuid" : "248798614183302464",
+          "qualifiers" : {
+            "qualifiers_array" : [
+              {
+                "time" : 32.917586210000003,
+                "uuid" : "248798616016589088",
+                "name" : "Bad",
+                "category" : "Outcome",
+                "color" : "0.6667,0.0889,0.0889"
+              }
+            ]
+          },
+          "color" : "0.7333,0.1956,0.7224",
+          "time_start" : 29.23420029
+        },
+        {
+          "uuid" : "248798639415062048",
+          "color" : "0.7333,0.1956,0.7224",
+          "time_start" : 51.667973959999998,
+          "edit_info" : {
+            "edit_seconds" : 1715855253.7887139,
+            "author" : "danewilliamson"
+          },
+          "time_end" : 55.669809960000002
+        },
+        {
+          "time_start" : 57.702582370000002,
+          "edit_info" : {
+            "edit_seconds" : 1715855259.8387442,
+            "author" : "danewilliamson"
+          },
+          "qualifiers" : {
+            "qualifiers_array" : [
+              {
+                "category" : "Outcome",
+                "name" : "Good",
+                "uuid" : "248798646352213856",
+                "color" : "0.1524,0.6933,0.1294",
+                "time" : 60.452483749999999
+              }
+            ]
+          },
+          "uuid" : "248798645447178016",
+          "time_end" : 60.826319179999999,
+          "color" : "0.7333,0.1956,0.7224"
+        },
+        {
+          "edit_info" : {
+            "edit_seconds" : 1715855262.172199,
+            "author" : "danewilliamson"
+          },
+          "time_end" : 64.052584539999998,
+          "color" : "0.7333,0.1956,0.7224",
+          "time_start" : 60.036934459999998,
+          "uuid" : "248798647780777888",
+          "qualifiers" : {
+            "qualifiers_array" : [
+              {
+                "name" : "Bad",
+                "time" : 63.102568210000001,
+                "category" : "Outcome",
+                "uuid" : "248798648998379264",
+                "color" : "0.6667,0.0889,0.0889"
+              }
+            ]
+          }
+        },
+        {
+          "uuid" : "248798657650979968",
+          "color" : "0.7333,0.1956,0.7224",
+          "time_end" : 71.769893370000005,
+          "edit_info" : {
+            "edit_seconds" : 1715855272.0218201,
+            "author" : "danewilliamson"
+          },
+          "time_start" : 67.769357499999998
+        },
+        {
+          "uuid" : "248798667969108160",
+          "time_start" : 78.086292119999996,
+          "edit_info" : {
+            "edit_seconds" : 1715855282.339303,
+            "author" : "danewilliamson"
+          },
+          "color" : "0.7333,0.1956,0.7224",
+          "time_end" : 82.086358579999995,
+          "qualifiers" : {
+            "qualifiers_array" : [
+              {
+                "category" : "Outcome",
+                "time" : 81.136318709999998,
+                "name" : "Bad",
+                "uuid" : "248798669170200288",
+                "color" : "0.6667,0.0889,0.0889"
+              }
+            ]
+          }
+        },
+        {
+          "edit_info" : {
+            "edit_seconds" : 1715855310.9752259,
+            "author" : "danewilliamson"
+          },
+          "time_end" : 110.72043832999999,
+          "time_start" : 106.72038108,
+          "color" : "0.7333,0.1956,0.7224",
+          "qualifiers" : {
+            "qualifiers_array" : [
+              {
+                "name" : "Good",
+                "category" : "Outcome",
+                "time" : 109.93707886999999,
+                "uuid" : "248798697968912640",
+                "color" : "0.1524,0.6933,0.1294"
+              }
+            ]
+          },
+          "uuid" : "248798696599856928"
+        }
+      ],
+      "height_real" : 20,
+      "row_name" : "My Clips",
+      "height" : 20,
+      "color" : "0.7333,0.1956,0.7224"
+    },
+    {
+      "height_real" : 20,
+      "uuid_row" : "26BBEB36-A2CA-48C9-ACF0-086C988BE2DD-1559-000002968BE51281",
+      "row_name" : "Your Clips",
+      "row_number" : 2,
+      "clips" : [
+        {
+          "uuid" : "248798588749830048",
+          "time_start" : 3.8001531200000001,
+          "color" : "0.7467,0.5421,0.219",
+          "edit_info" : {
+            "edit_seconds" : 1715855203.1149611,
+            "author" : "danewilliamson"
+          },
+          "time_end" : 7.8002151700000004
+        },
+        {
+          "color" : "0.7467,0.5421,0.219",
+          "uuid" : "248798595264498816",
+          "edit_info" : {
+            "author" : "danewilliamson",
+            "edit_seconds" : 1715855209.6311111
+          },
+          "time_end" : 14.31706608,
+          "time_start" : 10.317018210000001
+        },
+        {
+          "edit_info" : {
+            "edit_seconds" : 1715855215.147769,
+            "author" : "danewilliamson"
+          },
+          "time_end" : 19.833895330000001,
+          "color" : "0.7467,0.5421,0.219",
+          "uuid" : "248798600780746752",
+          "time_start" : 15.833844579999999,
+          "qualifiers" : {
+            "qualifiers_array" : [
+              {
+                "uuid" : "248798602199930912",
+                "category" : "Outcome",
+                "color" : "0.1524,0.6933,0.1294",
+                "time" : 19.100521539999999,
+                "name" : "Good"
+              }
+            ]
+          }
+        },
+        {
+          "time_end" : 29.36825692,
+          "time_start" : 25.367465249999999,
+          "edit_info" : {
+            "edit_seconds" : 1715855224.681762,
+            "author" : "danewilliamson"
+          },
+          "uuid" : "248798610313880608",
+          "color" : "0.7467,0.5421,0.219"
+        },
+        {
+          "edit_info" : {
+            "author" : "danewilliamson",
+            "edit_seconds" : 1715855234.9307609
+          },
+          "color" : "0.7467,0.5421,0.219",
+          "time_end" : 39.617758119999998,
+          "uuid" : "248798620565216224",
+          "time_start" : 35.617738959999997
+        },
+        {
+          "edit_info" : {
+            "edit_seconds" : 1715855255.5560951,
+            "author" : "danewilliamson"
+          },
+          "time_start" : 53.419590040000003,
+          "color" : "0.7467,0.5421,0.219",
+          "uuid" : "248798641168374336",
+          "time_end" : 57.436618369999998
+        },
+        {
+          "uuid" : "248798650198118432",
+          "time_start" : 62.452609039999999,
+          "time_end" : 66.452648830000001,
+          "edit_info" : {
+            "author" : "danewilliamson",
+            "edit_seconds" : 1715855264.5718479
+          },
+          "color" : "0.7467,0.5421,0.219",
+          "qualifiers" : {
+            "qualifiers_array" : [
+              {
+                "color" : "0.6667,0.0889,0.0889",
+                "uuid" : "248798651316504768",
+                "category" : "Outcome",
+                "name" : "Bad",
+                "time" : 65.419289329999998
+              }
+            ]
+          }
+        },
+        {
+          "time_start" : 70.286091290000002,
+          "uuid" : "248798660166601024",
+          "time_end" : 74.286146250000002,
+          "edit_info" : {
+            "edit_seconds" : 1715855274.538445,
+            "author" : "danewilliamson"
+          },
+          "color" : "0.7467,0.5421,0.219"
+        }
+      ],
+      "color" : "0.7467,0.5421,0.219",
+      "height" : 20
+    },
+    {
+      "height" : 20,
+      "uuid_row" : "37D32C0E-C430-4631-BCA9-8A014EB3C080-1559-00000296939F37B6",
+      "row_name" : "Highlight Clips",
+      "color" : "0.7333,0.7224,0.1956",
+      "height_real" : 20,
+      "row_number" : 3,
+      "clips" : [
+        {
+          "time_start" : 9.2003297499999999,
+          "edit_info" : {
+            "author" : "danewilliamson",
+            "edit_seconds" : 1715855208.5144892
+          },
+          "time_end" : 13.200424870000001,
+          "uuid" : "248798594149864032",
+          "color" : "0.7333,0.7224,0.1956"
+        },
+        {
+          "color" : "0.7333,0.7224,0.1956",
+          "edit_info" : {
+            "edit_seconds" : 1715855219.9639091,
+            "author" : "danewilliamson"
+          },
+          "qualifiers" : {
+            "qualifiers_array" : [
+              {
+                "time" : 23.200674169999999,
+                "name" : "Good",
+                "category" : "Outcome",
+                "uuid" : "248798606299918816",
+                "color" : "0.1524,0.6933,0.1294"
+              }
+            ]
+          },
+          "uuid" : "248798605583299904",
+          "time_start" : 20.633999500000002,
+          "time_end" : 24.65011062
+        },
+        {
+          "edit_info" : {
+            "edit_seconds" : 1715855236.2972701,
+            "author" : "danewilliamson"
+          },
+          "uuid" : "248798621929597632",
+          "time_end" : 40.98445967,
+          "color" : "0.7333,0.7224,0.1956",
+          "time_start" : 36.98439862
+        },
+        {
+          "uuid" : "248798636149644672",
+          "time_start" : 48.40220008,
+          "color" : "0.7333,0.7224,0.1956",
+          "time_end" : 52.402266670000003,
+          "edit_info" : {
+            "edit_seconds" : 1715855250.5224938,
+            "author" : "danewilliamson"
+          },
+          "qualifiers" : {
+            "qualifiers_array" : [
+              {
+                "category" : "Outcome",
+                "time" : 51.46889358,
+                "name" : "Good",
+                "color" : "0.1524,0.6933,0.1294",
+                "uuid" : "248798637369311040"
+              }
+            ]
+          }
+        },
+        {
+          "time_end" : 113.92051917000001,
+          "time_start" : 109.92045579000001,
+          "color" : "0.7333,0.7224,0.1956",
+          "edit_info" : {
+            "edit_seconds" : 1715855314.1713309,
+            "author" : "danewilliamson"
+          },
+          "qualifiers" : {
+            "qualifiers_array" : [
+              {
+                "color" : "0.6667,0.0889,0.0889",
+                "category" : "Outcome",
+                "time" : 112.8204965,
+                "uuid" : "248798700851885888",
+                "name" : "Bad"
+              }
+            ]
+          },
+          "uuid" : "248798699798587168"
+        }
+      ]
+    },
+    {
+      "color" : "0.0889,0.1361,0.6667",
+      "height" : 20,
+      "row_number" : 4,
+      "height_real" : 20,
+      "clips" : [
+        {
+          "uuid" : "248798596499633248",
+          "time_end" : 15.55102617,
+          "time_start" : 11.55037529,
+          "color" : "0.0889,0.1361,0.6667",
+          "edit_info" : {
+            "edit_seconds" : 1715855210.8654661,
+            "author" : "danewilliamson"
+          }
+        },
+        {
+          "time_end" : 22.783974959999998,
+          "edit_info" : {
+            "edit_seconds" : 1715855218.097939,
+            "author" : "danewilliamson"
+          },
+          "qualifiers" : {
+            "qualifiers_array" : [
+              {
+                "category" : "Type",
+                "time" : 21.50059117,
+                "color" : "0.2937,0.5754,0.7867",
+                "name" : "Type A",
+                "uuid" : "248798604599938752"
+              }
+            ]
+          },
+          "uuid" : "248798603729190464",
+          "time_start" : 18.783923919999999,
+          "color" : "0.0889,0.1361,0.6667"
+        },
+        {
+          "time_end" : 34.000946210000002,
+          "color" : "0.0889,0.1361,0.6667",
+          "edit_info" : {
+            "author" : "danewilliamson",
+            "edit_seconds" : 1715855229.3144279
+          },
+          "time_start" : 30.000895920000001,
+          "qualifiers" : {
+            "qualifiers_array" : [
+              {
+                "category" : "Outcome",
+                "name" : "Bad",
+                "uuid" : "248798616016647552",
+                "time" : 32.917586210000003,
+                "color" : "0.6667,0.0889,0.0889"
+              }
+            ]
+          },
+          "uuid" : "248798614949960608"
+        },
+        {
+          "color" : "0.0889,0.1361,0.6667",
+          "uuid" : "248798625462917920",
+          "time_start" : 40.517833869999997,
+          "edit_info" : {
+            "author" : "danewilliamson",
+            "edit_seconds" : 1715855239.83059
+          },
+          "qualifiers" : {
+            "qualifiers_array" : [
+              {
+                "name" : "Type B",
+                "color" : "0.347,0.8133,0.7277",
+                "category" : "Type",
+                "time" : 43.084517959999999,
+                "uuid" : "248798626183188160"
+              }
+            ]
+          },
+          "time_end" : 43.634062239999999
+        },
+        {
+          "time_end" : 46.851298290000003,
+          "color" : "0.0889,0.1361,0.6667",
+          "time_start" : 42.850241830000002,
+          "uuid" : "248798627798090784",
+          "edit_info" : {
+            "author" : "danewilliamson",
+            "edit_seconds" : 1715855242.164017
+          },
+          "qualifiers" : {
+            "qualifiers_array" : [
+              {
+                "name" : "Type A",
+                "category" : "Type",
+                "color" : "0.2937,0.5754,0.7867",
+                "time" : 45.51792425,
+                "uuid" : "248798628616410208"
+              }
+            ]
+          }
+        },
+        {
+          "color" : "0.0889,0.1361,0.6667",
+          "time_start" : 55.152387789999999,
+          "uuid" : "248798642898407904",
+          "edit_info" : {
+            "author" : "danewilliamson",
+            "edit_seconds" : 1715855257.2742181
+          },
+          "time_end" : 59.152453250000001,
+          "qualifiers" : {
+            "qualifiers_array" : [
+              {
+                "category" : "Type",
+                "name" : "Type A",
+                "uuid" : "248798644166583968",
+                "color" : "0.2937,0.5754,0.7867",
+                "time" : 58.269096709999999
+              }
+            ]
+          }
+        },
+        {
+          "time_end" : 77.919572619999997,
+          "time_start" : 73.919523670000004,
+          "uuid" : "248798663799066912",
+          "qualifiers" : {
+            "qualifiers_array" : [
+              {
+                "uuid" : "248798664703098816",
+                "time" : 76.669542039999996,
+                "color" : "0.347,0.8133,0.7277",
+                "name" : "Type B",
+                "category" : "Type"
+              }
+            ]
+          },
+          "edit_info" : {
+            "edit_seconds" : 1715855278.1719141,
+            "author" : "danewilliamson"
+          },
+          "color" : "0.0889,0.1361,0.6667"
+        },
+        {
+          "time_end" : 89.23654646,
+          "uuid" : "248798675103084320",
+          "color" : "0.0889,0.1361,0.6667",
+          "edit_info" : {
+            "edit_seconds" : 1715855289.4937921,
+            "author" : "danewilliamson"
+          },
+          "qualifiers" : {
+            "qualifiers_array" : [
+              {
+                "name" : "Type A",
+                "category" : "Type",
+                "uuid" : "248798676002835744",
+                "time" : 87.970341790000006,
+                "qualifier_attributes" : [
+                  {
+                    "x" : 35,
+                    "color" : "0.5,0.5,0.5",
+                    "y" : 55,
+                    "category" : "Location",
+                    "name" : "Grid",
+                    "time" : 88.819771119999999,
+                    "attr_uuid" : "248798676700181152"
+                  }
+                ],
+                "color" : "0.2937,0.5754,0.7867"
+              }
+            ]
+          },
+          "time_start" : 85.220623500000002
+        },
+        {
+          "time_start" : 90.271727420000005,
+          "color" : "0.0889,0.1361,0.6667",
+          "time_end" : 94.286682209999995,
+          "qualifiers" : {
+            "qualifiers_array" : [
+              {
+                "time" : 93.044569870000004,
+                "color" : "0.347,0.8133,0.7277",
+                "uuid" : "248798681084998208",
+                "qualifier_attributes" : [
+                  {
+                    "y" : 32,
+                    "color" : "0.5,0.5,0.5",
+                    "x" : 71,
+                    "time" : 94.052969669999996,
+                    "category" : "Location",
+                    "name" : "Grid",
+                    "attr_uuid" : "248798681935891648"
+                  }
+                ],
+                "category" : "Type",
+                "name" : "Type B"
+              }
+            ]
+          },
+          "uuid" : "248798680154706080",
+          "edit_info" : {
+            "author" : "danewilliamson",
+            "edit_seconds" : 1715855294.541858
+          }
+        },
+        {
+          "qualifiers" : {
+            "qualifiers_array" : [
+              {
+                "name" : "Type A",
+                "time" : 99.003464919999999,
+                "category" : "Type",
+                "uuid" : "248798687037401408",
+                "color" : "0.2937,0.5754,0.7867",
+                "qualifier_attributes" : [
+                  {
+                    "color" : "0.5,0.5,0.5",
+                    "x" : 14,
+                    "attr_uuid" : "248798687783631808",
+                    "y" : 85,
+                    "category" : "Location",
+                    "name" : "Grid",
+                    "time" : 99.903486209999997
+                  }
+                ]
+              }
+            ]
+          },
+          "time_end" : 100.16928458,
+          "uuid" : "248798686034928608",
+          "color" : "0.0889,0.1361,0.6667",
+          "edit_info" : {
+            "edit_seconds" : 1715855300.424473,
+            "author" : "danewilliamson"
+          },
+          "time_start" : 96.153434290000007
+        },
+        {
+          "uuid" : "248798692155140480",
+          "time_end" : 106.30365492,
+          "edit_info" : {
+            "edit_seconds" : 1715855306.5582628,
+            "author" : "danewilliamson"
+          },
+          "time_start" : 102.28783812,
+          "qualifiers" : {
+            "qualifiers_array" : [
+              {
+                "name" : "Type A",
+                "color" : "0.2937,0.5754,0.7867",
+                "uuid" : "248798693235170016",
+                "time" : 105.17823537,
+                "qualifier_attributes" : [
+                  {
+                    "color" : "0.5,0.5,0.5",
+                    "x" : 66,
+                    "attr_uuid" : "248798693850639808",
+                    "category" : "Location",
+                    "name" : "Grid",
+                    "time" : 105.97018454000001,
+                    "y" : 25
+                  }
+                ],
+                "category" : "Type"
+              }
+            ]
+          },
+          "color" : "0.0889,0.1361,0.6667"
+        },
+        {
+          "time_end" : 116.45392292,
+          "uuid" : "248798702316746368",
+          "color" : "0.0889,0.1361,0.6667",
+          "time_start" : 112.43746004,
+          "edit_info" : {
+            "author" : "danewilliamson",
+            "edit_seconds" : 1715855316.7069869
+          },
+          "qualifiers" : {
+            "qualifiers_array" : [
+              {
+                "time" : 115.22054058000001,
+                "name" : "Type B",
+                "qualifier_attributes" : [
+                  {
+                    "y" : 66,
+                    "name" : "Grid",
+                    "time" : 116.27155358,
+                    "category" : "Location",
+                    "attr_uuid" : "248798704154633792",
+                    "x" : 58,
+                    "color" : "0.5,0.5,0.5"
+                  }
+                ],
+                "color" : "0.347,0.8133,0.7277",
+                "category" : "Type",
+                "uuid" : "248798703249507008"
+              }
+            ]
+          }
+        },
+        {
+          "uuid" : "248798707238203296",
+          "time_end" : 121.37070375,
+          "color" : "0.0889,0.1361,0.6667",
+          "time_start" : 117.35489432999999,
+          "edit_info" : {
+            "edit_seconds" : 1715855321.6219769,
+            "author" : "danewilliamson"
+          },
+          "qualifiers" : {
+            "qualifiers_array" : [
+              {
+                "color" : "0.2937,0.5754,0.7867",
+                "qualifier_attributes" : [
+                  {
+                    "time" : 121.60405279,
+                    "color" : "0.5,0.5,0.5",
+                    "x" : 22,
+                    "name" : "Grid",
+                    "y" : 18,
+                    "attr_uuid" : "248798709483255328",
+                    "category" : "Location"
+                  }
+                ],
+                "time" : 120.82068408000001,
+                "name" : "Type A",
+                "category" : "Type",
+                "uuid" : "248798708849934464"
+              }
+            ]
+          }
+        }
+      ],
+      "uuid_row" : "A3DF386E-9C7F-41AB-8E3D-3506D6F51D7D-1559-0000029696FB609E",
+      "row_name" : "Event"
+    }
+  ],
+  "row_count" : 4,
+  "show_rows_by_category" : false,
+  "data_version" : 2
+}
