@@ -52,9 +52,9 @@
         create_bootstrap_grid(config.arrangement.rows, config.arrangement.columns)
 
         // Define location of the json data to be analysed
-        const json_file_path = config.json_file_path;
+        const import_json_file_path = config.import_json_file_path;
 
-        d3.json(json_file_path).then(function(data) {
+        d3.json(import_json_file_path).then(function(data) {
 
             // Read the config variables
             const var_results = read_config_variables(config, data)
