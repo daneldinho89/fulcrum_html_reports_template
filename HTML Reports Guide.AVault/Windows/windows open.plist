@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>open windows</key>
+	<array>
+		<dict>
+			<key>name</key>
+			<string>HTML Reports Guide</string>
+			<key>order</key>
+			<integer>1</integer>
+			<key>root ID</key>
+			<string>86C57145-8585-498E-8128-E7668FD8285E-1559-0000028EE47CEB0D</string>
+			<key>vault_for_window</key>
+			<string>/Users/danewilliamson/Documents/AnglesHTMLReports/DaneWilliamson/fulcrum_html_reports_template/HTML Reports Guide.AVault</string>
+			<key>window_order_on_save</key>
+			<integer>1</integer>
+		</dict>
+	</array>
+</dict>
+</plist>

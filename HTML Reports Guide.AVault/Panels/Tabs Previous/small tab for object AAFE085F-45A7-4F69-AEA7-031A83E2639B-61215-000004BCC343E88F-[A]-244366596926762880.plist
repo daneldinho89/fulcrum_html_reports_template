@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>- description</key>
+	<string>a tabber is a group of Small Tabs in a placeholder - other objects in the place holder are files and inspectors</string>
+	<key>- kind</key>
+	<string>TABBER - A GROUP OF SMALL TABS</string>
+	<key>Tab array</key>
+	<array>
+		<dict>
+			<key>- description</key>
+			<string>This is a single small tab such as Timeline, Markup, Collection, Composer, Table or Matrix.</string>
+			<key>Type pane - split view</key>
+			<string>Type pane - TABLE</string>
+			<key>last selected time</key>
+			<real>1713176083.69982</real>
+			<key>linked Object UUID</key>
+			<string>AAFE085F-45A7-4F69-AEA7-031A83E2639B-61215-000004BCC343E88F-[A]-244366596926762880</string>
+			<key>object type</key>
+			<integer>27482</integer>
+			<key>object type name</key>
+			<string>Split View</string>
+			<key>remote</key>
+			<string>not used yet C</string>
+			<key>tab name</key>
+			<string>Table 560</string>
+			<key>vault bookmark for object</key>
+			<data>
+			Ym9va8ADAAAAAAQQMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+			AAAAAAAAAAAAsAIAAAQAAAADAwAAAAIAAAUAAAABAQAAVXNlcnMA
+			AAAOAAAAAQEAAGRhbmV3aWxsaWFtc29uAAAGAAAAAQEAAE1vdmll
+			cwAAEgAAAAEBAABIb21lIEZvbGRlci5BVmF1bHQAABAAAAABBgAA
+			EAAAACAAAAA4AAAASAAAAAgAAAAEAwAAhFwAAAAAAAAIAAAABAMA
+			AHClAwAAAAAACAAAAAQDAACfpQMAAAAAAAgAAAAEAwAAqAgGAAAA
+			AAAQAAAAAQYAAHwAAACMAAAAnAAAAKwAAAAIAAAAAAQAAEHDsTYB
+			fwiZGAAAAAECAAACAAAAAAAAAA8AAAAAAAAAAAAAAAAAAAAIAAAA
+			BAMAAAIAAAAAAAAABAAAAAMDAAD1AQAACAAAAAEJAABmaWxlOi8v
+			LwwAAAABAQAATWFjaW50b3NoIEhECAAAAAQDAAAAkIKW5wAAAAgA
+			AAAABAAAQcXWA8GAAAAkAAAAAQEAADAzNDA3RDQ5LTA5RTctNEYw
+			Ri1COTE0LUQwMjJFODczQTE0MhgAAAABAgAAgQAAAAEAAADvEwAA
+			AQAAAAAAAAAAAAAAAQAAAAEBAAAvAAAAAAAAAAEFAADhAAAAAQIA
+			AGVhNWFiNjZlZTU0ODhiZDdiMDY1MzM4NzE3ZDY0MTFkYzU4NzYx
+			OGYzZWYxZDFkOGRkZTVhOWVmZGYwZmE1MTE7MDA7MDAwMDAwMDA7
+			MDAwMDAwMDA7MDAwMDAwMDA7MDAwMDAwMDAwMDAwMDAyMDtjb20u
+			YXBwbGUuYXBwLXNhbmRib3gucmVhZC13cml0ZTswMTswMTAwMDAx
+			MDswMDAwMDAwMDAwMDYwOGE4OzAxOy91c2Vycy9kYW5ld2lsbGlh
+			bXNvbi9tb3ZpZXMvaG9tZSBmb2xkZXIuYXZhdWx0AAAAANgAAAD+
+			////AQAAAAAAAAARAAAABBAAAGQAAAAAAAAABRAAALwAAAAAAAAA
+			EBAAAOQAAAAAAAAAQBAAANQAAAAAAAAAAiAAALABAAAAAAAABSAA
+			ACABAAAAAAAAECAAADABAAAAAAAAESAAAGQBAAAAAAAAEiAAAEQB
+			AAAAAAAAEyAAAFQBAAAAAAAAICAAAJABAAAAAAAAMCAAALwBAAAA
+			AAAAAcAAAAQBAAAAAAAAEcAAACAAAAAAAAAAEsAAABQBAAAAAAAA
+			ENAAAAQAAAAAAAAAgPAAAMQBAAAAAAAA
+			</data>
+			<key>vault for object</key>
+			<string>/Users/danewilliamson/Movies/Home Folder.AVault</string>
+		</dict>
+	</array>
+	<key>UUID parent super tab</key>
+	<string>265B8ABA-8E67-46C0-B588-59366DFD9468-26929-00000205F87114C7</string>
+	<key>UUID parent window</key>
+	<string>679D3246-0B9D-41FA-9E0E-730D646DF4D1-736-000001EE12CDF58A</string>
+	<key>UUID tabber</key>
+	<string>23A60B91-7951-46FF-9BC6-2DF9FFA54F2F-61215-000004BCC34F176B</string>
+	<key>[====] parent_supertab_name</key>
+	<string>Super tab 623</string>
+	<key>display set up options</key>
+	<string>NONE</string>
+	<key>last written</key>
+	<date>2024-05-16T10:04:03Z</date>
+	<key>last written seconds</key>
+	<real>1715853843.384208</real>
+	<key>number of tab</key>
+	<integer>1</integer>
+	<key>selected tab</key>
+	<integer>1</integer>
+</dict>
+</plist>

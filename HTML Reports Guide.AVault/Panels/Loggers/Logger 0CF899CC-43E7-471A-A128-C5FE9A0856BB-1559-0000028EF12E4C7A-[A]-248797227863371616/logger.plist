@@ -1,0 +1,583 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>UUID logger</key>
+	<string>0CF899CC-43E7-471A-A128-C5FE9A0856BB-1559-0000028EF12E4C7A-[A]-248797227863371616</string>
+	<key>array objects</key>
+	<array>
+		<dict>
+			<key>UUID pic</key>
+			<string>45E2A6FE-4691-4DE6-9F4A-B00491A7F3CB-1559-0000028F15EB6A94</string>
+			<key>alpha</key>
+			<real>1</real>
+			<key>auto up</key>
+			<true/>
+			<key>auto up duration</key>
+			<real>2</real>
+			<key>button Type</key>
+			<integer>10</integer>
+			<key>button actions</key>
+			<dict>
+				<key>button actions array</key>
+				<array/>
+			</dict>
+			<key>button color</key>
+			<string>0.733333 0.195556 0.722358 1.0</string>
+			<key>button name color</key>
+			<string>1.0 1.0 1.0 1.0</string>
+			<key>button name font size</key>
+			<real>14</real>
+			<key>button shape</key>
+			<string>Rounded Rect</string>
+			<key>cartesian_scale_end_X</key>
+			<real>100</real>
+			<key>cartesian_scale_end_Y</key>
+			<real>100</real>
+			<key>cartesian_scale_start_X</key>
+			<real>0.0</real>
+			<key>cartesian_scale_start_Y</key>
+			<real>0.0</real>
+			<key>cartesian_scale_step_X</key>
+			<real>1</real>
+			<key>cartesian_scale_step_Y</key>
+			<real>1</real>
+			<key>font_colour_formula_output</key>
+			<string>1.0,1.0,0.9</string>
+			<key>font_size_formula_output</key>
+			<real>14</real>
+			<key>jump on</key>
+			<string>DOWN</string>
+			<key>linked mask and button colors</key>
+			<true/>
+			<key>logger rect</key>
+			<string>21.3632813 120.734375 138.0 72.0</string>
+			<key>mask color</key>
+			<string>0.733333 0.195556 0.722358 1.0</string>
+			<key>name</key>
+			<string>My Clips</string>
+			<key>output_time_format</key>
+			<string>HH:MM:SS.00</string>
+			<key>real picture</key>
+			<false/>
+			<key>secs in</key>
+			<real>-2</real>
+		</dict>
+		<dict>
+			<key>UUID pic</key>
+			<string>F6CBDFB1-8290-4CCC-81E5-1398D09CB426-1559-0000028F1A3C4DF8</string>
+			<key>alpha</key>
+			<real>1</real>
+			<key>auto up</key>
+			<true/>
+			<key>auto up duration</key>
+			<real>2</real>
+			<key>button Type</key>
+			<integer>10</integer>
+			<key>button actions</key>
+			<dict>
+				<key>button actions array</key>
+				<array/>
+			</dict>
+			<key>button color</key>
+			<string>0.746667 0.54207 0.219022 1.0</string>
+			<key>button name color</key>
+			<string>1.0 1.0 1.0 1.0</string>
+			<key>button name font size</key>
+			<real>14</real>
+			<key>button shape</key>
+			<string>Rounded Rect</string>
+			<key>cartesian_scale_end_X</key>
+			<real>100</real>
+			<key>cartesian_scale_end_Y</key>
+			<real>100</real>
+			<key>cartesian_scale_start_X</key>
+			<real>0.0</real>
+			<key>cartesian_scale_start_Y</key>
+			<real>0.0</real>
+			<key>cartesian_scale_step_X</key>
+			<real>1</real>
+			<key>cartesian_scale_step_Y</key>
+			<real>1</real>
+			<key>font_colour_formula_output</key>
+			<string>1.0,1.0,0.9</string>
+			<key>font_size_formula_output</key>
+			<real>14</real>
+			<key>jump on</key>
+			<string>DOWN</string>
+			<key>linked mask and button colors</key>
+			<true/>
+			<key>logger rect</key>
+			<string>167.8945313 120.734375 138.0 72.0</string>
+			<key>mask color</key>
+			<string>0.746667 0.54207 0.219022 1.0</string>
+			<key>name</key>
+			<string>Your Clips</string>
+			<key>output_time_format</key>
+			<string>HH:MM:SS.00</string>
+			<key>real picture</key>
+			<false/>
+			<key>secs in</key>
+			<real>-2</real>
+		</dict>
+		<dict>
+			<key>UUID pic</key>
+			<string>58F7860D-AE61-4C51-8E88-FA3A2CF797D9-1559-0000028F1E36C10B</string>
+			<key>alpha</key>
+			<real>1</real>
+			<key>button Type</key>
+			<integer>20</integer>
+			<key>button actions</key>
+			<dict>
+				<key>button actions array</key>
+				<array/>
+			</dict>
+			<key>button color</key>
+			<string>0.152439 0.693333 0.129422 1.0</string>
+			<key>button name color</key>
+			<string>1.0 1.0 1.0 1.0</string>
+			<key>button name font size</key>
+			<real>14</real>
+			<key>button shape</key>
+			<string>Rounded Rect</string>
+			<key>cartesian_scale_end_X</key>
+			<real>100</real>
+			<key>cartesian_scale_end_Y</key>
+			<real>100</real>
+			<key>cartesian_scale_start_X</key>
+			<real>0.0</real>
+			<key>cartesian_scale_start_Y</key>
+			<real>0.0</real>
+			<key>cartesian_scale_step_X</key>
+			<real>1</real>
+			<key>cartesian_scale_step_Y</key>
+			<real>1</real>
+			<key>font_colour_formula_output</key>
+			<string>1.0,1.0,0.9</string>
+			<key>font_size_formula_output</key>
+			<real>14</real>
+			<key>jump on</key>
+			<string>DOWN</string>
+			<key>linked mask and button colors</key>
+			<true/>
+			<key>logger rect</key>
+			<string>21.3632813 275.4116211 138.0 43.7929688</string>
+			<key>mask color</key>
+			<string>0.152439 0.693333 0.129422 1.0</string>
+			<key>name</key>
+			<string>Good</string>
+			<key>name category</key>
+			<string>Outcome</string>
+			<key>output_time_format</key>
+			<string>HH:MM:SS.00</string>
+			<key>real picture</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>UUID pic</key>
+			<string>80363B59-AD2F-4404-B3BD-96DC6F0CEFA9-1559-0000028F288A31C2</string>
+			<key>alpha</key>
+			<real>1</real>
+			<key>auto up</key>
+			<true/>
+			<key>auto up duration</key>
+			<real>2</real>
+			<key>button Type</key>
+			<integer>10</integer>
+			<key>button actions</key>
+			<dict>
+				<key>button actions array</key>
+				<array/>
+			</dict>
+			<key>button color</key>
+			<string>0.733333 0.722358 0.195556 1.0</string>
+			<key>button name color</key>
+			<string>0.0 0.0 0.0 1.0</string>
+			<key>button name font size</key>
+			<real>14</real>
+			<key>button shape</key>
+			<string>Rounded Rect</string>
+			<key>cartesian_scale_end_X</key>
+			<real>100</real>
+			<key>cartesian_scale_end_Y</key>
+			<real>100</real>
+			<key>cartesian_scale_start_X</key>
+			<real>0.0</real>
+			<key>cartesian_scale_start_Y</key>
+			<real>0.0</real>
+			<key>cartesian_scale_step_X</key>
+			<real>1</real>
+			<key>cartesian_scale_step_Y</key>
+			<real>1</real>
+			<key>font_colour_formula_output</key>
+			<string>1.0,1.0,0.9</string>
+			<key>font_size_formula_output</key>
+			<real>14</real>
+			<key>jump on</key>
+			<string>DOWN</string>
+			<key>linked mask and button colors</key>
+			<true/>
+			<key>logger rect</key>
+			<string>21.3632813 193.1142578 138.0 72.0</string>
+			<key>mask color</key>
+			<string>0.733333 0.722358 0.195556 1.0</string>
+			<key>name</key>
+			<string>Highlight Clips</string>
+			<key>output_time_format</key>
+			<string>HH:MM:SS.00</string>
+			<key>real picture</key>
+			<false/>
+			<key>secs in</key>
+			<real>-2</real>
+		</dict>
+		<dict>
+			<key>UUID pic</key>
+			<string>B4ECA1C6-B5D9-4C2A-8373-79302D03AFD8-1559-0000028F2BF32E64</string>
+			<key>alpha</key>
+			<real>1</real>
+			<key>auto up</key>
+			<true/>
+			<key>auto up duration</key>
+			<real>2</real>
+			<key>button Type</key>
+			<integer>10</integer>
+			<key>button actions</key>
+			<dict>
+				<key>button actions array</key>
+				<array/>
+			</dict>
+			<key>button color</key>
+			<string>0.088889 0.136054 0.666667 1.0</string>
+			<key>button name color</key>
+			<string>1.0 1.0 1.0 1.0</string>
+			<key>button name font size</key>
+			<real>14</real>
+			<key>button shape</key>
+			<string>Rounded Rect</string>
+			<key>cartesian_scale_end_X</key>
+			<real>100</real>
+			<key>cartesian_scale_end_Y</key>
+			<real>100</real>
+			<key>cartesian_scale_start_X</key>
+			<real>0.0</real>
+			<key>cartesian_scale_start_Y</key>
+			<real>0.0</real>
+			<key>cartesian_scale_step_X</key>
+			<real>1</real>
+			<key>cartesian_scale_step_Y</key>
+			<real>1</real>
+			<key>font_colour_formula_output</key>
+			<string>1.0,1.0,0.9</string>
+			<key>font_size_formula_output</key>
+			<real>14</real>
+			<key>jump on</key>
+			<string>DOWN</string>
+			<key>linked mask and button colors</key>
+			<true/>
+			<key>logger rect</key>
+			<string>167.8945313 193.1142578 138.0 72.0</string>
+			<key>mask color</key>
+			<string>0.088889 0.136054 0.666667 1.0</string>
+			<key>name</key>
+			<string>Event</string>
+			<key>output_time_format</key>
+			<string>HH:MM:SS.00</string>
+			<key>real picture</key>
+			<false/>
+			<key>secs in</key>
+			<real>-2</real>
+		</dict>
+		<dict>
+			<key>UUID pic</key>
+			<string>F1C57F78-A464-410E-ABDC-BF5CF1715084-1559-0000028F3BCDE1CB</string>
+			<key>alpha</key>
+			<real>1</real>
+			<key>button Type</key>
+			<integer>20</integer>
+			<key>button actions</key>
+			<dict>
+				<key>button actions array</key>
+				<array/>
+			</dict>
+			<key>button color</key>
+			<string>0.666667 0.088889 0.088889 1.0</string>
+			<key>button name color</key>
+			<string>1.0 1.0 1.0 1.0</string>
+			<key>button name font size</key>
+			<real>14</real>
+			<key>button shape</key>
+			<string>Rounded Rect</string>
+			<key>cartesian_scale_end_X</key>
+			<real>100</real>
+			<key>cartesian_scale_end_Y</key>
+			<real>100</real>
+			<key>cartesian_scale_start_X</key>
+			<real>0.0</real>
+			<key>cartesian_scale_start_Y</key>
+			<real>0.0</real>
+			<key>cartesian_scale_step_X</key>
+			<real>1</real>
+			<key>cartesian_scale_step_Y</key>
+			<real>1</real>
+			<key>font_colour_formula_output</key>
+			<string>1.0,1.0,0.9</string>
+			<key>font_size_formula_output</key>
+			<real>14</real>
+			<key>jump on</key>
+			<string>DOWN</string>
+			<key>linked mask and button colors</key>
+			<true/>
+			<key>logger rect</key>
+			<string>167.8945313 275.4116211 138.0 43.7929688</string>
+			<key>mask color</key>
+			<string>0.666667 0.088889 0.088889 1.0</string>
+			<key>name</key>
+			<string>Bad</string>
+			<key>name category</key>
+			<string>Outcome</string>
+			<key>output_time_format</key>
+			<string>HH:MM:SS.00</string>
+			<key>real picture</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>UUID pic</key>
+			<string>3A4CAE93-3675-4982-AFB8-1730853581DE-1559-0000028F3E48B1FF</string>
+			<key>alpha</key>
+			<real>1</real>
+			<key>button Type</key>
+			<integer>20</integer>
+			<key>button actions</key>
+			<dict>
+				<key>button actions array</key>
+				<array/>
+			</dict>
+			<key>button color</key>
+			<string>0.293689 0.57539 0.786667 1.0</string>
+			<key>button name color</key>
+			<string>1.0 1.0 1.0 1.0</string>
+			<key>button name font size</key>
+			<real>14</real>
+			<key>button shape</key>
+			<string>Rounded Rect</string>
+			<key>cartesian_scale_end_X</key>
+			<real>100</real>
+			<key>cartesian_scale_end_Y</key>
+			<real>100</real>
+			<key>cartesian_scale_start_X</key>
+			<real>0.0</real>
+			<key>cartesian_scale_start_Y</key>
+			<real>0.0</real>
+			<key>cartesian_scale_step_X</key>
+			<real>1</real>
+			<key>cartesian_scale_step_Y</key>
+			<real>1</real>
+			<key>font_colour_formula_output</key>
+			<string>1.0,1.0,0.9</string>
+			<key>font_size_formula_output</key>
+			<real>14</real>
+			<key>jump on</key>
+			<string>DOWN</string>
+			<key>linked mask and button colors</key>
+			<true/>
+			<key>logger rect</key>
+			<string>21.3632813 322.2695313 138.0 43.7929688</string>
+			<key>mask color</key>
+			<string>0.293689 0.57539 0.786667 1.0</string>
+			<key>name</key>
+			<string>Type A</string>
+			<key>name category</key>
+			<string>Type</string>
+			<key>output_time_format</key>
+			<string>HH:MM:SS.00</string>
+			<key>real picture</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>UUID pic</key>
+			<string>ED95C94F-88E5-4E0F-8013-D5467C0965FA-1559-0000028F40B7578D</string>
+			<key>alpha</key>
+			<real>1</real>
+			<key>button Type</key>
+			<integer>20</integer>
+			<key>button actions</key>
+			<dict>
+				<key>button actions array</key>
+				<array/>
+			</dict>
+			<key>button color</key>
+			<string>0.347022 0.813333 0.727684 1.0</string>
+			<key>button name color</key>
+			<string>0.0 0.0 0.0 1.0</string>
+			<key>button name font size</key>
+			<real>14</real>
+			<key>button shape</key>
+			<string>Rounded Rect</string>
+			<key>cartesian_scale_end_X</key>
+			<real>100</real>
+			<key>cartesian_scale_end_Y</key>
+			<real>100</real>
+			<key>cartesian_scale_start_X</key>
+			<real>0.0</real>
+			<key>cartesian_scale_start_Y</key>
+			<real>0.0</real>
+			<key>cartesian_scale_step_X</key>
+			<real>1</real>
+			<key>cartesian_scale_step_Y</key>
+			<real>1</real>
+			<key>font_colour_formula_output</key>
+			<string>1.0,1.0,0.9</string>
+			<key>font_size_formula_output</key>
+			<real>14</real>
+			<key>jump on</key>
+			<string>DOWN</string>
+			<key>linked mask and button colors</key>
+			<true/>
+			<key>logger rect</key>
+			<string>167.8945313 322.2695313 138.0 43.7929688</string>
+			<key>mask color</key>
+			<string>0.347022 0.813333 0.727684 1.0</string>
+			<key>name</key>
+			<string>Type B</string>
+			<key>name category</key>
+			<string>Type</string>
+			<key>output_time_format</key>
+			<string>HH:MM:SS.00</string>
+			<key>real picture</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Cartesian</key>
+			<true/>
+			<key>UUID pic</key>
+			<string>F4820163-6E0F-4991-8CE1-F8024040282F-1559-000002927890C21A</string>
+			<key>alpha</key>
+			<real>1</real>
+			<key>attribute stage</key>
+			<string>A</string>
+			<key>button Type</key>
+			<integer>40</integer>
+			<key>button actions</key>
+			<dict>
+				<key>button actions array</key>
+				<array/>
+			</dict>
+			<key>button color</key>
+			<string>0.5 0.5 0.5 1.0</string>
+			<key>button name color</key>
+			<string>1.0 1.0 1.0 1.0</string>
+			<key>button name font size</key>
+			<real>14</real>
+			<key>button shape</key>
+			<string></string>
+			<key>cartesian_scale_end_X</key>
+			<real>100</real>
+			<key>cartesian_scale_end_Y</key>
+			<real>100</real>
+			<key>cartesian_scale_start_X</key>
+			<real>0.0</real>
+			<key>cartesian_scale_start_Y</key>
+			<real>0.0</real>
+			<key>cartesian_scale_step_X</key>
+			<real>1</real>
+			<key>cartesian_scale_step_Y</key>
+			<real>1</real>
+			<key>font_colour_formula_output</key>
+			<string>1.0,1.0,0.9</string>
+			<key>font_size_formula_output</key>
+			<real>14</real>
+			<key>jump on</key>
+			<string>DOWN</string>
+			<key>linked mask and button colors</key>
+			<true/>
+			<key>logger rect</key>
+			<string>324.1507874 122.890625 341.2226563 244.2304688</string>
+			<key>mask color</key>
+			<string>0.5 0.5 0.5 1.0</string>
+			<key>name</key>
+			<string>Grid</string>
+			<key>name category</key>
+			<string>Location</string>
+			<key>name offset x</key>
+			<real>2.71484375</real>
+			<key>name offset y</key>
+			<real>-128.92578125</real>
+			<key>output_time_format</key>
+			<string>HH:MM:SS.00</string>
+			<key>real picture</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Cartesian</key>
+			<true/>
+			<key>UUID pic</key>
+			<string>126FB0EE-1DEF-460D-AE6D-3CAC6EEDA03B-1559-000002960A8896A6</string>
+			<key>alpha</key>
+			<real>1</real>
+			<key>attribute stage</key>
+			<string>A</string>
+			<key>button Type</key>
+			<integer>40</integer>
+			<key>button actions</key>
+			<dict>
+				<key>button actions array</key>
+				<array/>
+			</dict>
+			<key>button color</key>
+			<string>0.5 0.5 0.5 1.0</string>
+			<key>button name color</key>
+			<string>1.0 1.0 1.0 1.0</string>
+			<key>button name font size</key>
+			<real>14</real>
+			<key>button shape</key>
+			<string></string>
+			<key>cartesian_scale_end_X</key>
+			<real>100</real>
+			<key>cartesian_scale_end_Y</key>
+			<real>100</real>
+			<key>cartesian_scale_start_X</key>
+			<real>0.0</real>
+			<key>cartesian_scale_start_Y</key>
+			<real>0.0</real>
+			<key>cartesian_scale_step_X</key>
+			<real>1</real>
+			<key>cartesian_scale_step_Y</key>
+			<real>1</real>
+			<key>font_colour_formula_output</key>
+			<string>1.0,1.0,0.9</string>
+			<key>font_size_formula_output</key>
+			<real>14</real>
+			<key>jump on</key>
+			<string>DOWN</string>
+			<key>linked mask and button colors</key>
+			<true/>
+			<key>logger rect</key>
+			<string>669.8753662 123.6464844 341.2226563 244.2304688</string>
+			<key>mask color</key>
+			<string>0.5 0.5 0.5 1.0</string>
+			<key>name</key>
+			<string>Grid End</string>
+			<key>name category</key>
+			<string>Location End</string>
+			<key>name offset x</key>
+			<real>-0.6328125</real>
+			<key>name offset y</key>
+			<real>-130.1953125</real>
+			<key>output_time_format</key>
+			<string>HH:MM:SS.00</string>
+			<key>real picture</key>
+			<true/>
+		</dict>
+	</array>
+	<key>background color</key>
+	<string>0.05 0.05 0.05 1.0</string>
+	<key>last saved</key>
+	<date>2024-05-16T12:13:20Z</date>
+	<key>logger name</key>
+	<string>HTML Reports Guide</string>
+	<key>total</key>
+	<integer>10</integer>
+	<key>version markup</key>
+	<integer>2</integer>
+</dict>
+</plist>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>- description</key>
+	<string>a tabber is a group of Small Tabs in a placeholder - other objects in the place holder are files and inspectors</string>
+	<key>- kind</key>
+	<string>TABBER - A GROUP OF SMALL TABS</string>
+	<key>Tab array</key>
+	<array>
+		<dict>
+			<key>- description</key>
+			<string>This is a single small tab such as Timeline, Markup, Collection, Composer, Table or Matrix.</string>
+			<key>last selected time</key>
+			<real>1715853831.443531</real>
+			<key>linked Object UUID</key>
+			<string>7CA4CF8F-ED2A-463C-B736-3822E74E6857-1559-0000028EE4917DB3</string>
+			<key>object type</key>
+			<integer>27487</integer>
+			<key>object type name</key>
+			<string>Blank filler</string>
+			<key>remote</key>
+			<string>not used yet C</string>
+			<key>tab name</key>
+			<string>empty tab</string>
+			<key>vault bookmark for object</key>
+			<string></string>
+			<key>vault for object</key>
+			<string></string>
+		</dict>
+	</array>
+	<key>UUID parent super tab</key>
+	<string>EB32FE02-47DC-4BCF-B8B4-7A5DF2D94FBC-1559-0000028EE47CEB8C</string>
+	<key>UUID parent window</key>
+	<string>86C57145-8585-498E-8128-E7668FD8285E-1559-0000028EE47CEB0D</string>
+	<key>UUID tabber</key>
+	<string>EA00FDC5-F03E-48EC-9A45-770CB609D12C-1559-0000028EE47D0782</string>
+	<key>[====] parent_supertab_name</key>
+	<string>HTML Reports Guide</string>
+	<key>display set up options</key>
+	<string>CHOOSE_SPLITS</string>
+	<key>last written</key>
+	<date>2024-05-16T10:03:52Z</date>
+	<key>last written seconds</key>
+	<real>1715853832.573878</real>
+	<key>number of tab</key>
+	<integer>1</integer>
+	<key>selected tab</key>
+	<integer>1</integer>
+</dict>
+</plist>

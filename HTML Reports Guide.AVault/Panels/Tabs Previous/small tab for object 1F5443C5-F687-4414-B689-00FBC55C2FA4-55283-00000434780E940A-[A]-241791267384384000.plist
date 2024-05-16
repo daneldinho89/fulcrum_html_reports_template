@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>- description</key>
+	<string>a tabber is a group of Small Tabs in a placeholder - other objects in the place holder are files and inspectors</string>
+	<key>- kind</key>
+	<string>TABBER - A GROUP OF SMALL TABS</string>
+	<key>Tab array</key>
+	<array>
+		<dict>
+			<key>- description</key>
+			<string>This is a single small tab such as Timeline, Markup, Collection, Composer, Table or Matrix.</string>
+			<key>last selected time</key>
+			<real>1714824242.6885419</real>
+			<key>linked Object UUID</key>
+			<string>1F5443C5-F687-4414-B689-00FBC55C2FA4-55283-00000434780E940A-[A]-241791267384384000</string>
+			<key>object type</key>
+			<integer>27465</integer>
+			<key>object type name</key>
+			<string>Chronology2</string>
+			<key>remote</key>
+			<string>not used yet C</string>
+			<key>tab name</key>
+			<string>Statsbomb Sequences DW</string>
+			<key>vault bookmark for object</key>
+			<data>
+			Ym9va/gDAAAAAAQQMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+			AAAAAAAAAAAA6AIAAAQAAAADAwAAAAIAAAUAAAABAQAAVXNlcnMA
+			AAAOAAAAAQEAAGRhbmV3aWxsaWFtc29uAAAJAAAAAQEAAERvY3Vt
+			ZW50cwAAAAgAAAABAQAARm9vdGJhbGwUAAAAAQEAADFEZW1vIEZv
+			bGRlcnMuQVZhdWx0FAAAAAEGAAAQAAAAIAAAADgAAABMAAAAXAAA
+			AAgAAAAEAwAAhFwAAAAAAAAIAAAABAMAAHClAwAAAAAACAAAAAQD
+			AAChpQMAAAAAAAgAAAAEAwAAOz8OAAAAAAAIAAAABAMAAALzhAAA
+			AAAAFAAAAAEGAACUAAAApAAAALQAAADEAAAA1AAAAAgAAAAABAAA
+			QcPdT2JzLIoYAAAAAQIAAAIAAAAAAAAADwAAAAAAAAAAAAAAAAAA
+			AAgAAAAEAwAAAwAAAAAAAAAEAAAAAwMAAPUBAAAIAAAAAQkAAGZp
+			bGU6Ly8vDAAAAAEBAABNYWNpbnRvc2ggSEQIAAAABAMAAACQgpbn
+			AAAACAAAAAAEAABBxdYDwYAAACQAAAABAQAAMDM0MDdENDktMDlF
+			Ny00RjBGLUI5MTQtRDAyMkU4NzNBMTQyGAAAAAECAACBAAAAAQAA
+			AO8TAAABAAAAAAAAAAAAAAABAAAAAQEAAC8AAAAAAAAAAQUAAO8A
+			AAABAgAANjZkYmU0ZWE5NmNjMmUzNTliMWJjMjgzMGVhM2MzZTNh
+			MDZmYzNkZDg4MjRhYWJkZDg2YmNmOWU4ZDA3OTcyYTswMDswMDAw
+			MDAwMDswMDAwMDAwMDswMDAwMDAwMDswMDAwMDAwMDAwMDAwMDIw
+			O2NvbS5hcHBsZS5hcHAtc2FuZGJveC5yZWFkLXdyaXRlOzAxOzAx
+			MDAwMDEwOzAwMDAwMDAwMDA4NGYzMDI7NGU7L3VzZXJzL2RhbmV3
+			aWxsaWFtc29uL2RvY3VtZW50cy9mb290YmFsbC8xZGVtbyBmb2xk
+			ZXJzLmF2YXVsdAAA2AAAAP7///8BAAAAAAAAABEAAAAEEAAAeAAA
+			AAAAAAAFEAAA5AAAAAAAAAAQEAAAEAEAAAAAAABAEAAAAAEAAAAA
+			AAACIAAA3AEAAAAAAAAFIAAATAEAAAAAAAAQIAAAXAEAAAAAAAAR
+			IAAAkAEAAAAAAAASIAAAcAEAAAAAAAATIAAAgAEAAAAAAAAgIAAA
+			vAEAAAAAAAAwIAAA6AEAAAAAAAABwAAAMAEAAAAAAAARwAAAIAAA
+			AAAAAAASwAAAQAEAAAAAAAAQ0AAABAAAAAAAAACA8AAA8AEAAAAA
+			AAA=
+			</data>
+			<key>vault for object</key>
+			<string>/Users/danewilliamson/Documents/Football/1Demo Folders.AVault</string>
+		</dict>
+	</array>
+	<key>UUID parent super tab</key>
+	<string>265B8ABA-8E67-46C0-B588-59366DFD9468-26929-00000205F87114C7</string>
+	<key>UUID parent window</key>
+	<string>679D3246-0B9D-41FA-9E0E-730D646DF4D1-736-000001EE12CDF58A</string>
+	<key>UUID tabber</key>
+	<string>B158734D-EF7A-43A7-B2BD-809184453D9F-26929-00000205F87184C0</string>
+	<key>[====] parent_supertab_name</key>
+	<string>Super tab 623</string>
+	<key>display set up options</key>
+	<string>CHOOSE_SPLITS</string>
+	<key>last written</key>
+	<date>2024-05-16T10:04:03Z</date>
+	<key>last written seconds</key>
+	<real>1715853843.3821311</real>
+	<key>number of tab</key>
+	<integer>1</integer>
+	<key>selected tab</key>
+	<integer>1</integer>
+</dict>
+</plist>

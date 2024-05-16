@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>- description</key>
+	<string>a tabber is a group of Small Tabs in a placeholder - other objects in the place holder are files and inspectors</string>
+	<key>- kind</key>
+	<string>TABBER - A GROUP OF SMALL TABS</string>
+	<key>Tab array</key>
+	<array>
+		<dict>
+			<key>- description</key>
+			<string>This is a single small tab such as Timeline, Markup, Collection, Composer, Table or Matrix.</string>
+			<key>last selected time</key>
+			<real>1715855192.6246638</real>
+			<key>linked Object UUID</key>
+			<string>0CF899CC-43E7-471A-A128-C5FE9A0856BB-1559-0000028EF12E4C7A-[A]-248797227863371616</string>
+			<key>object type</key>
+			<integer>27470</integer>
+			<key>object type name</key>
+			<string>Action logger</string>
+			<key>remote</key>
+			<string>not used yet C</string>
+			<key>tab name</key>
+			<string>HTML Reports Guide</string>
+			<key>vault bookmark for object</key>
+			<data>
+			Ym9va7gEAAAAAAQQMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+			AAAAAAAAAAAAqAMAAAQAAAADAwAAAAIAAAUAAAABAQAAVXNlcnMA
+			AAAOAAAAAQEAAGRhbmV3aWxsaWFtc29uAAAJAAAAAQEAAERvY3Vt
+			ZW50cwAAABEAAAABAQAAQW5nbGVzSFRNTFJlcG9ydHMAAAAOAAAA
+			AQEAAERhbmVXaWxsaWFtc29uAAAdAAAAAQEAAGZ1bGNydW1faHRt
+			bF9yZXBvcnRzX3RlbXBsYXRlAAAAGQAAAAEBAABIVE1MIFJlcG9y
+			dHMgR3VpZGUuQVZhdWx0AAAAHAAAAAEGAAAQAAAAIAAAADgAAABM
+			AAAAaAAAAIAAAACoAAAACAAAAAQDAACEXAAAAAAAAAgAAAAEAwAA
+			cKUDAAAAAAAIAAAABAMAAKGlAwAAAAAACAAAAAQDAACBg4kAAAAA
+			AAgAAAAEAwAAkPqVAAAAAAAIAAAABAMAALU5ngIAAAAACAAAAAQD
+			AACgy5YEAAAAABwAAAABBgAA8AAAAAABAAAQAQAAIAEAADABAABA
+			AQAAUAEAAAgAAAAABAAAQcX7CMOkSvEYAAAAAQIAAAIAAAAAAAAA
+			DwAAAAAAAAAAAAAAAAAAAAgAAAAEAwAABQAAAAAAAAAEAAAAAwMA
+			APUBAAAIAAAAAQkAAGZpbGU6Ly8vDAAAAAEBAABNYWNpbnRvc2gg
+			SEQIAAAABAMAAACQgpbnAAAACAAAAAAEAABBxdYDwYAAACQAAAAB
+			AQAAMDM0MDdENDktMDlFNy00RjBGLUI5MTQtRDAyMkU4NzNBMTQy
+			GAAAAAECAACBAAAAAQAAAO8TAAABAAAAAAAAAAAAAAABAAAAAQEA
+			AC8AAAAAAAAAAQUAACoBAAABAgAANTJkN2M0OGZjZjgyOTEzNDM5
+			YWU0MmJhNTM3MGFkMzIwODA0YTNjYTI4YTg5OTI5OGI5MjBjMzZj
+			ODliMTgyNjswMDswMDAwMjAwMDswMDAwMDAwMDswMDAwMDAwMDsw
+			MDAwMDAwMDAwMDAwMDIwO2NvbS5hcHBsZS5hcHAtc2FuZGJveC5y
+			ZWFkLXdyaXRlOzAxOzAxMDAwMDEwOzAwMDAwMDAwMDQ5NmNiYTA7
+			NGU7L3VzZXJzL2RhbmV3aWxsaWFtc29uL2RvY3VtZW50cy9hbmds
+			ZXNodG1scmVwb3J0cy9kYW5ld2lsbGlhbXNvbi9mdWxjcnVtX2h0
+			bWxfcmVwb3J0c190ZW1wbGF0ZS9odG1sIHJlcG9ydHMgZ3VpZGUu
+			YXZhdWx0AAAA2AAAAP7///8BAAAAAAAAABEAAAAEEAAAzAAAAAAA
+			AAAFEAAAYAEAAAAAAAAQEAAAlAEAAAAAAABAEAAAhAEAAAAAAAAC
+			IAAAYAIAAAAAAAAFIAAA0AEAAAAAAAAQIAAA4AEAAAAAAAARIAAA
+			FAIAAAAAAAASIAAA9AEAAAAAAAATIAAABAIAAAAAAAAgIAAAQAIA
+			AAAAAAAwIAAAbAIAAAAAAAABwAAAtAEAAAAAAAARwAAAIAAAAAAA
+			AAASwAAAxAEAAAAAAAAQ0AAABAAAAAAAAACA8AAAdAIAAAAAAAA=
+			</data>
+			<key>vault for object</key>
+			<string>/Users/danewilliamson/Documents/AnglesHTMLReports/DaneWilliamson/fulcrum_html_reports_template/HTML Reports Guide.AVault</string>
+		</dict>
+	</array>
+	<key>UUID parent super tab</key>
+	<string>EB32FE02-47DC-4BCF-B8B4-7A5DF2D94FBC-1559-0000028EE47CEB8C</string>
+	<key>UUID parent window</key>
+	<string>86C57145-8585-498E-8128-E7668FD8285E-1559-0000028EE47CEB0D</string>
+	<key>UUID tabber</key>
+	<string>77DF9A04-6B68-42E0-B4E8-CB12532D6029-1559-0000028EF3F6C5B3</string>
+	<key>[====] parent_supertab_name</key>
+	<string>HTML Reports Guide</string>
+	<key>display set up options</key>
+	<string>NONE</string>
+	<key>last written</key>
+	<date>2024-05-16T10:29:11Z</date>
+	<key>last written seconds</key>
+	<real>1715855351.905421</real>
+	<key>number of tab</key>
+	<integer>1</integer>
+	<key>selected tab</key>
+	<integer>1</integer>
+</dict>
+</plist>

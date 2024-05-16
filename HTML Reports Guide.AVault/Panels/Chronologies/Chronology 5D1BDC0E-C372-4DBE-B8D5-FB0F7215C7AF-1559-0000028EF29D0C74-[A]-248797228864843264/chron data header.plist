@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>UUID chronology header</key>
+	<string>5D1BDC0E-C372-4DBE-B8D5-FB0F7215C7AF-1559-0000028EF29D0C74-[A]-248797228864843264</string>
+	<key>UUID linked collection</key>
+	<string></string>
+	<key>UUID secondary chronology header</key>
+	<string>59613229-DBC8-4B6D-9E76-D3850274FDE6-1559-000002FD2A223BB8</string>
+	<key>body left</key>
+	<real>-743.12429586668213</real>
+	<key>chronology name</key>
+	<string>HTML Reports Guide</string>
+	<key>created by</key>
+	<string>CFC188FCAB81A9A5E457F74E06066A42</string>
+	<key>cursor seconds</key>
+	<real>272.04819138410494</real>
+	<key>duration</key>
+	<real>482.83740120808653</real>
+	<key>last saved</key>
+	<date>2024-05-16T16:02:54Z</date>
+	<key>name column width</key>
+	<real>145.50390625</real>
+	<key>pixels per second</key>
+	<real>3.490001200839286</real>
+	<key>top</key>
+	<real>0.0</real>
+	<key>unlinked collection message created by</key>
+	<string>CFC188FCAB81A9A5E457F74E06066A42</string>
+</dict>
+</plist>

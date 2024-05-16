@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>big scroller offset x</key>
+	<real>0.0</real>
+	<key>big scroller offset y</key>
+	<real>-95.371875000000074</real>
+	<key>scaleUnitSquare</key>
+	<real>1</real>
+</dict>
+</plist>

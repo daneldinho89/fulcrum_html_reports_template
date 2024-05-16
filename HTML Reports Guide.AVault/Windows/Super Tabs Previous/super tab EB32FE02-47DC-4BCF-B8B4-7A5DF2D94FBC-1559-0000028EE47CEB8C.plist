@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>HTML Reports Guide</string>
+	<key>placeholders</key>
+	<array>
+		<dict>
+			<key>UUID of placeholder</key>
+			<string>16436EE5-4D8A-4BB6-B75B-B5A32B7D7117-1559-0000028EE47619CC-[A]-248797218971780928</string>
+			<key>files switcher mode</key>
+			<integer>24316</integer>
+			<key>linked object TYPE</key>
+			<integer>27488</integer>
+			<key>linked object UUID</key>
+			<string>8345D600-17B3-4538-BF84-374C5271E23D-1559-0000028EE47CEC23</string>
+			<key>linked object type name</key>
+			<string>Files list</string>
+			<key>prop bottom</key>
+			<real>1</real>
+			<key>prop left</key>
+			<real>0.0</real>
+			<key>prop right</key>
+			<real>0.14999999999999999</real>
+			<key>prop top</key>
+			<real>0.0</real>
+			<key>search string</key>
+			<string></string>
+			<key>vaults</key>
+			<dict>
+				<key>vault disclosures</key>
+				<array>
+					<dict>
+						<key>disclosed</key>
+						<false/>
+						<key>vault</key>
+						<string>/Users/danewilliamson/Movies/Home Folder.AVault</string>
+					</dict>
+					<dict>
+						<key>disclosed</key>
+						<false/>
+						<key>vault</key>
+						<string>/Users/danewilliamson/Documents/Football/1Demo Folders.AVault</string>
+					</dict>
+					<dict>
+						<key>disclosed</key>
+						<false/>
+						<key>vault</key>
+						<string>/Users/danewilliamson/Documents/Alyson Annan/Alyson Annan.AVault</string>
+					</dict>
+					<dict>
+						<key>disclosed</key>
+						<false/>
+						<key>vault</key>
+						<string>/Users/danewilliamson/Desktop/desktop/amplify uploads/Arsenal v Liverpool.AVault</string>
+					</dict>
+					<dict>
+						<key>disclosed</key>
+						<false/>
+						<key>vault</key>
+						<string>/Users/danewilliamson/Downloads/Dax Béziers.AVault</string>
+					</dict>
+					<dict>
+						<key>disclosed</key>
+						<false/>
+						<key>vault</key>
+						<string>/Users/danewilliamson/DW Analysis HardDrive/121Coaching/EdRichardson.AVault</string>
+					</dict>
+					<dict>
+						<key>disclosed</key>
+						<false/>
+						<key>vault</key>
+						<string>/Users/danewilliamson/Documents/Football/EPL Analysis 2022:23.AVault</string>
+					</dict>
+					<dict>
+						<key>disclosed</key>
+						<false/>
+						<key>vault</key>
+						<string>/Users/danewilliamson/Documents/Football/FIFA/FIFA.AVault</string>
+					</dict>
+					<dict>
+						<key>disclosed</key>
+						<false/>
+						<key>vault</key>
+						<string>/Users/danewilliamson/Documents/Football/FulcrumFC.AVault</string>
+					</dict>
+					<dict>
+						<key>disclosed</key>
+						<false/>
+						<key>vault</key>
+						<string>/Users/danewilliamson/Documents/Football/GresleyFC/GresleyFc.AVault</string>
+					</dict>
+					<dict>
+						<key>disclosed</key>
+						<false/>
+						<key>vault</key>
+						<string>/Users/danewilliamson/Documents/HorseRacing/HorseRacingEdmunds.AVault</string>
+					</dict>
+					<dict>
+						<key>disclosed</key>
+						<true/>
+						<key>vault</key>
+						<string>/Users/danewilliamson/Desktop/fulcrum_html_reports_template-main/HTML Reports Guide.AVault</string>
+					</dict>
+					<dict>
+						<key>disclosed</key>
+						<true/>
+						<key>vault</key>
+						<string>/Users/danewilliamson/Documents/AnglesHTMLReports/DaneWilliamson/fulcrum_html_reports_template/HTML Reports Guide.AVault</string>
+					</dict>
+					<dict>
+						<key>disclosed</key>
+						<false/>
+						<key>vault</key>
+						<string>/Users/danewilliamson/Documents/Limerick_GAA/Limerick GAA.AVault</string>
+					</dict>
+					<dict>
+						<key>disclosed</key>
+						<false/>
+						<key>vault</key>
+						<string>/Users/danewilliamson/Documents/Football/Manchester United/ManUtdRecruitment.AVault</string>
+					</dict>
+					<dict>
+						<key>disclosed</key>
+						<false/>
+						<key>vault</key>
+						<string>/Users/danewilliamson/Documents/Football/Melbourne Victory/Melbourne Victory.AVault</string>
+					</dict>
+					<dict>
+						<key>disclosed</key>
+						<true/>
+						<key>vault</key>
+						<string>/Users/danewilliamson/Desktop/desktop/amplify uploads/Multi Angle Split Clips.AVault</string>
+					</dict>
+					<dict>
+						<key>disclosed</key>
+						<false/>
+						<key>vault</key>
+						<string>/Users/danewilliamson/Documents/Football/WestBromWomen/wbaw/WBAW_221023_WNLN_Burnley_A.AVault</string>
+					</dict>
+					<dict>
+						<key>disclosed</key>
+						<false/>
+						<key>vault</key>
+						<string>/Users/danewilliamson/Documents/Football/WestBromWomen/wbaw/WBAW_221106_WNLN_Derby_H.AVault</string>
+					</dict>
+					<dict>
+						<key>disclosed</key>
+						<false/>
+						<key>vault</key>
+						<string>/Users/danewilliamson/Documents/Football/WestBromWomen/wbaw/WBAW_221113_WFAC_Crewe_H.AVault</string>
+					</dict>
+					<dict>
+						<key>disclosed</key>
+						<false/>
+						<key>vault</key>
+						<string>/Users/danewilliamson/Downloads/WestBrom.AVault</string>
+					</dict>
+					<dict>
+						<key>disclosed</key>
+						<false/>
+						<key>vault</key>
+						<string>/Users/danewilliamson/Documents/Football/WestBromWomen/WestBromWomen.AVault</string>
+					</dict>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UUID of placeholder</key>
+			<string>D76AB3E9-8CE0-41E0-92D9-F537CC666E21-1559-0000028EE476D1E4-[A]-248797218973744288</string>
+			<key>linked object TYPE</key>
+			<integer>27485</integer>
+			<key>linked object UUID</key>
+			<string>CD7A9BDD-1D9E-42C1-A910-870991078CCC-1559-0000028EE47D06F5</string>
+			<key>linked object type name</key>
+			<string>Inspector</string>
+			<key>prop bottom</key>
+			<real>1</real>
+			<key>prop left</key>
+			<real>0.78104729137447404</real>
+			<key>prop right</key>
+			<real>1</real>
+			<key>prop top</key>
+			<real>0.0</real>
+		</dict>
+		<dict>
+			<key>UUID of placeholder</key>
+			<string>05051746-6BFA-435E-B615-8D2D56378FCD-1559-0000028EE4770532-[A]-248797218974291424</string>
+			<key>linked object TYPE</key>
+			<integer>27472</integer>
+			<key>linked object UUID</key>
+			<string>EA00FDC5-F03E-48EC-9A45-770CB609D12C-1559-0000028EE47D0782</string>
+			<key>linked object type name</key>
+			<string>Tabber</string>
+			<key>prop bottom</key>
+			<real>1</real>
+			<key>prop left</key>
+			<real>0.14999999999999999</real>
+			<key>prop right</key>
+			<real>0.78104729137447404</real>
+			<key>prop top</key>
+			<real>0.5</real>
+		</dict>
+		<dict>
+			<key>UUID of placeholder</key>
+			<string>A7332F92-0006-4EE1-8C0B-842FC53D9B86-1559-0000028EEA2A679A-[A]-248797222959394336</string>
+			<key>linked object TYPE</key>
+			<integer>27472</integer>
+			<key>linked object UUID</key>
+			<string>77DF9A04-6B68-42E0-B4E8-CB12532D6029-1559-0000028EF3F6C5B3</string>
+			<key>linked object type name</key>
+			<string>Tabber</string>
+			<key>prop bottom</key>
+			<real>0.5</real>
+			<key>prop left</key>
+			<real>0.14999999999999999</real>
+			<key>prop right</key>
+			<real>0.78104729137447404</real>
+			<key>prop top</key>
+			<real>0.0</real>
+		</dict>
+	</array>
+	<key>position</key>
+	<integer>1</integer>
+	<key>selected</key>
+	<true/>
+	<key>super tab UUID</key>
+	<string>EB32FE02-47DC-4BCF-B8B4-7A5DF2D94FBC-1559-0000028EE47CEB8C</string>
+</dict>
+</plist>
