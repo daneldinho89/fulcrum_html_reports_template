@@ -34,7 +34,7 @@
     var pagename = url.substring(url.lastIndexOf('/')+1, url.length -5);
     if (pagename === "index" || url.slice(-1) === "/") { pagename = "home"};
 
-    const configUrl = "json/config_"+ pagename +".json";
+    const configUrl = "config/config_"+ pagename +".json";
 
     d3.json(configUrl).then(function(config){
 
