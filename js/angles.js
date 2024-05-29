@@ -2636,17 +2636,36 @@ function create_update_button(button_text, button_id, location_id, update_div_fu
 * ---------------------------------------------------------------
 * Function to create a button to link to another page or refresh the current page
 ****************************************************************/
-function create_button_link(id, button_text, location_id, link_path) {
+function create_button_link(id, button_text, location_id, link_path, color = '', alignment = '') {
     // Select the HTML element with the specified selector
     var element = d3.select(location_id);
-      
+
+    // Determine alignment class
+    if (alignment === 'center') {
+        alignment_class = 'd-flex justify-content-center';
+    } else if (alignment === 'right') {
+        alignment_class = 'd-flex justify-content-end';
+    } else {
+        alignment_class = 'd-flex justify-content-start';
+    }
+
+    // Create a container div with the alignment class
+    var container = element.append('div')
+                           .attr("class", alignment_class);
+
     // Create a button
-    element.append('a')
-            .attr("id", id)
-            .attr("class", "btn btn-dark m-1")
-            .attr("href",  link_path)
-            .text(button_text);
-};
+    var button = container.append('a')
+                        .attr("id", id)
+                        .attr("class", `btn btn-dark m-1 ${alignment_class}`)
+                        .attr("href", link_path)
+                        .text(button_text);
+
+    // Apply custom color if provided
+    if (color) {
+        button.style("background-color", color);
+        button.style("border-color", color);
+    }
+}
 
 /****************************************************************
 * CREATE TEXT
@@ -2803,7 +2822,9 @@ function create_config_content(config, var_results) {
                     var text = config.content[el][1];
                     var location_id = config.content[el][2];
                     var link_path = config.content[el][3];
-                    create_button_link(id, text, location_id, link_path);
+                    var custom_color = config.content[el][4];
+                    var alignment = config.content[el][5];
+                    create_button_link(id, text, location_id, link_path, custom_color, alignment);
                     break;
                 case "create_scatter_plot":
                     var id = el;
