@@ -2636,7 +2636,7 @@ function create_update_button(button_text, button_id, location_id, update_div_fu
 * ---------------------------------------------------------------
 * Function to create a button to link to another page or refresh the current page
 ****************************************************************/
-function create_button_link(id, button_text, location_id, link_path, color = '', alignment = '') {
+function create_button_link(id, button_text, location_id, link_path, colour = '', alignment = '') {
     // Select the HTML element with the specified selector
     var element = d3.select(location_id);
 
@@ -2661,9 +2661,9 @@ function create_button_link(id, button_text, location_id, link_path, color = '',
                         .text(button_text);
 
     // Apply custom color if provided
-    if (color) {
-        button.style("background-color", color);
-        button.style("border-color", color);
+    if (colour) {
+        button.style("background-color", colour);
+        button.style("border-color", colour);
     }
 }
 
@@ -2822,9 +2822,10 @@ function create_config_content(config, var_results) {
                     var text = config.content[el][1];
                     var location_id = config.content[el][2];
                     var link_path = config.content[el][3];
-                    var custom_color = config.content[el][4];
+                    var custom_colour = config.content[el][4] ? config.content[el][4] : "#532CEB"
+                    var colour = config.colours[custom_colour] ? config.colours[custom_colour] : custom_colour;
                     var alignment = config.content[el][5];
-                    create_button_link(id, text, location_id, link_path, custom_color, alignment);
+                    create_button_link(id, text, location_id, link_path, colour, alignment);
                     break;
                 case "create_scatter_plot":
                     var id = el;
