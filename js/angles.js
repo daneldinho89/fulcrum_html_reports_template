@@ -2669,7 +2669,7 @@ function create_text(id, text, location_id, size, textcolour, align) {
 * ---------------------------------------------------------------
 * Function to create some text for the page
 ****************************************************************/
-function create_image(id, image_location, location_id, width) {
+function create_image(id, image_location, location_id, width, href_link = "#") {
     // Select the HTML element with the specified selector
     var element = d3.select(location_id);
 
@@ -2678,7 +2678,8 @@ function create_image(id, image_location, location_id, width) {
             .attr("id", id)
             .attr("src", image_location)
             .attr("class", "img-fluid")
-            .attr("style", "padding: 10px; width:"+width+"px; margin: 0 auto; display: block;");
+            .attr("style", "padding: 10px; width:"+width+"px; margin: 0 auto; display: block;")
+            .attr("href", href_link);
 };
 
 /****************************************************************
@@ -2783,7 +2784,8 @@ function create_config_content(config, var_results) {
                     var image_location = config.content[el][1];
                     var location_id = config.content[el][2];
                     var width = config.content[el][3] ? config.content[el][3] : "100%";
-                    create_image(id, image_location, location_id, width);
+                    var href_link = config.content[el][4] ? config.content[el][4] : "#";
+                    create_image(id, image_location, location_id, width, href_link);
                     break;
                 case "create_table":
                     var id = el;
