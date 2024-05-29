@@ -2690,15 +2690,19 @@ function create_text(id, text, location_id, size, textcolour, align) {
 ****************************************************************/
 function create_image(id, image_location, location_id, width, href_link = "#") {
     // Select the HTML element with the specified selector
-    var element = d3.select(location_id);
+
+    if (href_link != "#") {
+        var element = d3.select(location_id).append("a").attr("href", href_link);        
+    } else {
+        var element = d3.select(location_id)
+    }
 
     // Create image
     element.append('img')
             .attr("id", id)
             .attr("src", image_location)
             .attr("class", "img-fluid")
-            .attr("style", "padding: 10px; width:"+width+"px; margin: 0 auto; display: block;")
-            .attr("href", href_link);
+            .attr("style", "padding: 10px; width:"+width+"px; margin: 0 auto; display: block;");
 };
 
 /****************************************************************
