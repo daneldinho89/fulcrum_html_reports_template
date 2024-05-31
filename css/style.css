@@ -1,8 +1,11 @@
-:root {
-    --colour1: rgb(89, 41, 245);
-    --colour2: #ffffff;
-    --colour3: #baa807;
-    --colour4: #424242;
-    --colour5: #9d2525;
-  }
+.no-link-style {
+    color: inherit; /* Inherits color from parent element */
+    text-decoration: none; /* Removes underline */
+}
 
+.no-link-style:hover,
+.no-link-style:focus,
+.no-link-style:active {
+    color: inherit; /* Keeps color on hover/focus/active */
+    text-decoration: none; /* Removes underline on hover/focus/active */
+}
