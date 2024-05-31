@@ -1461,16 +1461,25 @@ function create_div_background(id, background_image_path, location_id) {
 * ---------------------------------------------------------------
 * Function to create a data card with a single data value
 ****************************************************************/
-function create_data_card(id, title, data, location_id, colour = "#532CEB", textcolour = "white", height= "100", time = false) {
+function create_data_card(id, title, data, location_id, colour = "#532CEB", textcolour = "white", height= "100", time = false, href_link = "#") {
     // Create a card element
-    d3.select(location_id)
+    let container = d3.select(location_id)
         .append("div")
         .attr("class", "card m-1")
         .attr("style", "background-color:" + colour + "; color:" + textcolour +"; height:" + height + "px; border: none;")
         .attr("id", id)
-        .append("div")
+    
+    // Check the value of href_link and append accordingly
+    if (href_link !== "#") {
+        container = container.append("a")
+            .attr("href", href_link)
+            .attr("style", "color: inherit !important; text-decoration: none !important;");
+    }
+    
+    let card = container.append("div")
         .attr("class", "card-body d-flex flex-column justify-content-center align-items-center")
-        .append("h5")
+    
+    card.append("h5")
         .attr("class", "card-title text-center")
         .attr("style", "font-size:" + height/6 + "px;")
         .text(title)
@@ -1485,7 +1494,7 @@ function create_data_card(id, title, data, location_id, colour = "#532CEB", text
 * ---------------------------------------------------------------
 * Function to create a donut chart with 2 values - success/fail
 ****************************************************************/
-function create_success_donut(id, title, success_val, failure_val, location_id, size, colour = "#532CEB"){
+function create_success_donut(id, title, success_val, failure_val, location_id, size, colour = "#532CEB", href_link = "#"){
 
     let perc = percentage(success_val,(success_val + failure_val));
     let width = size;
@@ -1515,11 +1524,18 @@ function create_success_donut(id, title, success_val, failure_val, location_id, 
         .text(title)
         .style("text-align", "center");
 
+    // Check the value of href_link and append accordingly
+    if (href_link !== "#") {
+        wrapper = wrapper.append("a")
+            .attr("href", href_link);
+    }
+
     // Create svg for donut inside the wrapper
     var svg = wrapper.append("svg")
         .attr("width", width)
         .attr("height", height)
         .attr("class", "fluid");
+        
 
     // create group for defensive donut in the svg
     var g = svg.append("g")
@@ -1565,7 +1581,7 @@ function create_success_donut(id, title, success_val, failure_val, location_id, 
 * Function to create a horizontal elliptical bar with 2 values -
 * success/fail
 ****************************************************************/
-function create_contest_bar(id, title, success_val, failure_val, location_id, width, height, colours = ["#532CEB", "#C34247"]) {
+function create_contest_bar(id, title, success_val, failure_val, location_id, width, height, colours = ["#532CEB", "#C34247"], href_link = "#") {
 
     // Create array of data values
     let data_values = [success_val, failure_val]
@@ -1573,11 +1589,18 @@ function create_contest_bar(id, title, success_val, failure_val, location_id, wi
     let bar_corner_radius = 2
 
     // Create an svg in the body element
-    let graph = d3.select(location_id)
+    let container = d3.select(location_id)
             .append("div")
             .attr("id", id)
             .attr("class","d-flex py-1 justify-content-center")
-            .append("svg")
+
+    // Check the value of href_link and append accordingly
+    if (href_link !== "#") {
+        container = container.append("a")
+            .attr("href", href_link);
+    }
+
+    let graph = container.append("svg")
             .attr("width", width)
             .attr("height", height)
             .attr("class", "fluid");
@@ -1586,7 +1609,7 @@ function create_contest_bar(id, title, success_val, failure_val, location_id, wi
     let bar = graph.append("g")
             .attr("transform", function(d, i) {
                     return "translate(0," + i * height + ")";
-            }); 
+            });
 
     // Draw background bar
     let back_bar = bar.append("rect")
@@ -1664,7 +1687,7 @@ function create_contest_bar(id, title, success_val, failure_val, location_id, wi
 * Function to create a horizontal elliptical bar with 2 values -
 * success/fail
 ****************************************************************/
-function create_possession_bar(id, title, success_val, failure_val, location_id, width, height, colours = ["#532CEB", "#C34247"]) {
+function create_possession_bar(id, title, success_val, failure_val, location_id, width, height, colours = ["#532CEB", "#C34247"], href_link = "#") {
 
     var success_mins = Math.floor(success_val/60);
     var success_secs_unformat = Math.round(success_val % 60)
@@ -1683,11 +1706,18 @@ function create_possession_bar(id, title, success_val, failure_val, location_id,
     let bar_corner_radius = 2
 
     // Create an svg in the body element
-    let graph = d3.select(location_id)
+    let container = d3.select(location_id)
             .append("div")
             .attr("id", id)
             .attr("class","d-flex py-1 justify-content-center")
-            .append("svg")
+    
+    // Check the value of href_link and append accordingly
+    if (href_link !== "#") {
+        container = container.append("a")
+            .attr("href", href_link);
+    }
+    
+    let graph = container.append("svg")
             .attr("width", width)
             .attr("height", height)
             .attr("class", "fluid");
@@ -2427,7 +2457,7 @@ function create_simple_bar_graph(id, series_names, series_values, axis_titles = 
 * Function to create a pie or donut chart with 2+ values
 * inner radius is a % 0-100
 ****************************************************************/
-function create_pie_chart(id, titles, values, location_id, colours, given_width, given_height, innerRadius = 0, legend = true) {
+function create_pie_chart(id, titles, values, location_id, colours, given_width, given_height, innerRadius = 0, legend = true, href_link = "#") {
     
     // Get the size of the container to make the visualization responsive
     const container = document.getElementById(location_id.slice(1));
@@ -2458,8 +2488,17 @@ function create_pie_chart(id, titles, values, location_id, colours, given_width,
                  .outerRadius(radius)
                  .innerRadius(innerRadius);
 
+    let containerdiv = d3.select(location_id)
+                        .append("div")
+
+    // Check the value of href_link and append accordingly
+    if (href_link !== "#") {
+        containerdiv = containerdiv.append("a")
+            .attr("href", href_link);
+    }
+
     // Create SVG element for the chart
-    var svg = d3.select(location_id).append("svg")
+    var svg = containerdiv.append("svg")
         .attr("id", id)
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
@@ -2749,7 +2788,8 @@ function create_config_content(config, var_results) {
                     var textcolour = config.colours[custom_textcolour] ? config.colours[custom_textcolour] : custom_textcolour;
                     var height = config.content[el][6] ? config.content[el][6] : "100";
                     var time_bool = config.content[el][7] ? config.content[el][7] : false;
-                    create_data_card(id, title, value, location_id, colour, textcolour, height, time_bool);
+                    var href_link = config.content[el][8] ? config.content[el][8] : "#";
+                    create_data_card(id, title, value, location_id, colour, textcolour, height, time_bool, href_link);
                     break;
                 case "create_success_donut":
                     var id = el;
@@ -2762,7 +2802,8 @@ function create_config_content(config, var_results) {
                     var size = config.content[el][5] ? config.content[el][5] : 100;
                     var custom_colour = config.content[el][6] ? config.content[el][6] : "#532CEB"
                     var colour = config.colours[custom_colour] ? config.colours[custom_colour] : custom_colour;
-                    create_success_donut(id, title, success_val, failure_val, location_id, size, colour);
+                    var href_link = config.content[el][7] ? config.content[el][7] : "#";
+                    create_success_donut(id, title, success_val, failure_val, location_id, size, colour, href_link);
                     break;
                 case "create_contest_bar":
                     var id = el;
@@ -2776,7 +2817,8 @@ function create_config_content(config, var_results) {
                     var height = config.content[el][6] ? config.content[el][6] : 40;
                     var custom_colour = config.content[el][7] ? config.content[el][7] : ["#532CEB", "#C34247"]
                     var colour = config.colours[custom_colour] ? config.colours[custom_colour] : custom_colour;
-                    create_contest_bar(id, title, success_val, failure_val, location_id, width, height, colour);
+                    var href_link = config.content[el][8] ? config.content[el][8] : "#";
+                    create_contest_bar(id, title, success_val, failure_val, location_id, width, height, colour, href_link);
                     break;
                 case "create_possession_bar":
                     var id = el;
@@ -2790,7 +2832,8 @@ function create_config_content(config, var_results) {
                     var height = config.content[el][6] ? config.content[el][6] : 40;
                     var custom_colour = config.content[el][7] ? config.content[el][7] : ["#532CEB", "#C34247"]
                     var colour = config.colours[custom_colour] ? config.colours[custom_colour] : custom_colour;
-                    create_possession_bar(id, title, success_val, failure_val, location_id, width, height, colour);
+                    var href_link = config.content[el][8] ? config.content[el][8] : "#";
+                    create_possession_bar(id, title, success_val, failure_val, location_id, width, height, colour, href_link);
                     break;
                 case "create_text":
                     var id = el;
@@ -2914,7 +2957,8 @@ function create_config_content(config, var_results) {
                     var height = config.content[el][6] ? config.content[el][6] : "default";
                     var innerRadius = config.content[el][7] ? config.content[el][7] : 0;
                     var legend = config.content[el][8] ? config.content[el][8] : true;
-                    create_pie_chart(id, titles, values, location_id, colours, width, height, innerRadius, legend)
+                    var href_link = config.content[el][9] ? config.content[el][9] : "#";
+                    create_pie_chart(id, titles, values, location_id, colours, width, height, innerRadius, legend, href_link)
                     break;
                 default:
                     console.log("Unable to add content: " + el);
