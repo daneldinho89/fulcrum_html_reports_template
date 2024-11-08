@@ -864,14 +864,22 @@ function all_row_durations(data, rows) {
 function count_clips_table(data, rows, columns = [""], time_start = 0, time_end = Infinity) {
     var clips = [];
     var qualifiers = [];
+    // Added category checks to match formulas in Angles eg RC_ or QC_
+    let row_category_check = rows[0].slice(0,3)
+    let col_category_check = columns[0].slice(0,3)
 
     if (rows[0] === "all_rows") {
         clips = row_names(data);  
+    } else if (row_category_check === "RC_") {
+        clips = row_names_in_category(data, rows[0].slice(3))
     } else { clips = rows; }
+
     if (columns[0] === "all_qualifiers") {
         qualifiers = qualifier_names(data)
     } else if (columns[0] === "") {
         qualifiers = [""]
+    } else if (col_category_check === "QC_") {
+        qualifiers = qualifier_names_in_category(data, columns[0].slice(3))
     } else { qualifiers = columns;}
 
     // Create data table as a Map
@@ -888,7 +896,7 @@ function count_clips_table(data, rows, columns = [""], time_start = 0, time_end 
         }
         data_table.set('Total', clip_qualifier_counts);
 }
-    // Loop over actions array and count clips for each player
+    // Loop over actions array and count clips for each row
     for (let qualifier of qualifiers) {
         let clip_qualifier_counts = [];
         for (let row of clips) {
@@ -1346,6 +1354,14 @@ function read_config_variables(config, data) {
                 var timeframe_s = config.variables[each][4];
                 var res = create_time_graph_data(data, row_name, start_clip, aggregate_type, timeframe_s)
                 var_res[each] = res;
+                break;
+            case "row_names_in_category":
+                var row_category = config.variables[each][1];
+                var res = row_names_in_category(data, row_category)
+                var_res[each] = res;
+                break;
+            default:
+                var_res[each] = config.variables[each];
                 break;
         }
     }
@@ -2653,6 +2669,69 @@ function create_bootstrap_rows(row_name_suffix, no_rows, location_id) {
 }
 
 /****************************************************************
+* CREATE CUSTOM TABLE
+* ---------------------------------------------------------------
+* Function to create a customizable Bootstrap table with headers,
+* row names, and data provided in a matrix format.
+* 
+* Parameters:
+*   id: Unique identifier for the table.
+*   variable_matrix: 2D array containing data for the table cells.
+*   row_names: Array of row names (corresponding to each row in the matrix).
+*   col_headers: Array of column headers.
+*   header_colour: Background color for the table header.
+*   location_id: ID of the HTML element where the table should be appended.
+* 
+* Example usage:
+*   create_custom_table("myTable", [
+*       ["Data 1", "Data 2", "Data 3"],
+*       ["Data 4", "Data 5", "Data 6"]
+*   ], ["Row 1", "Row 2"], ["Header 1", "Header 2", "Header 3"], "#337ab7", "#table-container");
+****************************************************************/
+function create_custom_table(id, variable_matrix, row_names, col_headers, header_colour, location_id) {
+    // Create a table element
+    let table = d3.select(location_id)
+        .append("table")
+        .attr("class", "table table-striped table-hover")
+        .attr("id", id);
+
+    // Create header row
+    let header_row = table.append("thead")
+                        .attr("style", "background-color: " + header_colour + "; color: #fff")
+                        .append("tr");
+    
+    // Empty header cell for row names column
+    header_row.append("th");
+
+    // Create column headers
+    for (let header of col_headers) {
+        header_row.append("th")
+            .text(header);
+    }
+    
+    // Append a tbody element for the table body
+    table = table.append("tbody");
+
+    // Create rows
+    for (let i = 0; i < variable_matrix.length; i++) {
+        let row = table.append("tr")
+            .attr("id", id + "_row_" + (i + 1));
+
+        // Add row name in the first cell
+        row.append("td")
+            .attr("id", id + "_cell_" + (i + 1) + "_0")
+            .text(row_names[i]);
+
+        // Create cells in each row
+        for (let j = 0; j < col_headers.length; j++) {
+            row.append("td")
+                .attr("id", id + "_cell_" + (i + 1) + "_" + (j + 1))
+                .text(variable_matrix[i][j]);
+        }
+    }
+}
+
+/****************************************************************
 * CREATE UPDATE BUTTON
 * ---------------------------------------------------------------
 * Function to create a button to run a js function such as regenerate vizualisations
@@ -2775,6 +2854,24 @@ function create_config_content(config, var_results) {
                     var no_cols = config.content[el][1];
                     var location_id = config.content[el][2];
                     create_bootstrap_columns(col_name_suffix, no_cols, location_id);
+                    break;
+                case "create_custom_table":
+                    var id = el;
+                    var variable_matrix_names = eval(config.content[el][1]);
+                    var variable_matrix = variable_matrix_names.map(namesOrValues => {
+                        return namesOrValues.map(item => {
+                            if (var_results[item] || var_results[item] === 0) {
+                                return var_results[item]; // Lookup result if it exists
+                            } else {
+                                return item; // Use the direct value if no result found
+                            }
+                        });
+                    });
+                    var row_names = config.content[el][2];
+                    var col_headers = config.content[el][3];
+                    var header_colour = config.content[el][4];
+                    var location_id = config.content[el][5];
+                    create_custom_table(id, variable_matrix, row_names, col_headers, header_colour, location_id)
                     break;
                 case "create_data_card":
                     var id = el;
@@ -2934,8 +3031,17 @@ function create_config_content(config, var_results) {
                 case "create_simple_bar_graph":
                     var id = el;
                     var series_names = config.content[el][1];
+                    // Check if series_names is already a list (allows you to use row_names_category function to quickly build a chart)
+                    if (typeof series_names === 'string') {series_names = var_results[series_names]}
                     var series_values = config.content[el][2];
-                    var series_values = series_values.map(name => math.evaluate(name,var_results));
+                    // Check if series_values is a list
+                    if (Array.isArray(series_values)) {
+                        // If it's a list, map each name to its evaluated value
+                        series_values = series_values.map(name => math.evaluate(name, var_results));
+                    } else {
+                        // If it's not a list, evaluate series_values directly
+                        series_values = eval(series_values);
+                    }
                     var axis_titles = config.content[el][3] ? config.content[el][3] : ["x axis", "y axis"]
                     var location_id = config.content[el][4];
                     var custom_colours = config.content[el][5];
