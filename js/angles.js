@@ -2869,7 +2869,8 @@ function create_config_content(config, var_results) {
                     });
                     var row_names = config.content[el][2];
                     var col_headers = config.content[el][3];
-                    var header_colour = config.content[el][4];
+                    var custom_header_colour = config.content[el][4] ? config.content[el][4] : "#532CEB";
+                    var header_colour = config.colours[custom_header_colour] ? config.colours[custom_header_colour] : custom_header_colour;
                     var location_id = config.content[el][5];
                     create_custom_table(id, variable_matrix, row_names, col_headers, header_colour, location_id)
                     break;
@@ -2913,9 +2914,9 @@ function create_config_content(config, var_results) {
                     var width = config.content[el][5] ? config.content[el][5] : 200;
                     var height = config.content[el][6] ? config.content[el][6] : 40;
                     var custom_colour = config.content[el][7] ? config.content[el][7] : ["#532CEB", "#C34247"]
-                    var colour = config.colours[custom_colour] ? config.colours[custom_colour] : custom_colour;
+                    var colours = custom_colour.map(colour => config.colours[colour] ? config.colours[colour] : colour);
                     var href_link = config.content[el][8] ? config.content[el][8] : "#";
-                    create_contest_bar(id, title, success_val, failure_val, location_id, width, height, colour, href_link);
+                    create_contest_bar(id, title, success_val, failure_val, location_id, width, height, colours, href_link);
                     break;
                 case "create_possession_bar":
                     var id = el;
@@ -2928,9 +2929,9 @@ function create_config_content(config, var_results) {
                     var width = config.content[el][5] ? config.content[el][5] : 200;
                     var height = config.content[el][6] ? config.content[el][6] : 40;
                     var custom_colour = config.content[el][7] ? config.content[el][7] : ["#532CEB", "#C34247"]
-                    var colour = config.colours[custom_colour] ? config.colours[custom_colour] : custom_colour;
+                    var colours = custom_colour.map(colour => config.colours[colour] ? config.colours[colour] : colour);
                     var href_link = config.content[el][8] ? config.content[el][8] : "#";
-                    create_possession_bar(id, title, success_val, failure_val, location_id, width, height, colour, href_link);
+                    create_possession_bar(id, title, success_val, failure_val, location_id, width, height, colours, href_link);
                     break;
                 case "create_text":
                     var id = el;
