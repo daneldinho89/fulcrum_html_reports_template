@@ -1378,13 +1378,20 @@ function read_config_variables(config, data) {
                 var_res[each] = res;
                 break;
             default:
-                eval(`var ${each} = ${JSON.stringify(var_res[each])};`);  // Dynamically declare default variables
-                var_res[each] = eval(config.variables[each]);
+                eval(`var ${each} = ${JSON.stringify(config.variables[each])};`);  // Dynamically declare default variables
+                try {
+                    var_res[each] = eval(config.variables[each]); // Assign the result of evaluation
+                } catch (error) {
+                    console.log(`Unable to evaluate "${each}" so just assigned the string:`, `${config.variables[each]}`, error);
+                    var_res[each] = config.variables[each]; // Assign the string directly
+                }
                 break;
         }
     }
-
+    
+    console.log("config_variables:",var_res)
     return var_res;
+
 
 };
 
