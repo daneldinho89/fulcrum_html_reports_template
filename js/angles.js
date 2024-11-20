@@ -1306,6 +1306,7 @@ function read_config_variables(config, data) {
                 var time_end_read = config.variables[each][4] ? config.variables[each][4] : Infinity;
                 time_end = var_res[time_end_read] ? var_res[time_end_read] : eval(time_end_read);
                 var res = count_clips_table(data, rows, cols, time_start, time_end)
+                eval(`var ${each} = ${JSON.stringify(res)};`);
                 var_res[each] = res;
                 break;
             case "min_time_start":
@@ -1333,7 +1334,7 @@ function read_config_variables(config, data) {
                 res.sort(function(a, b) {
                     return a - b;
                     });
-                eval(`var ${each} = ${res[max]};`);
+                eval(`var ${each} = ${JSON.stringify(res)};`);
                 var_res[each] = res;
                 break;
             case "cartesian_line_extract":
@@ -1345,7 +1346,7 @@ function read_config_variables(config, data) {
                 res.sort(function(a, b) {
                     return a - b;
                     });
-                eval(`var ${each} = ${res[max]};`);
+                eval(`var ${each} = ${JSON.stringify(res)};`);
                 var_res[each] = res;
                 break;
             case "create_time_graph_data":
@@ -1353,20 +1354,38 @@ function read_config_variables(config, data) {
                 var aggregate_type = config.variables[each][3];
                 var timeframe_s = config.variables[each][4];
                 var res = create_time_graph_data(data, row_name, start_clip, aggregate_type, timeframe_s)
+                eval(`var ${each} = ${JSON.stringify(res)};`);
                 var_res[each] = res;
                 break;
             case "row_names_in_category":
                 var row_category = config.variables[each][1];
-                var res = row_names_in_category(data, row_category)
+                var res = row_names_in_category(data, row_category);
+                eval(`var ${each} = ${JSON.stringify(res)};`);
+                var_res[each] = res;
+                break;
+            case "round_dp":
+                var value = eval(config.variables[each][1]);
+                var decimals = config.variables[each][2] ? config.variables[each][2] : 0;
+                var res = round_dp(value, decimals)
+                eval(`var ${each} = ${res};`);
+                var_res[each] = res;
+                break;
+            case "percentage":
+                var numerator = config.variables[each][1];
+                var denominator = config.variables[each][2];
+                var res = percentage(numerator, denominator)
+                eval(`var ${each} = ${res};`);
                 var_res[each] = res;
                 break;
             default:
-                var_res[each] = config.variables[each];
+                eval(`var ${each} = ${JSON.stringify(var_res[each])};`);  // Dynamically declare default variables
+                var_res[each] = eval(config.variables[each]);
                 break;
         }
     }
 
     return var_res;
+
 };
 
 
@@ -3102,6 +3121,15 @@ function percentage (numerator, denominator) {
     } else {
         return percent
     }
+};
+
+/****************************************************************
+* ROUND DECIMAL PLACES
+* ---------------------------------------------------------------
+* Function to return a rounded number to a certain value of decimal places
+****************************************************************/
+function round_dp (value, decimals = 0) {
+    return math.round(value, decimals)
 };
 
 /****************************************************************
