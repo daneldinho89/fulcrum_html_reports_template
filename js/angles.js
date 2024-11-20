@@ -1371,8 +1371,8 @@ function read_config_variables(config, data) {
                 var_res[each] = res;
                 break;
             case "percentage":
-                var numerator = config.variables[each][1];
-                var denominator = config.variables[each][2];
+                var numerator = eval(config.variables[each][1]);
+                var denominator = eval(config.variables[each][2]);
                 var res = percentage(numerator, denominator)
                 eval(`var ${each} = ${res};`);
                 var_res[each] = res;
