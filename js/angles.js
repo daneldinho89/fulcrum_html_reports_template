@@ -1530,7 +1530,7 @@ function create_data_card(id, title, data, location_id, colour = "#532CEB", text
         .attr("style", "font-size:" + height/4 + "px;")
         .text(time ? sec2time_mmss(data) : data)
 };
-
+    
 /****************************************************************
 * SUCCESS DONUT
 * ---------------------------------------------------------------
@@ -2903,8 +2903,7 @@ function create_config_content(config, var_results) {
                 case "create_data_card":
                     var id = el;
                     var title = config.content[el][1];
-                    var variable = eval(config.content[el][2]);
-                    var value = typeof variable === "number" ? variable : var_results[variable];
+                    var value = eval(config.content[el][2]);
                     var location_id = config.content[el][3];
                     var custom_colour = config.content[el][4] ? config.content[el][4] : "#532CEB";
                     var colour = config.colours[custom_colour] ? config.colours[custom_colour] : custom_colour;
