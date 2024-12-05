@@ -2437,7 +2437,8 @@ function create_simple_bar_graph(id, series_names, series_values, axis_titles = 
         .attr("y", d => y(d))
         .attr("width", x.bandwidth())
         .attr("height", d => height - y(d))
-        .attr("fill", (d, i) => colours[i % colours.length]);
+        .attr("fill", (d, i) => colours[i % colours.length])
+       
 
     // Append x and y axes to the SVG
     svg.append("g")
@@ -2450,6 +2451,18 @@ function create_simple_bar_graph(id, series_names, series_values, axis_titles = 
         .call(d3.axisLeft(y));
 
     const text_scaler = Math.min(width, height) / 20
+
+    // Add text labels above the bars
+    svg.selectAll(".bar-label")
+        .data(series_values)
+        .enter().append("text")
+        .attr("class", "bar-label")
+        .attr("x", (d, i) => x(series_names[i]) + x.bandwidth() / 2) // Center text horizontally
+        .attr("y", d => y(d) - 5) // Position text slightly above the bar
+        .text(d => d) // Display the value of the bar
+        .attr("text-anchor", "middle") // Center text
+        .style("font-size", text_scaler + "px") // Scale text size
+        .style("fill", "#000"); // Set text color
 
     // Add labels for the x and y axes
     svg.append("text")
